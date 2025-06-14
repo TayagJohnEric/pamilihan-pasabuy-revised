@@ -13,4 +13,6 @@ class CustomerDashboardController extends Controller
 
         return view('customer.home.home');
     }
+
+    
 }

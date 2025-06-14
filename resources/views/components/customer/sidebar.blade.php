@@ -14,7 +14,7 @@
                 <ul class="space-y-2 px-4">
                     <!-- Dashboard -->
                     <li>
-                        <a href="#" class="group flex items-center font-semibold p-3 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-200">
+                        <a href="/home" class="group flex items-center font-semibold p-3 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-green-500 group-hover:text-white transition-colors">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                             </svg>
@@ -38,9 +38,9 @@
                             </button>
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Profile</a></li>
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Saved Addresses</a></li>
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Change Password</a></li>
+                                    <li><a href="/profile/edit" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Profile</a></li>
+                                    <li><a href="/saved_addresses" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Saved Addresses</a></li>
+                                    <li><a href="/profile/password/edit" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Change Password</a></li>
                                 </ul>
                             </div>
                         </div>
