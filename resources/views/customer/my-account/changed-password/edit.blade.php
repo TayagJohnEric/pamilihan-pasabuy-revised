@@ -3,7 +3,7 @@
 @section('title', 'Change Password')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="max-w-[90rem] mx-auto">
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Change Password</h2>
 

@@ -9,6 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerProfileController extends Controller
 {
+    public function show()
+{
+    
+    $user = Auth::user()->load(['savedAddresses' => function ($query) {
+        $query->where('is_default', true)->with('district');
+    }]);
+
+    $defaultAddress = $user->savedAddresses->first();
+
+    return view('customer.my-account.profile.show', compact('user', 'defaultAddress'));
+}
+
     public function edit()
 {
     $user = Auth::user();

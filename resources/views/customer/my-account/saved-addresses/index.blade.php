@@ -3,7 +3,7 @@
 @section('title', 'My Saved Addresses')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="max-w-[90rem] mx-auto">
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">My Saved Addresses</h2>
         <p class="text-gray-600 mb-4">Below is a list of your saved addresses.</p>

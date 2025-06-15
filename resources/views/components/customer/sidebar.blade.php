@@ -38,7 +38,7 @@
                             </button>
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
-                                    <li><a href="/profile/edit" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Profile</a></li>
+                                    <li><a href="/profile" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Profile</a></li>
                                     <li><a href="/saved_addresses" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Saved Addresses</a></li>
                                     <li><a href="/profile/password/edit" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Change Password</a></li>
                                 </ul>

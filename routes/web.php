@@ -2,16 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\AdminAuthController;
+
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerPasswordController;
 use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Customer\CustomerSavedAddressController;
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+
+
 
 Route::get('/', function () {
     return view('welcome');
 });
-
 
 
 
@@ -32,8 +36,9 @@ Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->midd
 Route::get('/home', [CustomerDashboardController::class, 'dashboard'])->middleware(['auth', 'role:customer'])->name('customer.dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', [CustomerProfileController::class, 'show'])->name('customer.profile.show');
     Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
-    Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+    Route::put('/profile/update', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/profile/password/edit', [CustomerPasswordController::class, 'edit'])->name('customer.password.edit');
@@ -64,7 +69,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 //Vendor Route
-Route::get('/vendor-dashboard', function () {
+Route::get('/vendor/dashboard', function () {
     return view('vendor.dashboard.dashboard');
 });
 
@@ -78,7 +83,7 @@ Route::get('/vendor-dashboard', function () {
 
 
 //Rider Route
-Route::get('/rider-dashboard', function () {
+Route::get('/rider/dashboard', function () {
     return view('rider.dashboard.dashboard');
 });
 
@@ -88,10 +93,15 @@ Route::get('/rider-dashboard', function () {
 
 
 
-
-
-
 //Admin Route
-Route::get('/admin-dashboard', function () {
-    return view('admin.dashboard.dashboard');
+//Admin Login and Register
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/auth/admin/login', [AdminAuthController::class, 'login']);
 });
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->middleware('auth')->name('admin.logout');
+
+
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'dashboard'])->middleware(['auth', 'role:admin'])->name('admin.dashboard');
+
+
