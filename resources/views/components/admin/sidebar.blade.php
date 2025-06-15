@@ -39,7 +39,7 @@
                             </button>
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">All Users</a></li>
+                                    <li><a href="/admin/users" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">All Users</a></li>
                                     <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Rider Application</a></li>
                                     <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Vendor Application</a></li>
                                 </ul>

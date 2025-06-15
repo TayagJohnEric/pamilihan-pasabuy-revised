@@ -13,7 +13,7 @@
             @method('PUT')
 
             <div>
-                <label class="block">District</label>
+                <label class="block">Pampanga/San Fernando/District</label>
                 <select name="district_id" class="w-full border rounded px-3 py-2">
                     @foreach($districts as $district)
                         <option value="{{ $district->id }}" {{ $district->id == $saved_address->district_id ? 'selected' : '' }}>

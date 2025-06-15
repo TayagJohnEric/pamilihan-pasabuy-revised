@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\Auth\RiderAuthController;
+use App\Http\Controllers\Auth\VendorAuthController;
 
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerPasswordController;
@@ -10,6 +12,12 @@ use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Customer\CustomerSavedAddressController;
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminRiderApplicationController;
+use App\Http\Controllers\Admin\AdminVendorApplicationController;
+
+
+
 
 
 
@@ -69,6 +77,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 //Vendor Route
+
+Route::get('/vendor-application', [VendorAuthController::class, 'create'])->name('vendor-applications.create');
+Route::post('/vendor-application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
+
 Route::get('/vendor/dashboard', function () {
     return view('vendor.dashboard.dashboard');
 });
@@ -83,9 +95,15 @@ Route::get('/vendor/dashboard', function () {
 
 
 //Rider Route
+Route::get('/rider-application', [RiderAuthController::class, 'create'])->name('rider-applications.create');
+Route::post('/rider-application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
+
 Route::get('/rider/dashboard', function () {
     return view('rider.dashboard.dashboard');
 });
+
+
+
 
 
 
@@ -101,7 +119,62 @@ Route::middleware('guest')->group(function () {
 });
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->middleware('auth')->name('admin.logout');
 
-
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'dashboard'])->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
+Route::prefix('admin')->group(function () {
+    Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+});
+
+// Rider Applications Index
+Route::get('admin/rider-applications', [AdminRiderApplicationController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.rider_applications.index');
+
+// Rider Applications Show
+Route::get('admin/rider-applications/{rider_application}', [AdminRiderApplicationController::class, 'show'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.rider_applications.show');
+
+// Rider Applications Destroy
+Route::delete('admin/rider-applications/{rider_application}', [AdminRiderApplicationController::class, 'destroy'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.rider_applications.destroy');
+
+// Create Rider from Application
+Route::get('admin/rider-applications/{id}/create-rider', [AdminRiderApplicationController::class, 'createRiderFromApplication'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.rider_applications.createRider');
+
+// Store Rider from Application
+Route::post('admin/rider-applications/{id}/store-rider', [AdminRiderApplicationController::class, 'storeRiderFromApplication'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.rider_applications.storeRider');
+
+    // Vendor Applications Index
+Route::get('admin/vendor-applications', [AdminVendorApplicationController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.vendor_applications.index');
+
+// Vendor Applications Show
+Route::get('admin/vendor-applications/{vendor_application}', [AdminVendorApplicationController::class, 'show'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.vendor_applications.show');
+
+// Vendor Applications Destroy
+Route::delete('admin/vendor-applications/{vendor_application}', [AdminVendorApplicationController::class, 'destroy'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.vendor_applications.destroy');
+
+// Create Vendor from Application
+Route::get('admin/vendor-applications/{id}/create-vendor', [AdminVendorApplicationController::class, 'createVendorFromApplication'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.vendor_applications.createVendor');
+
+// Store Vendor from Application
+Route::post('admin/vendor-applications/{id}/store-vendor', [AdminVendorApplicationController::class, 'storeVendorFromApplication'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.vendor_applications.storeVendor');
 
