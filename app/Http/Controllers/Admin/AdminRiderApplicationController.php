@@ -17,11 +17,10 @@ class AdminRiderApplicationController extends Controller
 {
     // Index: Show all rider applications
     public function index()
-    {
-        $applications = RiderApplication::latest()->get();
-        return view('admin.user-management.rider-application.index', compact('applications'));
-    }
-
+{
+    $applications = RiderApplication::where('status', 'pending')->latest()->get();
+    return view('admin.user-management.rider-application.index', compact('applications'));
+}
     // Show: Show details of a specific application
     public function show($id)
     {

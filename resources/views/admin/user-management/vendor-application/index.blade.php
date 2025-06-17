@@ -25,16 +25,34 @@
                         <td>{{ ucfirst($app->status) }}</td>
                         <td>
                             <a href="{{ route('admin.vendor_applications.show', $app->id) }}" class="text-blue-600">View</a> |
-                            <form action="{{ route('admin.vendor_applications.destroy', $app->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button onclick="return confirm('Delete application?')" class="text-red-600">Delete</button>
-                            </form>
+                                        <button 
+    onclick="openDeleteModal({{ $app->id }})" 
+    type="button" 
+    class="text-red-600 hover:underline"
+>
+    Reject
+</button>   
                         </td>
                     </tr>
+
+                       <!--Delete Modal-->
+                                                @include('admin.user-management.vendor-application.modal.delete-modal')
+
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+
+     function openDeleteModal(applicantId) {
+        document.getElementById('deleteModal-' + applicantId).classList.remove('hidden');
+    }
+
+    function closeDeleteModal(applicantId) {
+        document.getElementById('deleteModal-' + applicantId).classList.add('hidden');
+    }
+</script>
+
 @endsection

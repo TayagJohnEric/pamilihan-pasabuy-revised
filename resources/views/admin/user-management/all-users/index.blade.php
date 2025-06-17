@@ -40,18 +40,35 @@
                     <td class="px-4 py-2 capitalize">{{ $user->role }}</td>
                     <td class="px-4 py-2">{{ $user->is_active ? 'Active' : 'Inactive' }}</td>
                     <td class="px-4 py-2 flex gap-2">
-                        <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 hover:underline">Edit</a>
-                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="text-red-600 hover:underline">Delete</button>
-                        </form>
-                    </td>
+<button 
+    onclick="openEditModal({{ $user->id }})" 
+    type="button" 
+    class="text-blue-600 hover:underline"
+>
+    Edit
+</button>                     
+<button 
+    onclick="openDeleteModal({{ $user->id }})" 
+    type="button" 
+    class="text-red-600 hover:underline"
+>
+    Delete
+</button>                     
+
+
                 </tr>
+                                 <!--Edit modal-->
+                                 @include('admin.user-management.all-users.modal.edit-modal')
+                                 <!--Delete modal-->
+                                @include('admin.user-management.all-users.modal.delete-modal')
+
+
                 @empty
                 <tr>
                     <td colspan="5" class="px-4 py-2 text-center text-gray-500">No users found.</td>
                 </tr>
+
+
                 @endforelse
             </tbody>
         </table>
@@ -61,4 +78,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    function openEditModal(userId) {
+        document.getElementById('editModal-' + userId).classList.remove('hidden');
+    }
+
+    function closeEditModal(userId) {
+        document.getElementById('editModal-' + userId).classList.add('hidden');
+    }
+
+     function openDeleteModal(userId) {
+        document.getElementById('deleteModal-' + userId).classList.remove('hidden');
+    }
+
+    function closeDeleteModal(userId) {
+        document.getElementById('deleteModal-' + userId).classList.add('hidden');
+    }
+</script>
+
+
 @endsection
+
+
