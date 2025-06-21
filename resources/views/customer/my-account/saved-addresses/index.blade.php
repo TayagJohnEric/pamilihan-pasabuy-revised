@@ -3,13 +3,13 @@
 @section('title', 'My Saved Addresses')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-2">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">My Saved Addresses</h1>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">My Saved Addresses</h1>
                     <p class="mt-2 text-gray-600 text-sm">Manage your delivery addresses for faster checkout</p>
                 </div>
                 <button 
@@ -123,13 +123,15 @@
                 </svg>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No saved addresses yet</h3>
                 <p class="text-gray-600 mb-6 max-w-md mx-auto">Save your frequently used addresses to make checkout faster and easier.</p>
-                <a href="{{ route('customer.saved_addresses.create') }}" 
-                   class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Add Your First Address
-                </a>
+                         <button 
+    type="button"
+    onclick="openCreateModal()"
+    class="inline-flex items-center justify-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:w-auto w-full">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+    </svg>
+    Add Your First Address
+</button>
             </div>
         @endif
     </div>

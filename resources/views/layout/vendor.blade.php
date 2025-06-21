@@ -11,7 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-    
+     <!-- Lucide CDN for icons --> 
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;

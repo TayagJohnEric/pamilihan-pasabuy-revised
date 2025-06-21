@@ -7,7 +7,7 @@
     <div class="max-w-[90rem] mx-auto">
         <!-- Header Section - Left Aligned and Larger -->
         <div class="text-left mb-8">
-            <h1 class="text-xl font-bold text-gray-900 sm:text-1xl">Edit Profile</h1>
+            <h1 class="text-xl font-bold text-gray-900 sm:text-xl">Edit Profile</h1>
             <p class="mt-1 text-sm text-gray-600">Update your personal information and preferences</p>
         </div>
 

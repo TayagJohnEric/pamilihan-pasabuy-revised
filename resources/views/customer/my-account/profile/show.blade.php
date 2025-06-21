@@ -9,7 +9,7 @@
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900 sm:text-1xl">My Profile</h1>
+                    <h1 class="text-xl font-bold text-gray-900 sm:text-xl">My Profile</h1>
                     <p class="mt-1 text-sm text-gray-600">View and manage your personal information and settings</p>
                 </div>
             </div>
