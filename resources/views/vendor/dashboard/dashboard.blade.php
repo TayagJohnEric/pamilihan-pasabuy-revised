@@ -1,10 +1,10 @@
 @extends('layout.vendor')
 
-@section('title', 'Rider Vendor')
+@section('title', 'Vendor Dashboard')
 
 @section('content')
 
-<h1>Rider Dashboard</h1>
+<h1>Vendor Dashboard</h1>
 
 
 

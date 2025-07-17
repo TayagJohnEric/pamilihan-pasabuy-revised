@@ -74,7 +74,20 @@ Route::get('/vendor/dashboard', function () {
     return view('vendor.dashboard.dashboard');
 })->name('vendor.dashboard');
 
-
+// Vendor Profile Management
+Route::middleware(['auth', 'role:vendor'])->group(function () {
+    // Vendor Profile Management Routes
+    Route::prefix('vendor')->name('vendor.')->group(function () {
+        // Shop Profile Routes
+        Route::get('/profile', [App\Http\Controllers\Vendor\VendorProfileController::class, 'index'])->name('profile.index');
+        Route::get('/profile/edit', [App\Http\Controllers\Vendor\VendorProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [App\Http\Controllers\Vendor\VendorProfileController::class, 'update'])->name('profile.update');
+        
+        // Ratings and Reviews
+        Route::get('/ratings', [App\Http\Controllers\Vendor\VendorProfileController::class, 'ratings'])->name('profile.ratings'); 
+    });
+    
+});
 
 
 
