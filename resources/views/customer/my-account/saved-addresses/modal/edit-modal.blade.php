@@ -33,14 +33,34 @@
                                         <textarea name="delivery_notes" class="w-full mt-1 border border-gray-300 rounded">{{ $address->delivery_notes }}</textarea>
                                     </div>
 
-                                    <div class="mb-4 flex items-center">
-                                        <input type="checkbox" name="is_default" id="is_default_{{ $address->id }}" value="1" class="mr-2"
-                                            @checked($address->is_default)>
-                                        <label for="is_default_{{ $address->id }}">Set as default</label>
+                                 <div class="mb-4 flex items-center justify-between">
+                                        <label for="is_default_{{ $address->id }}" class="flex items-center cursor-pointer">
+                                            <span class="mr-3 text-gray-700">Set as default</span>
+                                            <div class="relative w-14 h-8">
+                                                <input
+                                                    type="checkbox"
+                                                    name="is_default"
+                                                    id="is_default_{{ $address->id }}"
+                                                    value="1"
+                                                    class="sr-only peer"
+                                                    @checked($address->is_default)
+                                                >
+                                                <!-- The background track that turns green when checked -->
+                                                <div class="w-full h-full bg-[#d4d9de] rounded-full shadow-inner transition-all duration-300 peer-checked:bg-green-500"></div>
+                                                
+                                                <!-- The circular knob -->
+                                                <div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all duration-300
+                                                    peer-checked:translate-x-6
+                                                ">
+                                                </div>
+                                            </div>
+                                        </label>
                                     </div>
 
-                                    <div class="flex justify-end">
-                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
+                                    <div class="mb-4 flex items-center justify-end">
+                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            Update
+                                        </button>
                                     </div>
                                 </form>
                             </div>

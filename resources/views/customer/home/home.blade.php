@@ -1,6 +1,6 @@
 @extends('layout.customer')
 
-@section('title', 'Customer Dashboard')
+@section('title', 'Home')
 
 @section('content')
 

@@ -16,9 +16,7 @@
 
         <!-- Header Actions -->
         <div class="flex items-center space-x-3">
-            <!-- Cart -->
-            @include('components.cart')
-            
+          
             <!-- Notifications -->
             @include('components.notification')
 

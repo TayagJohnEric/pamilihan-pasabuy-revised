@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\RiderApplication;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use App\Models\VendorApplication;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RiderAuthController extends Controller
 {
@@ -50,6 +54,52 @@ class RiderAuthController extends Controller
         RiderApplication::create($validated);
 
         return redirect()->back()->with('success', 'Application submitted successfully!');
+    }
+
+     public function showLoginForm()
+    {
+        return view('auth.rider.login');
+    }
+
+    public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $credentials = $request->only('email', 'password');
+    $credentials['role'] = 'rider';
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        // Check if AJAX request
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Login successful'], 200);
+        }
+
+        return redirect()->intended(route('rider.dashboard'));
+    }
+
+    if ($request->ajax()) {
+        return response()->json([
+            'errors' => ['email' => ['Invalid credentials or not a rider.']]
+        ], 422);
+    }
+
+    return back()->withErrors([
+        'email' => 'Invalid credentials or not a rider.',
+    ]);
+}
+
+ public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('rider.login');
     }
 
 }

@@ -32,11 +32,27 @@
                 <textarea name="delivery_notes" class="w-full mt-1 border border-gray-300 rounded"></textarea>
             </div>
 
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" name="is_default" id="create_is_default" value="1" class="mr-2">
-                <label for="create_is_default">Set as default</label>
-            </div>
-
+                <div class="mb-4 flex items-center justify-between">
+                        <label for="create_is_default" class="flex items-center cursor-pointer">
+                            <span class="mr-3 text-gray-700">Set as default</span>
+                            <div class="relative w-14 h-8">
+                                <input
+                                    type="checkbox"
+                                    name="is_default"
+                                    id="create_is_default"
+                                    value="1"
+                                    class="sr-only peer"
+                                >
+                                <!-- The background track that turns green when checked -->
+                                <div class="w-full h-full bg-[#d4d9de] rounded-full shadow-inner transition-all duration-300 peer-checked:bg-green-500"></div>
+                                
+                                <!-- The circular knob -->
+                                <div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all duration-300
+                                    peer-checked:translate-x-6">
+                                </div>
+                            </div>
+                        </label>
+                </div>
             <div class="flex justify-end">
                 <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
             </div>

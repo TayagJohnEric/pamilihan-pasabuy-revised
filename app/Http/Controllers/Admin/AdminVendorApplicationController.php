@@ -15,7 +15,7 @@ class AdminVendorApplicationController extends Controller
 {
     public function index()
     {
-        $applications = VendorApplication::latest()->get();
+    $applications = VendorApplication::where('status', 'pending')->latest()->get();
         return view('admin.user-management.vendor-application.index', compact('applications'));
     }
 

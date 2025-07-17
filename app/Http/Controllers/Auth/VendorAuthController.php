@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\VendorApplication;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 
 class VendorAuthController extends Controller
@@ -60,5 +63,52 @@ class VendorAuthController extends Controller
         VendorApplication::create($validated);
 
         return redirect()->back()->with('success', 'Vendor application submitted successfully!');
+    }
+
+
+     public function showLoginForm()
+    {
+        return view('auth.vendor.login');
+    }
+
+    public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $credentials = $request->only('email', 'password');
+    $credentials['role'] = 'vendor';
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        // Check if AJAX request
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Login successful'], 200);
+        }
+
+        return redirect()->intended(route('vendor.dashboard'));
+    }
+
+    if ($request->ajax()) {
+        return response()->json([
+            'errors' => ['email' => ['Invalid credentials or not a vendor.']]
+        ], 422);
+    }
+
+    return back()->withErrors([
+        'email' => 'Invalid credentials or not a rider.',
+    ]);
+}
+
+ public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('vendor.login');
     }
 }

@@ -1,70 +1,51 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\CustomerAuthController;
-use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\Auth\RiderAuthController;
-use App\Http\Controllers\Auth\VendorAuthController;
-
-use App\Http\Controllers\Customer\CustomerDashboardController;
-use App\Http\Controllers\Customer\CustomerPasswordController;
-use App\Http\Controllers\Customer\CustomerProfileController;
-use App\Http\Controllers\Customer\CustomerSavedAddressController;
-
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AdminUserController;
-use App\Http\Controllers\Admin\AdminRiderApplicationController;
-use App\Http\Controllers\Admin\AdminVendorApplicationController;
 
 
 
-
-
-
+//Landing Page
 Route::get('/', function () {
     return view('welcome');
 });
 
 
 
+//-----------------------------------------------Customer Route---------------------------------------------------------//
 
-
-
-//Customer Route
 //Customer Login and Register
 Route::middleware('guest')->group(function () {
-    Route::get('/auth/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
-    Route::post('/auth/login', [CustomerAuthController::class, 'login']);
+    Route::get('/auth/login', [App\Http\Controllers\Auth\CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
+    Route::post('/auth/login', [App\Http\Controllers\Auth\CustomerAuthController::class, 'login']);
 
-    Route::get('/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register');
-    Route::post('/register', [CustomerAuthController::class, 'register']);
+    Route::get('/register', [App\Http\Controllers\Auth\CustomerAuthController::class, 'showRegisterForm'])->name('customer.register');
+    Route::post('/register', [App\Http\Controllers\Auth\CustomerAuthController::class, 'register']);
 });
-Route::post('/customer/logout', [CustomerAuthController::class, 'logout'])->middleware('auth')->name('customer.logout');
+Route::post('/customer/logout', [App\Http\Controllers\Auth\CustomerAuthController::class, 'logout'])->middleware('auth')->name('customer.logout');
 
-Route::get('/home', [CustomerDashboardController::class, 'dashboard'])->middleware(['auth', 'role:customer'])->name('customer.dashboard');
+//Customer Dashboard
+Route::get('/home', [App\Http\Controllers\Customer\CustomerDashboardController::class, 'dashboard'])->middleware(['auth', 'role:customer'])->name('customer.dashboard');
 
+//User Profile Mangement (Profile, Password, Address)
+//Profile Route
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [CustomerProfileController::class, 'show'])->name('customer.profile.show');
-    Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
-    Route::put('/profile/update', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+    Route::get('/profile', [App\Http\Controllers\Customer\CustomerProfileController::class, 'show'])->name('customer.profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\Customer\CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
+    Route::put('/profile/update', [App\Http\Controllers\Customer\CustomerProfileController::class, 'update'])->name('customer.profile.update');
 });
+//Password Route
 Route::middleware('auth')->group(function () {
-    Route::get('/profile/password/edit', [CustomerPasswordController::class, 'edit'])->name('customer.password.edit');
-    Route::put('/profile/password', [CustomerPasswordController::class, 'update'])->name('customer.password.update');
+    Route::get('/profile/password/edit', [App\Http\Controllers\Customer\CustomerPasswordController::class, 'edit'])->name('customer.password.edit');
+    Route::put('/profile/password', [App\Http\Controllers\Customer\CustomerPasswordController::class, 'update'])->name('customer.password.update');
 });
+//Address Route
 Route::middleware(['auth'])->group(function () {
-    // List all saved addresses
-    Route::get('/saved_addresses', [CustomerSavedAddressController::class, 'index'])->name('customer.saved_addresses.index');
-    // Show form to create a new address
-    Route::get('/saved_addresses/create', [CustomerSavedAddressController::class, 'create'])->name('customer.saved_addresses.create');
-    // Store new address
-    Route::post('/saved_addresses', [CustomerSavedAddressController::class, 'store'])->name('customer.saved_addresses.store');
-    // Show form to edit existing address
-    Route::get('/saved_addresses/{saved_address}/edit', [CustomerSavedAddressController::class, 'edit'])->name('customer.saved_addresses.edit');
-    // Update the address
-    Route::put('/saved_addresses/{saved_address}', [CustomerSavedAddressController::class, 'update'])->name('customer.saved_addresses.update');
-    // Delete the address
-    Route::delete('/saved_addresses/{saved_address}', [CustomerSavedAddressController::class, 'destroy'])->name('customer.saved_addresses.destroy');
+    Route::get('/saved_addresses', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'index'])->name('customer.saved_addresses.index');
+    Route::get('/saved_addresses/create', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'create'])->name('customer.saved_addresses.create');
+    Route::post('/saved_addresses', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'store'])->name('customer.saved_addresses.store');
+    Route::get('/saved_addresses/{saved_address}/edit', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'edit'])->name('customer.saved_addresses.edit');
+    Route::put('/saved_addresses/{saved_address}', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'update'])->name('customer.saved_addresses.update');
+    Route::delete('/saved_addresses/{saved_address}', [App\Http\Controllers\Customer\CustomerSavedAddressController::class, 'destroy'])->name('customer.saved_addresses.destroy');
 });
 
 
@@ -76,14 +57,22 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-//Vendor Route
+//-----------------------------------------------Vendor Route---------------------------------------------------------//
 
-Route::get('/vendor-application', [VendorAuthController::class, 'create'])->name('vendor-applications.create');
-Route::post('/vendor-application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
+//Vendor Register Application
+Route::get('/vendor-application', [App\Http\Controllers\Auth\VendorAuthController::class, 'create'])->name('vendor-applications.create');
+Route::post('/vendor-application', [App\Http\Controllers\Auth\VendorAuthController::class, 'store'])->name('vendor-applications.store');
 
+//Rider Login
+ Route::get('/vendor/login', [App\Http\Controllers\Auth\VendorAuthController::class, 'showLoginForm'])->name('vendor.login');
+ Route::post('/vendor/login', [App\Http\Controllers\Auth\VendorAuthController::class, 'login']);
+
+Route::post('/vendor/logout', [App\Http\Controllers\Auth\VendorAuthController::class, 'logout'])->middleware('auth')->name('vendor.logout');
+
+//Vendor Dashboard
 Route::get('/vendor/dashboard', function () {
     return view('vendor.dashboard.dashboard');
-});
+})->name('vendor.dashboard');
 
 
 
@@ -94,13 +83,22 @@ Route::get('/vendor/dashboard', function () {
 
 
 
-//Rider Route
-Route::get('/rider-application', [RiderAuthController::class, 'create'])->name('rider-applications.create');
-Route::post('/rider-application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
+//-----------------------------------------------Rider Route---------------------------------------------------------//
 
+//Rider Register Application
+Route::get('/rider-application', [App\Http\Controllers\Auth\RiderAuthController::class, 'create'])->name('rider-applications.create');
+Route::post('/rider-application', [App\Http\Controllers\Auth\RiderAuthController::class, 'store'])->name('rider-applications.store');
+
+//Rider Login
+ Route::get('/rider/login', [App\Http\Controllers\Auth\RiderAuthController::class, 'showLoginForm'])->name('rider.login');
+ Route::post('/rider/login', [App\Http\Controllers\Auth\RiderAuthController::class, 'login']);
+
+ Route::post('/rider/logout', [App\Http\Controllers\Auth\RiderAuthController::class, 'logout'])->middleware('auth')->name('rider.logout');
+
+//Rider Dashboard
 Route::get('/rider/dashboard', function () {
     return view('rider.dashboard.dashboard');
-});
+})->name('rider.dashboard');
 
 
 
@@ -111,70 +109,52 @@ Route::get('/rider/dashboard', function () {
 
 
 
-//Admin Route
+//-----------------------------------------------Admin Route---------------------------------------------------------//
+
 //Admin Login and Register
 Route::middleware('guest')->group(function () {
-    Route::get('/auth/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/auth/admin/login', [AdminAuthController::class, 'login']);
+    Route::get('/auth/admin/login', [App\Http\Controllers\Auth\AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/auth/admin/login', [App\Http\Controllers\Auth\AdminAuthController::class, 'login']);
 });
-Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->middleware('auth')->name('admin.logout');
+Route::post('/admin/logout', [App\Http\Controllers\Auth\AdminAuthController::class, 'logout'])->middleware('auth')->name('admin.logout');
 
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'dashboard'])->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
+//Admin Dashboard
+Route::get('/admin/dashboard', [App\Http\Controllers\Admin\AdminDashboardController::class, 'dashboard'])->middleware(['auth', 'role:admin'])->name('admin.dashboard');
+
+
+// User Management
+// All Users Routes
 Route::prefix('admin')->group(function () {
-    Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
-    Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
-    Route::put('users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
-    Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('users', [App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::get('users/{user}/edit', [App\Http\Controllers\Admin\AdminUserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('users/{user}', [App\Http\Controllers\Admin\AdminUserController::class, 'update'])->name('admin.users.update');
+    Route::delete('users/{user}', [App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
-// Rider Applications Index
-Route::get('admin/rider-applications', [AdminRiderApplicationController::class, 'index'])
+// Rider Applications Routes
+Route::prefix('admin/rider-applications')
+    ->name('admin.rider_applications.')
     ->middleware(['auth', 'role:admin'])
-    ->name('admin.rider_applications.index');
+    ->controller(App\Http\Controllers\Admin\AdminRiderApplicationController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('{rider_application}', 'show')->name('show');
+        Route::delete('{rider_application}', 'destroy')->name('destroy');
+        Route::get('{id}/create-rider', 'createRiderFromApplication')->name('createRider');
+        Route::post('{id}/store-rider', 'storeRiderFromApplication')->name('storeRider');
+    });
 
-// Rider Applications Show
-Route::get('admin/rider-applications/{rider_application}', [AdminRiderApplicationController::class, 'show'])
+// Vendor Applications Routes
+Route::prefix('admin/vendor-applications')
+    ->name('admin.vendor_applications.')
     ->middleware(['auth', 'role:admin'])
-    ->name('admin.rider_applications.show');
-
-// Rider Applications Destroy
-Route::delete('admin/rider-applications/{rider_application}', [AdminRiderApplicationController::class, 'destroy'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.rider_applications.destroy');
-
-// Create Rider from Application
-Route::get('admin/rider-applications/{id}/create-rider', [AdminRiderApplicationController::class, 'createRiderFromApplication'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.rider_applications.createRider');
-
-// Store Rider from Application
-Route::post('admin/rider-applications/{id}/store-rider', [AdminRiderApplicationController::class, 'storeRiderFromApplication'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.rider_applications.storeRider');
-
-    // Vendor Applications Index
-Route::get('admin/vendor-applications', [AdminVendorApplicationController::class, 'index'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.vendor_applications.index');
-
-// Vendor Applications Show
-Route::get('admin/vendor-applications/{vendor_application}', [AdminVendorApplicationController::class, 'show'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.vendor_applications.show');
-
-// Vendor Applications Destroy
-Route::delete('admin/vendor-applications/{vendor_application}', [AdminVendorApplicationController::class, 'destroy'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.vendor_applications.destroy');
-
-// Create Vendor from Application
-Route::get('admin/vendor-applications/{id}/create-vendor', [AdminVendorApplicationController::class, 'createVendorFromApplication'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.vendor_applications.createVendor');
-
-// Store Vendor from Application
-Route::post('admin/vendor-applications/{id}/store-vendor', [AdminVendorApplicationController::class, 'storeVendorFromApplication'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.vendor_applications.storeVendor');
+    ->controller( App\Http\Controllers\Admin\AdminVendorApplicationController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('{vendor_application}', 'show')->name('show');
+        Route::delete('{vendor_application}', 'destroy')->name('destroy');
+        Route::get('{id}/create-vendor', 'createVendorFromApplication')->name('createVendor');
+        Route::post('{id}/store-vendor', 'storeVendorFromApplication')->name('storeVendor');
+    });
 

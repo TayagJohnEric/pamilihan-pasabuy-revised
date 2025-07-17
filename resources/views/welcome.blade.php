@@ -80,19 +80,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #059669, #10b981);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out;
-        }
         .stats-counter {
             font-variant-numeric: tabular-nums;
         }
@@ -326,123 +313,105 @@
 <body class="font-sans bg-white">
     
 
-    <!-- Header for top of hero (white content) -->
-    <header id="header-top" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down header-white">
-        <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                    <i class="fas fa-shopping-basket text-white text-lg"></i>
-                </div>
-                <div>
-                    <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
-                    <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
-                </div>
+   <!-- Header for top of hero (white content) -->
+<header id="header-top" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                <i class="fas fa-shopping-basket text-white text-lg"></i>
             </div>
-
-            <!-- Desktop Navigation -->
-            <div class="hidden lg:flex items-center space-x-8">
-                <a href="#home" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Home</a>
-                <a href="#how-it-works" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">How It Works</a>
-                <a href="#features" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Features</a>
-                <a href="#testimonials" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Reviews</a>
-                <a href="#about" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">About</a>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="hidden lg:flex items-center space-x-3">
-                <button class="px-3 py-2.5 text-gray-600 hover:text-green-600 transition-colors font-medium">Log In</button>
-                <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Sign Up Free
-                </button>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <button class="lg:hidden text-gray-700 p-2" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </nav>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden glass-effect border-t">
-            <div class="container mx-auto px-4 py-6 space-y-4">
-                <a href="#home" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Home</a>
-                <a href="#how-it-works" class="block text-gray-700 hover:text-green-600 py-2 font-medium">How It Works</a>
-                <a href="#features" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Features</a>
-                <a href="#testimonials" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Reviews</a>
-                <a href="#about" class="block text-gray-700 hover:text-green-600 py-2 font-medium">About</a>
-                <div class="pt-4 border-t space-y-3">
-                    <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Join as Vendor</button>
-                    <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Become Rider</button>
-                    <button class="w-full px-4 py-3 text-gray-600 font-medium">Log In</button>
-                    <button class="w-full px-4 py-3 bg-green-600 text-white rounded-xl font-semibold">Sign Up Free</button>
-                </div>
+            <div>
+                <span class="text-2xl font-bold text-white">PamilihanPasabuy</span>
+                <div class="text-xs text-white leading-none">San Fernando Market</div>
             </div>
         </div>
-    </header>
 
-    <!-- Header for scrolling (original style) -->
-    <header id="header-scroll" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down" style="display:none;">
-        <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                    <i class="fas fa-shopping-basket text-white text-lg"></i>
-                </div>
-                <div>
-                    <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
-                    <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
-                </div>
-            </div>
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center space-x-8">
+            <a href="#home" class="nav-link text-white hover:text-green-600 transition-colors font-medium relative">Home</a>
+            <a href="#how-it-works" class="nav-link text-white hover:text-green-600 transition-colors font-medium relative">How It Works</a>
+            <a href="#features" class="nav-link text-white hover:text-green-600 transition-colors font-medium relative">Features</a>
+            <a href="#testimonials" class="nav-link text-white hover:text-green-600 transition-colors font-medium relative">Reviews</a>
+            <a href="#about" class="nav-link text-white hover:text-green-600 transition-colors font-medium relative">About</a>
+        </div>
 
-            <!-- Desktop Navigation -->
-            <div class="hidden lg:flex items-center space-x-8">
-                <a href="#home" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Home</a>
-                <a href="#how-it-works" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">How It Works</a>
-                <a href="#features" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Features</a>
-                <a href="#testimonials" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Reviews</a>
-                <a href="#about" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">About</a>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="hidden lg:flex items-center space-x-3">
-                <button class="px-3 py-2.5 text-gray-600 hover:text-green-600 transition-colors font-medium">Log In</button>
-                <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Sign Up Free
-                </button>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <button class="lg:hidden text-gray-700 p-2" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars text-xl"></i>
+        <!-- Action Buttons -->
+        <div class="hidden lg:flex items-center space-x-3">
+            <button class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">Log In</button>
+            <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                Sign Up Free
             </button>
-        </nav>
+        </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden glass-effect border-t">
-            <div class="container mx-auto px-4 py-6 space-y-4">
-                <a href="#home" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Home</a>
-                <a href="#how-it-works" class="block text-gray-700 hover:text-green-600 py-2 font-medium">How It Works</a>
-                <a href="#features" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Features</a>
-                <a href="#testimonials" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Reviews</a>
-                <a href="#about" class="block text-gray-700 hover:text-green-600 py-2 font-medium">About</a>
-                <div class="pt-4 border-t space-y-3">
-                    <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Join as Vendor</button>
-                    <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Become Rider</button>
-                    <button class="w-full px-4 py-3 text-gray-600 font-medium">Log In</button>
-                    <button class="w-full px-4 py-3 bg-green-600 text-white rounded-xl font-semibold">Sign Up Free</button>
-                </div>
+        <!-- Mobile Menu Button -->
+        <button class="lg:hidden text-white p-2" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden glass-effect border-t">
+        <div class="container mx-auto px-4 py-6 space-y-4">
+            <a href="#home" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Home</a>
+            <a href="#how-it-works" class="block text-gray-700 hover:text-green-600 py-2 font-medium">How It Works</a>
+            <a href="#features" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Features</a>
+            <a href="#testimonials" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Reviews</a>
+            <a href="#about" class="block text-gray-700 hover:text-green-600 py-2 font-medium">About</a>
+            <div class="pt-4 border-t space-y-3">
+                <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Join as Vendor</button>
+                <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Become Rider</button>
+                <button class="w-full px-4 py-3 text-green-600 border border-green-600 rounded-xl font-medium">Log In</button>
+                <button class="w-full px-4 py-3 bg-green-600 text-white rounded-xl font-semibold">Sign Up Free</button>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-   <!-- Hero Section -->
+<!-- Header for scrolling (original style) -->
+<header id="header-scroll" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down" style="display:none;">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                <i class="fas fa-shopping-basket text-white text-lg"></i>
+            </div>
+            <div>
+                <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
+                <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
+            </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center space-x-8">
+            <a href="#home" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Home</a>
+            <a href="#how-it-works" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">How It Works</a>
+            <a href="#features" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Features</a>
+            <a href="#testimonials" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">Reviews</a>
+            <a href="#about" class="nav-link text-gray-700 hover:text-green-600 transition-colors font-medium relative">About</a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="hidden lg:flex items-center space-x-3">
+            <button class="px-3 py-2.5 text-gray-600 hover:text-green-600 border border-white rounded-xl transition-colors font-medium">Log In</button>
+            <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                Sign Up Free
+            </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button class="lg:hidden text-gray-700 p-2" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </nav>
+</header>
+
+<!-- Hero Section -->
 <section id="home" 
          class="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat" 
          style="background-image: url('{{ asset('images/hero-bg.png') }}');">
-    
-   
-     <div class="absolute inset-0 bg-black/60 z-0"></div> 
+
+    <div class="absolute inset-0 bg-black/60 z-0"></div>
 
     <div class="relative z-10 w-full px-4 py-20">
         <div class="max-w-5xl mx-auto text-center text-white">
@@ -492,6 +461,7 @@
         </div>
     </div>
 </section>
+
 
 
     <!-- Stats Section -->
@@ -1262,28 +1232,6 @@
                     this.style.transform = 'translateY(0)';
                 });
             });
-
-            // Add loading animation
-            const pageLoader = document.createElement('div');
-            pageLoader.className = 'page-loader';
-            pageLoader.innerHTML = `
-                <div class="text-center text-white">
-                    <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <div class="text-2xl font-bold">PamilihanPasabuy</div>
-                    <div class="text-green-100">Loading...</div>
-                </div>
-            `;
-            document.body.appendChild(pageLoader);
-
-            // Remove loader after page loads
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    pageLoader.style.opacity = '0';
-                    setTimeout(() => {
-                        pageLoader.remove();
-                    }, 500);
-                }, 1000);
-            });
         });
 
         // Add smooth reveal animations for sections
@@ -1317,15 +1265,7 @@
             }
         });
 
-        // Add click handlers for demo buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.textContent.includes('Watch Demo')) {
-                alert('Demo video would play here!');
-            }
-            if (e.target.textContent.includes('Contact Us')) {
-                alert('Contact form would open here!');
-            }
-        });
+        
 
         // Add form validation for any future forms
         function validateForm(form) {
