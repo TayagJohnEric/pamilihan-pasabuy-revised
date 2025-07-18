@@ -86,8 +86,22 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
         // Ratings and Reviews
         Route::get('/ratings', [App\Http\Controllers\Vendor\VendorProfileController::class, 'ratings'])->name('profile.ratings'); 
     });
-    
+
 });
+// Product Management Route
+Route::middleware(['auth', 'role:vendor'])->prefix('vendor/products')->name('vendor.products.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Vendor\VendorProductController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\Vendor\VendorProductController::class, 'create'])->name('create');
+    Route::post('/', [App\Http\Controllers\Vendor\VendorProductController::class, 'store'])->name('store');
+    Route::get('/{product}', [App\Http\Controllers\Vendor\VendorProductController::class, 'show'])->name('show');
+    Route::get('/{product}/edit', [App\Http\Controllers\Vendor\VendorProductController::class, 'edit'])->name('edit');
+    Route::put('/{product}', [App\Http\Controllers\Vendor\VendorProductController::class, 'update'])->name('update');
+    Route::delete('/{product}', [App\Http\Controllers\Vendor\VendorProductController::class, 'destroy'])->name('destroy');
+
+    // Toggle availability of a specific product
+    Route::patch('/{product}/toggle-availability', [App\Http\Controllers\Vendor\VendorProductController::class, 'toggleAvailability'])->name('toggle-availability');
+});
+
 
 
 

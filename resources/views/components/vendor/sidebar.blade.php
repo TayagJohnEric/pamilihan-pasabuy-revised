@@ -41,8 +41,8 @@
                             </button>
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">My Product</a></li>
-                                    <li><a href="#" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Add New Product</a></li>
+                                    <li><a href="{{ route('vendor.products.index') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">My Product</a></li>
+                                    <li><a href="{{ route('vendor.products.create') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Add New Product</a></li>
                                 </ul>
                             </div>
                         </div>

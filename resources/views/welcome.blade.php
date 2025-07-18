@@ -432,9 +432,10 @@
                     Start Shopping Now
                 </button>
                 <button class="border-2 border-white text-white hover:bg-white hover:text-green-700 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center">
-                    <i class="fas fa-play mr-3"></i>
-                    Watch Demo
+                    <i class="fas fa-info-circle mr-3"></i>
+                    Learn More
                 </button>
+
             </div>
             <!-- Trust Indicators -->
             <div class="flex items-center justify-center space-x-6 text-sm text-white/80 hero-trust opacity-0 transform translate-y-8">
