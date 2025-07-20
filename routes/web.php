@@ -84,7 +84,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
         Route::put('/profile', [App\Http\Controllers\Vendor\VendorProfileController::class, 'update'])->name('profile.update');
         
         // Ratings and Reviews
-        Route::get('/ratings', [App\Http\Controllers\Vendor\VendorProfileController::class, 'ratings'])->name('profile.ratings'); 
+        Route::get('/shop/ratings', [App\Http\Controllers\Vendor\VendorProfileController::class, 'ratings'])->name('profile.ratings'); 
     });
 
 });
@@ -102,9 +102,19 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor/products')->name('ven
     Route::patch('/{product}/toggle-availability', [App\Http\Controllers\Vendor\VendorProductController::class, 'toggleAvailability'])->name('toggle-availability');
 });
 
+// Earning Route
+Route::middleware(['auth', 'role:vendor'])
+    ->prefix('vendor/earnings')
+    ->name('vendor.earnings.')
+    ->group(function () {
+        Route::get('/', [App\Http\Controllers\Vendor\VendorEarningController::class, 'index'])->name('index');
+        Route::get('/payout/{id}', [App\Http\Controllers\Vendor\VendorEarningController::class, 'showPayout'])->name('payout.details');
+    });
 
-
-
+// Ratings Route
+    Route::get('vendor/ratings', [App\Http\Controllers\Vendor\VendorRatingController::class, 'index'])
+    ->middleware(['auth', 'role:vendor'])
+    ->name('vendor.ratings.index');
 
 
 
