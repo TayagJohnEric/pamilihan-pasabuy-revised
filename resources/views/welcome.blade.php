@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PamilihanPasabuy - Your San Fernando Market, Delivered Fresh</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
                         'market-primary': '#059669',
                         'market-secondary': '#10b981',
@@ -605,95 +609,155 @@
     </section>
 
     <!-- How It Works Section -->
-    <section id="how-it-works" class="py-20 bg-white animate-on-scroll">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Simple Process
+<section id="how-it-works" class="py-16 md:py-20 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 md:mb-16">
+            <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4 hover:bg-green-200 transition-colors duration-200">
+                <i class="fas fa-cogs mr-2 text-green-600" aria-hidden="true"></i>
+                Simple Process
+            </div>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
+                Fresh Groceries in 3 Easy Steps
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+                From browsing to delivery, we've made grocery shopping as simple as 1-2-3. Experience the easiest way to get fresh market products.
+            </p>
+        </div>
+
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <!-- Step 1 -->
+                <div class="text-center group relative">       
+                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-search text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Browse & Select</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
+                            Explore our extensive catalog of fresh produce, meats, seafood, and local specialties from verified San Fernando Market vendors.
+                        </p>
+                        
+                        <!-- Feature Tags -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-apple-alt mr-1 text-green-500" aria-hidden="true"></i> 
+                                    Fruits
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-carrot mr-1 text-orange-500" aria-hidden="true"></i> 
+                                    Vegetables
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-fish mr-1 text-blue-500" aria-hidden="true"></i> 
+                                    Seafood
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Fresh Groceries in 3 Easy Steps</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">From browsing to delivery, we've made grocery shopping as simple as 1-2-3. Experience the easiest way to get fresh market products.</p>
+
+                <!-- Mobile Connection Line -->
+                <div class="flex justify-center md:hidden">
+                    <div class="w-1 h-8 bg-gradient-to-b from-green-400 to-green-600 rounded-full relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="text-center group relative">           
+                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-hands text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 md:mb-4">We Pick & Pack</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
+                            Our experienced vendors personally select and prepare your order, ensuring you get the freshest, highest-quality products available.
+                        </p>
+                        
+                        <!-- Feature Tags -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-eye mr-1 text-blue-500" aria-hidden="true"></i> 
+                                    Quality Check
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-box mr-1 text-amber-500" aria-hidden="true"></i> 
+                                    Careful Packing
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Connection Line -->
+                <div class="flex justify-center md:hidden">
+                    <div class="w-1 h-8 bg-gradient-to-b from-green-400 to-green-600 rounded-full relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="text-center group relative">      
+                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                        <div class="relative mb-6">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-truck-fast text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            </div>                          
+                        </div>
+                        
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Fast, Local Delivery</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
+                            Our local riders deliver your fresh groceries straight to your doorstep, maintaining the cold chain for optimal freshness.
+                        </p>
+                        
+                        <!-- Feature Tags -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-clock mr-1 text-indigo-500" aria-hidden="true"></i> 
+                                    Same Day
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-thermometer-half mr-1 text-cyan-500" aria-hidden="true"></i> 
+                                    Cold Chain
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="max-w-6xl mx-auto">
-                <div class="grid lg:grid-cols-3 gap-12">
-                    <!-- Step 1 -->
-                    <div class="text-center group">
-                        <div class="relative mb-8">
-                            <div class="w-32 h-32 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-search text-white text-4xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                                <span class="text-white font-bold text-xl">1</span>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Browse & Select</h3>
-                        <p class="text-gray-600 leading-relaxed mb-6">Explore our extensive catalog of fresh produce, meats, seafood, and local specialties from verified San Fernando Market vendors.</p>
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <div class="flex items-center justify-center space-x-4 text-sm text-gray-500">
-                                <span class="flex items-center"><i class="fas fa-apple-alt mr-1"></i> Fruits</span>
-                                <span class="flex items-center"><i class="fas fa-carrot mr-1"></i> Vegetables</span>
-                                <span class="flex items-center"><i class="fas fa-fish mr-1"></i> Seafood</span>
-                            </div>
-                        </div>
+            <!-- Desktop Process Flow -->
+            <div class="hidden md:flex justify-center mt-12 lg:mt-16">
+                <div class="flex items-center space-x-4 lg:space-x-8">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                        1
                     </div>
-
-                    <!-- Step 2 -->
-                    <div class="text-center group">
-                        <div class="relative mb-8">
-                            <div class="w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-hands text-white text-4xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                                <span class="text-white font-bold text-xl">2</span>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">We Pick & Pack</h3>
-                        <p class="text-gray-600 leading-relaxed mb-6">Our experienced vendors personally select and prepare your order, ensuring you get the freshest, highest-quality products available.</p>
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <div class="flex items-center justify-center space-x-4 text-sm text-gray-500">
-                                <span class="flex items-center"><i class="fas fa-eye mr-1"></i> Quality Check</span>
-                                <span class="flex items-center"><i class="fas fa-box mr-1"></i> Careful Packing</span>
-                            </div>
-                        </div>
+                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-green-400 to-green-500 rounded-full relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
                     </div>
-
-                    <!-- Step 3 -->
-                     <!-- Step 3 -->
-                    <div class="text-center group">
-                        <div class="relative mb-8">
-                            <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-truck-fast text-white text-4xl"></i>
-                            </div>
-                            <div class="absolute -top-2 -right-2 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                                <span class="text-white font-bold text-xl">3</span>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Fast, Local Delivery</h3>
-                        <p class="text-gray-600 leading-relaxed mb-6">Our local riders deliver your fresh groceries straight to your doorstep within hours, maintaining the cold chain for optimal freshness.</p>
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <div class="flex items-center justify-center space-x-4 text-sm text-gray-500">
-                                <span class="flex items-center"><i class="fas fa-clock mr-1"></i> Same Day</span>
-                                <span class="flex items-center"><i class="fas fa-thermometer-half mr-1"></i> Cold Chain</span>
-                            </div>
-                        </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                        2
                     </div>
-                </div>
-
-                <!-- Process Flow -->
-                <div class="mt-16 flex justify-center">
-                    <div class="flex items-center space-x-4 lg:space-x-8">
-                        <div class="flex items-center justify-center w-12 h-12 bg-green-600 text-white rounded-full font-bold">1</div>
-                        <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-green-600 to-yellow-500"></div>
-                        <div class="flex items-center justify-center w-12 h-12 bg-yellow-500 text-white rounded-full font-bold">2</div>
-                        <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-yellow-500 to-blue-600"></div>
-                        <div class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full font-bold">3</div>
+                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-green-400 to-green-500 rounded-full relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                        3
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Features Section -->
     <section id="features" class="py-20 bg-gradient-to-br from-green-50 to-blue-50 animate-on-scroll">
