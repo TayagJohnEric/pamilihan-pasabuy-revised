@@ -69,10 +69,11 @@ Route::post('/vendor-application', [App\Http\Controllers\Auth\VendorAuthControll
 
 Route::post('/vendor/logout', [App\Http\Controllers\Auth\VendorAuthController::class, 'logout'])->middleware('auth')->name('vendor.logout');
 
-//Vendor Dashboard
-Route::get('/vendor/dashboard', function () {
-    return view('vendor.dashboard.dashboard');
-})->name('vendor.dashboard');
+// Vendor Dashboard Routes
+Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
+    // Main Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Vendor\VendorDashboardController::class, 'index'])->name('dashboard');
+});
 
 // Vendor Profile Management
 Route::middleware(['auth', 'role:vendor'])->group(function () {
