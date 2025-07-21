@@ -16,64 +16,55 @@ use Carbon\Carbon;
 
 class VendorDashboardController extends Controller
 {
-    public function index()
-    {
-        $vendor = Auth::user()->vendor;
-        
-        if (!$vendor) {
-            return redirect()->route('vendor.setup')->with('error', 'Please complete your vendor profile setup.');
-        }
+   public function index()
+{
+    $vendor = Auth::user()->vendor;
 
-        // Quick Stats Data
-        $stats = $this->getQuickStats($vendor);
-        
-        // Urgent Orders (5 oldest pending orders)
-        $urgentOrders = $this->getUrgentOrders($vendor);
-        
-        // Recent Activity Feed
-        $recentActivity = $this->getRecentActivity($vendor);
-
-        return view('vendor.dashboard.index', compact('vendor', 'stats', 'urgentOrders', 'recentActivity'));
+    if (!$vendor) {
+        return redirect()->route('vendor.setup')->with('error', 'Please complete your vendor profile setup.');
     }
 
-    private function getQuickStats($vendor)
-    {
-        // Get vendor's product IDs
-        $productIds = $vendor->products()->pluck('id');
+    $averageRating  = $this->calculateAverageRating($vendor->id);
+    $stats          = $this->getQuickStats($vendor, $averageRating);
+    $urgentOrders   = $this->getUrgentOrders($vendor);
+    $recentActivity = $this->getRecentActivity($vendor);
 
-        // Pending Orders Count - count order items with pending status
-        $pendingOrdersCount = OrderItem::whereIn('product_id', $productIds)
-            ->whereHas('order', function($query) {
-                $query->where('status', 'pending');
-            })
-            ->count();
+    return view('vendor.dashboard.index', compact('vendor', 'stats', 'urgentOrders', 'recentActivity', 'averageRating'));
+}
 
-        // Sales Today - sum of delivered orders for today
-        $salesToday = OrderItem::whereIn('product_id', $productIds)
-            ->whereHas('order', function($query) {
-                $query->where('status', 'delivered')
-                      ->whereDate('updated_at', Carbon::today());
-            })
-            ->sum('actual_item_price');
+     private function calculateAverageRating($vendorId)
+{
+    $average = Rating::where('rateable_type', Vendor::class)
+                     ->where('rateable_id', $vendorId)
+                     ->avg('rating_value');
 
-        // Shop Rating
-        $shopRating = $vendor->average_rating ?? 0;
+    return $average ? round($average, 1) : 0;
+}
 
-        // Unsettled Earnings - sum of all delivered orders minus any payouts
-        // For now, we'll calculate gross sales from delivered orders
-        $unsettledEarnings = OrderItem::whereIn('product_id', $productIds)
-            ->whereHas('order', function($query) {
-                $query->where('status', 'delivered');
-            })
-            ->sum('actual_item_price');
+    private function getQuickStats($vendor, $averageRating)
+{
+    $productIds = $vendor->products()->pluck('id');
 
-        return [
-            'pending_orders' => $pendingOrdersCount,
-            'sales_today' => $salesToday ?? 0,
-            'shop_rating' => $shopRating,
-            'unsettled_earnings' => $unsettledEarnings ?? 0,
-        ];
-    }
+    $pendingOrdersCount = OrderItem::whereIn('product_id', $productIds)
+        ->whereHas('order', fn($query) => $query->where('status', 'pending'))
+        ->count();
+
+    $salesToday = OrderItem::whereIn('product_id', $productIds)
+        ->whereHas('order', fn($query) => $query->where('status', 'delivered')
+                                               ->whereDate('updated_at', Carbon::today()))
+        ->sum('actual_item_price');
+
+    $unsettledEarnings = OrderItem::whereIn('product_id', $productIds)
+        ->whereHas('order', fn($query) => $query->where('status', 'delivered'))
+        ->sum('actual_item_price');
+
+    return [
+        'pending_orders'      => $pendingOrdersCount,
+        'sales_today'         => $salesToday ?? 0,
+        'shop_rating'         => $averageRating,
+        'unsettled_earnings'  => $unsettledEarnings ?? 0,
+    ];
+}
 
     private function getUrgentOrders($vendor)
     {

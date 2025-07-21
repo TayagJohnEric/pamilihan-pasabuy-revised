@@ -609,7 +609,7 @@
     </section>
 
     <!-- How It Works Section -->
-<section id="how-it-works" class="py-16 md:py-20 bg-white">
+<section id="how-it-works" class="py-16 md:py-20 bg-white animate-on-scroll">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 md:mb-16">
             <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4 hover:bg-green-200 transition-colors duration-200">
@@ -654,6 +654,10 @@
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
                                     <i class="fas fa-fish mr-1 text-blue-500" aria-hidden="true"></i> 
                                     Seafood
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-drumstick-bite mr-1 text-red-500" aria-hidden="true"></i> 
+                                    Meats
                                 </span>
                             </div>
                         </div>

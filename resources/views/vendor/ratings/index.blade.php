@@ -35,7 +35,7 @@
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border">
                 <div class="text-center">
                     <div class="text-4xl font-bold text-gray-800 mb-2">
-                        {{ number_format($ratingStats->average_rating, 1) }}
+                        {{ number_format($ratingStats->average_rating ?? 0, 1) }}
                     </div>
                     <div class="flex justify-center mb-2">
                         @for($i = 1; $i <= 5; $i++)
@@ -113,7 +113,10 @@
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                                 <span class="text-sm font-medium text-gray-600">
-                                    {{ strtoupper(substr($rating->user->first_name, 0, 1)) }}{{ strtoupper(substr($rating->user->last_name, 0, 1)) }}
+                                    @php
+                                        $initials = strtoupper(substr($rating->user->first_name ?? '', 0, 1) . substr($rating->user->last_name ?? '', 0, 1));
+                                        @endphp
+                                        {{ $initials }}
                                 </span>
                             </div>
                         </div>
