@@ -641,7 +641,7 @@
                         </p>
                         
                         <!-- Feature Tags -->
-                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="p-4">
                             <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
                                     <i class="fas fa-apple-alt mr-1 text-green-500" aria-hidden="true"></i> 
@@ -686,7 +686,7 @@
                         </p>
                         
                         <!-- Feature Tags -->
-                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="p-4">
                             <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
                                     <i class="fas fa-eye mr-1 text-blue-500" aria-hidden="true"></i> 
@@ -723,7 +723,7 @@
                         </p>
                         
                         <!-- Feature Tags -->
-                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class=" p-4 ">
                             <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
                                     <i class="fas fa-clock mr-1 text-indigo-500" aria-hidden="true"></i> 
@@ -732,6 +732,10 @@
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
                                     <i class="fas fa-thermometer-half mr-1 text-cyan-500" aria-hidden="true"></i> 
                                     Cold Chain
+                                </span>
+                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-leaf mr-1 text-green-500" aria-hidden="true"></i> 
+                                    Fresh Produce
                                 </span>
                             </div>
                         </div>

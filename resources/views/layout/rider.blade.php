@@ -97,6 +97,8 @@
             const profileDropdown = document.getElementById('profile-dropdown');
             const notificationButton = document.getElementById('notification-button');
             const notificationDropdown = document.getElementById('notification-dropdown');
+                        const closeNotificationDropdown = document.getElementById('close-notification-dropdown');
+
             const cartButton = document.getElementById('cart-button');
 
             // Sidebar functionality
@@ -195,6 +197,12 @@
                     notificationDropdown.classList.add('hidden');
                 }
             });
+
+
+          //Notification Close Button in mobile size
+            closeNotificationDropdown?.addEventListener('click', function () {
+            notificationDropdown?.classList.add('hidden');
+        }); 
 
             // Dropdown toggle functionality for navigation items
             const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
