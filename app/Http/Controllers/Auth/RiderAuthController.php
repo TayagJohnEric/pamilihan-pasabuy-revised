@@ -61,7 +61,8 @@ class RiderAuthController extends Controller
         return view('auth.rider.login');
     }
 
-    public function login(Request $request)
+   // Updated login function to set is_available to true
+public function login(Request $request)
 {
     $request->validate([
         'email' => 'required|email',
@@ -74,7 +75,13 @@ class RiderAuthController extends Controller
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate();
 
-        // Check if AJAX request
+        // Set is_available to true for the rider
+        $user = Auth::user();
+        if ($user && $user->rider) {
+            $user->rider->is_available = true;
+            $user->rider->save();
+        }
+
         if ($request->ajax()) {
             return response()->json(['message' => 'Login successful'], 200);
         }
@@ -93,13 +100,21 @@ class RiderAuthController extends Controller
     ]);
 }
 
- public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('rider.login');
+// Updated logout function to set is_available to false
+public function logout(Request $request)
+{
+    // Set is_available to false before logging out
+    $user = Auth::user();
+    if ($user && $user->rider) {
+        $user->rider->is_available = false;
+        $user->rider->save();
     }
+
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('rider.login');
+}
 
 }

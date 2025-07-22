@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Vendor extends Model
 {
     use SoftDeletes;
@@ -26,12 +27,14 @@ class Vendor extends Model
         'permit_documents_path',
         'accepts_cod',
         'average_rating',
+        'is_accepting_orders', // <-- newly added
         'is_active',
     ];
 
     protected $casts = [
         'accepts_cod' => 'boolean',
         'is_active' => 'boolean',
+        'is_accepting_orders' => 'boolean', // <-- cast it to boolean
         'average_rating' => 'decimal:2',
         'verification_status' => 'string',
     ];
@@ -47,3 +50,4 @@ class Vendor extends Model
         return $this->hasMany(Product::class, 'vendor_id');
     }
 }
+

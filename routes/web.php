@@ -134,9 +134,22 @@ Route::post('/rider-application', [App\Http\Controllers\Auth\RiderAuthController
  Route::post('/rider/logout', [App\Http\Controllers\Auth\RiderAuthController::class, 'logout'])->middleware('auth')->name('rider.logout');
 
 //Rider Dashboard
-Route::get('/rider/dashboard', function () {
-    return view('rider.dashboard.dashboard');
-})->name('rider.dashboard');
+ Route::get('/rider/dashboard', [App\Http\Controllers\Rider\RiderDashboardController::class, 'dashboard'])->middleware('auth', 'role:rider')->name('rider.dashboard');
+
+
+//Rider Profile
+Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\Rider\RiderProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\Rider\RiderProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Rider\RiderProfileController::class, 'update'])->name('profile.update');
+});
+
+//Rider Ratings and Earning/Payouts
+Route::middleware(['auth', 'role:rider'])->prefix('rider')->group(function () {
+    Route::get('/earnings', [App\Http\Controllers\Rider\RiderEarningsController::class, 'earnings'])->name('rider.earnings');
+    Route::get('/payouts', [App\Http\Controllers\Rider\RiderEarningsController::class, 'payouts'])->name('rider.payouts');
+    Route::get('/ratings', [App\Http\Controllers\Rider\RiderRatingController::class, 'ratings'])->name('rider.ratings');
+});
 
 
 
@@ -144,9 +157,7 @@ Route::get('/rider/dashboard', function () {
 
 
 
-
-
-
+ 
 //-----------------------------------------------Admin Route---------------------------------------------------------//
 
 //Admin Login and Register

@@ -696,6 +696,10 @@
                                     <i class="fas fa-box mr-1 text-amber-500" aria-hidden="true"></i> 
                                     Careful Packing
                                 </span>
+                                  <span class="flex items-center bg-white px-3 py-1 rounded-full border">
+                                    <i class="fas fa-leaf mr-1 text-green-500" aria-hidden="true"></i> 
+                                    Fresh Produce
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -734,8 +738,8 @@
                                     Cold Chain
                                 </span>
                                 <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-leaf mr-1 text-green-500" aria-hidden="true"></i> 
-                                    Fresh Produce
+                                    <i class="fas fa-hand-holding-heart mr-1 text-pink-500" aria-hidden="true"></i> 
+                                    Careful Handling
                                 </span>
                             </div>
                         </div>

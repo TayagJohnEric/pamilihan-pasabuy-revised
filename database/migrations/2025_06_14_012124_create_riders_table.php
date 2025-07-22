@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('average_rating', 3, 2)->nullable(); // e.g. 4.75
             $table->unsignedInteger('total_deliveries')->default(0);
             $table->unsignedInteger('daily_deliveries')->default(0);
-            $table->boolean('is_available')->default(true);
+            $table->boolean('is_available')->default(false);
             $table->string('verification_status')->default('pending'); // pending, verified, rejected
             $table->string('license_number')->nullable();
             $table->string('vehicle_type')->nullable(); // bike, motorcycle, car, etc.

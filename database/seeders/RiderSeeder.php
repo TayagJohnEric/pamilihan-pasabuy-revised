@@ -19,7 +19,7 @@ class RiderSeeder extends Seeder
             'role' => 'rider',
             'first_name' => 'Mark',
             'last_name' => 'Salvador',
-            'email' => 'mark.rider@example.com',
+            'email' => 'rider1@example.com',
             'phone_number' => '09331234567',
             'password' => Hash::make('password123'),
             'is_active' => true,
@@ -29,11 +29,11 @@ class RiderSeeder extends Seeder
 
         // Create rider profile
         DB::table('riders')->insert([
-            'user_id' => $riderUserId,
+            'user_id' => $riderUserId,  
             'average_rating' => 4.7,
             'total_deliveries' => 120,
             'daily_deliveries' => 5,
-            'is_available' => true,
+            'is_available' => false,
             'verification_status' => 'verified',
             'license_number' => 'LIC123456',
             'vehicle_type' => 'motorcycle',
