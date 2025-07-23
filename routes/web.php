@@ -207,3 +207,57 @@ Route::prefix('admin/vendor-applications')
         Route::post('{id}/store-vendor', 'storeVendorFromApplication')->name('storeVendor');
     });
 
+    
+
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+
+    // Orders
+    Route::get('orders', [App\Http\Controllers\Admin\AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('orders/{id}', [App\Http\Controllers\Admin\AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::post('orders/{id}/status', [App\Http\Controllers\Admin\AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::post('orders/{id}/assign-rider', [App\Http\Controllers\Admin\AdminOrderController::class, 'assignRider'])->name('admin.orders.assignRider');
+
+    // Vendors
+    Route::get('vendors', [App\Http\Controllers\Admin\AdminVendorController::class, 'index'])->name('admin.vendors.index');
+    Route::post('vendors/{id}/toggle', [App\Http\Controllers\Admin\AdminVendorController::class, 'toggleStatus'])->name('admin.vendors.toggle-status');
+
+    // Products
+    Route::get('products', [App\Http\Controllers\Admin\AdminProductController::class, 'index'])->name('admin.products.index');
+    Route::post('products/{id}/toggle', [App\Http\Controllers\Admin\AdminProductController::class, 'toggleAvailability'])->name('admin.products.toggle');
+    Route::delete('products/{id}', [App\Http\Controllers\Admin\AdminProductController::class, 'destroy'])->name('admin.products.destroy');
+});
+
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    /** -------------------------
+     * Category Management Routes
+     * -------------------------- */
+    Route::get('categories', [App\Http\Controllers\Admin\AdminCategoryController::class, 'index'])->name('categories.index');
+    Route::get('categories/create', [App\Http\Controllers\Admin\AdminCategoryController::class, 'create'])->name('categories.create');
+    Route::post('categories', [App\Http\Controllers\Admin\AdminCategoryController::class, 'store'])->name('categories.store');
+    Route::get('categories/{id}', [App\Http\Controllers\Admin\AdminCategoryController::class, 'show'])->name('categories.show');
+    Route::get('categories/{id}/edit', [App\Http\Controllers\Admin\AdminCategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/{id}', [App\Http\Controllers\Admin\AdminCategoryController::class, 'update'])->name('categories.update');
+    Route::delete('categories/{id}', [App\Http\Controllers\Admin\AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+    
+    // Extra: Trashed and Restore
+    Route::get('categories/trashed/list', [App\Http\Controllers\Admin\AdminCategoryController::class, 'trashed'])->name('categories.trashed');
+    Route::patch('categories/{id}/restore', [App\Http\Controllers\Admin\AdminCategoryController::class, 'restore'])->name('categories.restore');
+
+    /** -------------------------
+     * District Management Routes
+     * -------------------------- */
+    Route::get('districts', [App\Http\Controllers\Admin\AdminDistrictController::class, 'index'])->name('districts.index');
+    Route::get('districts/create', [App\Http\Controllers\Admin\AdminDistrictController::class, 'create'])->name('districts.create');
+    Route::post('districts', [App\Http\Controllers\Admin\AdminDistrictController::class, 'store'])->name('districts.store');
+    Route::get('districts/{district}', [App\Http\Controllers\Admin\AdminDistrictController::class, 'show'])->name('districts.show');
+    Route::get('districts/{district}/edit', [App\Http\Controllers\Admin\AdminDistrictController::class, 'edit'])->name('districts.edit');
+    Route::put('districts/{district}', [App\Http\Controllers\Admin\AdminDistrictController::class, 'update'])->name('districts.update');
+    Route::delete('districts/{district}', [App\Http\Controllers\Admin\AdminDistrictController::class, 'destroy'])->name('districts.destroy');
+    
+    // Extra: Custom actions
+    Route::patch('districts/{district}/toggle-status', [App\Http\Controllers\Admin\AdminDistrictController::class, 'toggleStatus'])->name('districts.toggle-status');
+    Route::post('districts/bulk-update-fees', [App\Http\Controllers\Admin\AdminDistrictController::class, 'bulkUpdateFees'])->name('districts.bulk-update-fees');
+
+});
