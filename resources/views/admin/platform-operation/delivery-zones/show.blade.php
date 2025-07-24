@@ -52,11 +52,11 @@
                 </div>
                  <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-gray-500">Date Created</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ $district->created_at->format('M d, Y, h:i A') }}</dd>
+                    <dd class="mt-1 text-sm text-gray-900">{{ $district->created_at?->format('M d, Y, h:i A') ?? 'N/A' }}</dd>
                 </div>
                  <div class="sm:col-span-1">
                     <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ $district->updated_at->format('M d, Y, h:i A') }}</dd>
+                    <dd class="mt-1 text-sm text-gray-900">{{ $district->updated_at?->format('M d, Y, h:i A') ?? 'N/A' }}</dd>
                 </div>
             </dl>
         </div>
@@ -79,7 +79,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($district->savedAddresses as $address)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $address->user->name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $address->user?->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $address->street_address }}, {{ $address->city }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $address->created_at->diffForHumans() }}</td>
                             </tr>

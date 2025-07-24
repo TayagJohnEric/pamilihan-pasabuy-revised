@@ -10,7 +10,7 @@
                 <p class="text-gray-600">Update category information</p>
             </div>
             <div class="flex space-x-2">
-                <a href="{{ route('admin.categories.show', $category) }}" 
+                <a href="#" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -152,7 +152,7 @@
                         <p><strong>Products:</strong> {{ $category->products()->count() }} products assigned to this category</p>
                         @if($category->products()->count() > 0)
                             <p class="text-blue-600">
-                                <a href="{{ route('admin.categories.show', $category) }}" class="hover:underline">
+                                <a href="#" class="hover:underline">
                                     View all products in this category →
                                 </a>
                             </p>
