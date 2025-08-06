@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('permit_documents_path')->nullable();
             $table->boolean('accepts_cod')->default(false);
             $table->decimal('average_rating', 3, 2)->nullable();
-            $table->boolean('is_accepting_orders')->default(false); //when the vendor logsout this will automatically false
+            $table->boolean('is_accepting_orders')->default(false); //When the vendor logs out, this will automatically be set to false. When the vendor logs in, I plan to show a toggle switch modal that appears immediately after login. This allows the vendor to toggle between 'ready to sell' and 'not ready to sell'.
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();

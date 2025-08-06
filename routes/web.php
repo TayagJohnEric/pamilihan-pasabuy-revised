@@ -18,6 +18,12 @@ use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Customer\CustomerPasswordController;
 use App\Http\Controllers\Customer\CustomerSavedAddressController;
+use App\Http\Controllers\Customer\CustomerProductController;
+use App\Http\Controllers\Customer\CustomerCategoryController;
+use App\Http\Controllers\Customer\CustomerVendorController;
+
+
+
 
 //Customer Authentication Routes (Login & Register)
 Route::middleware('guest')->group(function () {
@@ -59,6 +65,12 @@ Route::middleware(['auth', 'role:customer'])->name('customer.')->group(function 
     });
 });
 
+// Product browsing routes
+Route::get('/products', [CustomerProductController::class, 'index'])->name('products.index');
+Route::get('/products/search', [CustomerProductController::class, 'search'])->name('products.search');
+Route::get('/products/{id}', [CustomerProductController::class, 'show'])->name('products.show');
+Route::get('/category/{categoryId}', [CustomerProductController::class, 'category'])->name('products.category');
+Route::get('/vendor/{vendorId}', [CustomerProductController::class, 'vendor'])->name('products.vendor');
 
 
 
@@ -199,8 +211,8 @@ use App\Http\Controllers\Admin\AdminVendorApplicationController;
 
 //Admin Authentication Routes
 Route::middleware('guest')->group(function () {
-    Route::get('/auth/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/auth/admin/login', [AdminAuthController::class, 'login']);
+    Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::post('/admin/login', [AdminAuthController::class, 'login']);
 });
 
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
