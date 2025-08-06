@@ -38,7 +38,7 @@
                 <div class="aspect-square relative bg-gray-100">
                     @if($product->image_url)
                         <img 
-                            src="{{ $product->image_url }}" 
+                             src="{{ asset('storage/' . $product->image_url) }}"
                             alt="{{ $product->product_name }}"
                             class="w-full h-full object-cover"
                         >
@@ -175,7 +175,7 @@
     </div>
 
     <!-- Vendor Ratings Section -->
-    @if($product->vendor->ratingsReceived->count() > 0)
+    @if($product->vendor && $product->vendor->ratingsReceived && $product->vendor->ratingsReceived->count() > 0)
         <div class="bg-white rounded-lg shadow-lg mt-8 p-6">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Customer Reviews for {{ $product->vendor->vendor_name }}</h3>
             <div class="space-y-4">
@@ -190,7 +190,7 @@
                                         </svg>
                                     @endfor
                                 </div>
-                                <span class="ml-2 font-medium">{{ $rating->user->first_name }} {{ $rating->user->last_name }}</span>
+                                <span class="ml-2 font-medium">{{ $rating->user ? $rating->user->first_name . ' ' . $rating->user->last_name : 'Anonymous' }}</span>
                             </div>
                             <span class="text-sm text-gray-500">{{ $rating->created_at->diffForHumans() }}</span>
                         </div>
@@ -212,7 +212,7 @@
                     <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                         <div class="aspect-square relative bg-gray-100">
                             @if($relatedProduct->image_url)
-                                <img src="{{ $relatedProduct->image_url }}" alt="{{ $relatedProduct->product_name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . $relatedProduct->image_url) }}" alt="{{ $relatedProduct->product_name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-400">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">

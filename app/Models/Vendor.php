@@ -49,5 +49,10 @@ class Vendor extends Model
     {
         return $this->hasMany(Product::class, 'vendor_id');
     }
+
+    public function ratingsReceived()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 }
 

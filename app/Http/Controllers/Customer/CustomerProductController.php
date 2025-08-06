@@ -148,7 +148,7 @@ class CustomerProductController extends Controller
             'vendor.user', 
             'category',
             'vendor.ratingsReceived' => function ($query) {
-                $query->latest()->take(5);
+                $query->with('user')->latest()->take(5);
             }
         ])
         ->where('is_available', true)

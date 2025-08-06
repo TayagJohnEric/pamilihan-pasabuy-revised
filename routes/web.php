@@ -69,8 +69,8 @@ Route::middleware(['auth', 'role:customer'])->name('customer.')->group(function 
 Route::get('/products', [CustomerProductController::class, 'index'])->name('products.index');
 Route::get('/products/search', [CustomerProductController::class, 'search'])->name('products.search');
 Route::get('/products/{id}', [CustomerProductController::class, 'show'])->name('products.show');
-Route::get('/category/{categoryId}', [CustomerProductController::class, 'category'])->name('products.category');
-Route::get('/vendor/{vendorId}', [CustomerProductController::class, 'vendor'])->name('products.vendor');
+Route::get('/products/category/{categoryId}', [CustomerProductController::class, 'category'])->name('products.category');
+Route::get('/products/vendor/{vendorId}', [CustomerProductController::class, 'vendor'])->name('products.vendor');
 
 
 
@@ -94,20 +94,20 @@ Route::middleware('guest')->group(function () {
     Route::post('/vendor-application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
 
     // Vendor Login
-    Route::get('/vendor/login', [VendorAuthController::class, 'showLoginForm'])->name('vendor.login');
-    Route::post('/vendor/login', [VendorAuthController::class, 'login']);
+   Route::get('/vendor/auth/login', [VendorAuthController::class, 'showLoginForm'])->name('vendor.login.form');
+Route::post('/vendor/login', [VendorAuthController::class, 'login'])->name('vendor.login');
 });
-
-//Vendor Logout (requires auth)
-Route::post('/vendor/logout', [VendorAuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('vendor.logout');
 
 //Vendor Protected Routes (requires auth & vendor role)
 Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
 
     // Dashboard
     Route::get('dashboard', [VendorDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/vendor/toggle-accepting', [VendorDashboardController::class, 'toggleAcceptingOrders'])->name('toggle.accepting');
+
+
+    // Logout
+    Route::post('logout', [VendorAuthController::class, 'logout'])->name('logout');
 
     //Profile Management
     Route::get('profile', [VendorProfileController::class, 'index'])->name('profile.index');
@@ -162,7 +162,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/rider-application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
 
     // Rider Login
-    Route::get('/rider/login', [RiderAuthController::class, 'showLoginForm'])->name('rider.login');
+    Route::get('/rider/auth/login', [RiderAuthController::class, 'showLoginForm'])->name('rider.login');
     Route::post('/rider/login', [RiderAuthController::class, 'login']);
 });
 

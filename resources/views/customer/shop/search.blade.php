@@ -146,7 +146,7 @@
                         <div class="aspect-square relative overflow-hidden bg-gray-50">
                             @if($product->image_url)
                                 <img 
-                                    src="{{ $product->image_url }}" 
+                                     src="{{ asset('storage/' . $product->image_url) }}"
                                     alt="{{ $product->product_name }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 >
@@ -232,7 +232,7 @@
                             </div>
                             <div>
                                 @if($product->quantity_in_stock > 0)
-                                    <form method="POST" action="{{ route('cart.add', $product->id) }}">
+                                    <form method="POST" action="#add-to-cart-route-here">
                                         @csrf
                                         <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors">Add to Cart</button>
                                     </form>

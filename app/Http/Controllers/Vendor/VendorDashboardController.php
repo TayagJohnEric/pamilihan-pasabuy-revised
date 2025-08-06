@@ -132,4 +132,24 @@ class VendorDashboardController extends Controller
 
         return $activities;
     }
+
+        //Toggel Swith for is_accepting_orders
+    public function toggleAcceptingOrders(Request $request)
+{
+    $request->validate([
+        'is_accepting_orders' => 'required|boolean'
+    ]);
+
+    $vendor = Vendor::where('user_id', Auth::id())->first();
+
+    if (!$vendor) {
+        return response()->json(['message' => 'Vendor not found.'], 404);
+    }
+
+    $vendor->is_accepting_orders = $request->is_accepting_orders;
+    $vendor->save();
+
+    return response()->json(['message' => 'Availability updated successfully.']);
+}
+
 }

@@ -12,6 +12,9 @@
 
                     <!-- Header Actions -->
                     <div class="flex items-center space-x-3">
+
+                      @include('components.vendor.toggle-switch')
+
                        
                       @include('components.notification')
 
