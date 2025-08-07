@@ -104,11 +104,25 @@ class VendorAuthController extends Controller
 }
 
  public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+{
+    $user = Auth::user();
 
-        return redirect()->route('vendor.login.form');
+    // Ensure the user is a vendor before attempting to update
+    if ($user && $user->vendor) {
+        $vendor = $user->vendor;
+
+        // Only update if it's currently true
+        if ($vendor->is_accepting_orders) {
+            $vendor->is_accepting_orders = false;
+            $vendor->save();
+        }
     }
+
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('vendor.login.form');
+}
+
 }

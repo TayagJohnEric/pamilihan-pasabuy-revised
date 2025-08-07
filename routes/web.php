@@ -23,12 +23,10 @@ use App\Http\Controllers\Customer\CustomerCategoryController;
 use App\Http\Controllers\Customer\CustomerVendorController;
 
 
-
-
 //Customer Authentication Routes (Login & Register)
 Route::middleware('guest')->group(function () {
-    Route::get('/auth/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
-    Route::post('/auth/login', [CustomerAuthController::class, 'login']);
+    Route::get('/customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
+    Route::post('/customer/login', [CustomerAuthController::class, 'login']);
 
     Route::get('/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register');
     Route::post('/register', [CustomerAuthController::class, 'register']);
@@ -94,7 +92,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/vendor-application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
 
     // Vendor Login
-   Route::get('/vendor/auth/login', [VendorAuthController::class, 'showLoginForm'])->name('vendor.login.form');
+   Route::get('/vendor/login', [VendorAuthController::class, 'showLoginForm'])->name('vendor.login.form');
 Route::post('/vendor/login', [VendorAuthController::class, 'login'])->name('vendor.login');
 });
 
@@ -162,7 +160,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/rider-application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
 
     // Rider Login
-    Route::get('/rider/auth/login', [RiderAuthController::class, 'showLoginForm'])->name('rider.login');
+    Route::get('/rider/login', [RiderAuthController::class, 'showLoginForm'])->name('rider.login');
     Route::post('/rider/login', [RiderAuthController::class, 'login']);
 });
 

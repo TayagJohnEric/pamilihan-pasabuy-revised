@@ -1,5 +1,43 @@
 @extends('layout.vendor')
 @section('title', 'Vendor Dashboard')
+
+
+<style>
+.modal-overlay {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-overlay.closing {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal-overlay.closing .modal-content {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+}
+</style>
+
+
+
 @section('content')
 <div class="max-w-[90rem] mx-auto space-y-6">
     
@@ -18,6 +56,26 @@
                     {{ number_format($stats['shop_rating'], 1) }} Rating
                 </span>
             </div>
+            
+           <!-- Accepting Order Toggle Switch with Modal Trigger -->
+<div class="mb-4 flex items-center justify-between">
+    <label for="toggle_orders" class="flex items-center cursor-pointer">
+        <span class="mr-3 text-white">Accepting Orders</span>
+        <div class="relative w-14 h-8">
+            <input
+    type="checkbox"
+    id="toggle_orders"
+    class="sr-only peer"
+    onchange="handleToggle(event)"
+    {{ $vendor->is_accepting_orders ? 'checked' : '' }}
+>
+            <div class="w-full h-full bg-[#d4d9de] rounded-full shadow-inner transition-all duration-300 peer-checked:bg-green-500"></div>
+            <div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-6"></div>
+        </div>
+    </label>
+</div>
+
+
         </div>
     </div>
 
@@ -216,4 +274,102 @@
 
     </div>
 </div>
+
+<!-- Modal for Aceppting Orders Confirmation -->
+<div id="toggle-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+    <div class="modal-content bg-white rounded-lg p-6 max-w-md w-full">
+        <h2 class="text-lg font-semibold mb-4">Confirm Toggle</h2>
+        <p class="mb-4">Are you ready to start accepting orders? If not, please make sure your products are prepared before enabling this option.</p>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeToggleModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+            <button onclick="confirmToggle()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Yes, I'm Ready</button>
+        </div>
+    </div>
+</div>
+
+<!--JQuery CDN for AJAX Purposes-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#toggle_orders').on('change', function () {
+            let isAccepting = $(this).is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: '{{ route('vendor.toggle.accepting') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    is_accepting_orders: isAccepting
+                },
+                success: function (response) {
+                    console.log(response.message);
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+
+     let toggleCheckbox;
+
+    function handleToggle(event) {
+        toggleCheckbox = event.target;
+
+        if (toggleCheckbox.checked) {
+            // Revert toggle visually and show modal
+            toggleCheckbox.checked = false;
+
+            const modal = document.getElementById('toggle-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.add('show'), 10);
+        } else {
+            // Allow direct OFF toggle without confirmation
+            triggerToggleAjax(0);
+        }
+    }
+
+    function closeToggleModal() {
+        const modal = document.getElementById('toggle-modal');
+        modal.classList.add('closing');
+        modal.classList.remove('show');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex', 'closing');
+            toggleCheckbox.checked = false;
+        }, 300);
+    }
+
+    function confirmToggle() {
+        const modal = document.getElementById('toggle-modal');
+        modal.classList.add('closing');
+        modal.classList.remove('show');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex', 'closing');
+            toggleCheckbox.checked = true;
+            triggerToggleAjax(1);
+        }, 300);
+    }
+
+    function triggerToggleAjax(value) {
+        $.ajax({
+            url: '{{ route('vendor.toggle.accepting') }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                is_accepting_orders: value
+            },
+            success: function (response) {
+                console.log(response.message);
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+</script>
 @endsection
