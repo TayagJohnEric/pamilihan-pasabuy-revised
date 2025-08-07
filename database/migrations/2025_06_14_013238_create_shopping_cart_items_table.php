@@ -19,7 +19,15 @@ return new class extends Migration
             $table->decimal('customer_budget', 10, 2)->nullable();
             $table->text('customer_notes')->nullable();
             $table->timestamps();
-        });
+            
+            // Add unique constraint to prevent duplicate products per user
+            $table->unique(['user_id', 'product_id']);
+            
+            // Add indexes for better query performance
+            $table->index('user_id');
+            $table->index('product_id');
+            $table->index(['user_id', 'created_at']);
+});
     }
 
     /**

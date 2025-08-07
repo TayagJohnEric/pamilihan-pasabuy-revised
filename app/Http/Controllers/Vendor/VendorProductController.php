@@ -34,76 +34,74 @@ class VendorProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new product.
-     */
-    public function create()
-    {
-        $vendor = Auth::user()->vendor;
-        
-        if (!$vendor) {
-            return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
-        }
-
-        $categories = Category::orderBy('category_name')->get();
-        
-        return view('vendor.product-management.create', compact('categories'));
+ * Show the form for creating a new product.
+ */
+public function create()
+{
+    $vendor = Auth::user()->vendor;
+    
+    if (!$vendor) {
+        return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
     }
 
-    /**
-     * Store a newly created product in storage.
-     */
-    public function store(Request $request)
-    {
-        $vendor = Auth::user()->vendor;
-        
-        if (!$vendor) {
-            return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
-        }
+    $categories = Category::orderBy('category_name')->get();
+    
+    return view('vendor.product-management.create', compact('categories'));
+}
 
-        $request->validate([
-            'product_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'unit' => 'required|string|max:50',
-            'pricing_model' => 'required|in:standard,budget_based',
-            'price' => 'required_if:pricing_model,standard|nullable|numeric|min:0',
-            'quantity_in_stock' => 'required_if:pricing_model,standard|nullable|integer|min:0',
-            'indicative_price_per_unit' => 'required_if:pricing_model,budget_based|nullable|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_available' => 'boolean'
-        ]);
-
-        $imageUrl = null;
-        if ($request->hasFile('image')) {
-            $imageUrl = $request->file('image')->store('products', 'public');
-        }
-
-        $productData = [
-            'vendor_id' => $vendor->id,
-            'category_id' => $request->category_id,
-            'product_name' => $request->product_name,
-            'description' => $request->description,
-            'unit' => $request->unit,
-            'image_url' => $imageUrl,
-            'is_available' => $request->has('is_available'),
-        ];
-
-        if ($request->pricing_model === 'budget_based') {
-            $productData['is_budget_based'] = true;
-            $productData['indicative_price_per_unit'] = $request->indicative_price_per_unit;
-            $productData['price'] = 0; // Set a default price for budget-based products
-            $productData['quantity_in_stock'] = 0;
-        } else {
-            $productData['is_budget_based'] = false;
-            $productData['price'] = $request->price;
-            $productData['quantity_in_stock'] = $request->quantity_in_stock;
-            $productData['indicative_price_per_unit'] = null;
-        }
-
-        Product::create($productData);
-
-        return redirect()->route('vendor.products.index')->with('success', 'Product created successfully!');
+/**
+ * Store a newly created product in storage.
+ */
+public function store(Request $request)
+{
+    $vendor = Auth::user()->vendor;
+    
+    if (!$vendor) {
+        return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
     }
+
+    $request->validate([
+        'product_name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'category_id' => 'required|exists:categories,id',
+        'unit' => 'required|string|max:50',
+        'pricing_model' => 'required|in:standard,budget_based',
+        'price' => 'required|numeric|min:0', // Always required now
+        'quantity_in_stock' => 'required|integer|min:0', // Always required now
+        'indicative_price_per_unit' => 'required_if:pricing_model,budget_based|nullable|numeric|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'is_available' => 'boolean'
+    ]);
+
+    $imageUrl = null;
+    if ($request->hasFile('image')) {
+        $imageUrl = $request->file('image')->store('products', 'public');
+    }
+
+    $productData = [
+        'vendor_id' => $vendor->id,
+        'category_id' => $request->category_id,
+        'product_name' => $request->product_name,
+        'description' => $request->description,
+        'unit' => $request->unit,
+        'image_url' => $imageUrl,
+        'is_available' => $request->has('is_available'),
+        'price' => $request->price, // Always set the price
+        'quantity_in_stock' => $request->quantity_in_stock, // Always set the stock
+    ];
+
+    if ($request->pricing_model === 'budget_based') {
+        $productData['is_budget_based'] = true;
+        $productData['indicative_price_per_unit'] = $request->indicative_price_per_unit;
+    } else {
+        $productData['is_budget_based'] = false;
+        $productData['indicative_price_per_unit'] = null;
+    }
+
+    Product::create($productData);
+
+    return redirect()->route('vendor.products.index')->with('success', 'Product created successfully!');
+}
 
     /**
      * Display the specified product.

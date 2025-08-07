@@ -157,8 +157,8 @@
                 @enderror
             </div>
 
-            <!-- Standard Pricing Fields -->
-            <div id="standard_fields" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Price and Stock Fields (Always Visible) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price (₱) *</label>
                     <input type="number" 
@@ -189,7 +189,7 @@
                 </div>
             </div>
 
-            <!-- Budget-Based Pricing Fields -->
+            <!-- Budget-Based Pricing Fields (Shown when Budget-Based is selected) -->
             <div id="budget_fields" class="hidden">
                 <div class="max-w-md">
                     <label for="indicative_price_per_unit" class="block text-sm font-medium text-gray-700 mb-2">Indicative Price per Unit (₱) *</label>
@@ -239,24 +239,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     const standardRadio = document.getElementById('standard_pricing');
     const budgetRadio = document.getElementById('budget_pricing');
-    const standardFields = document.getElementById('standard_fields');
     const budgetFields = document.getElementById('budget_fields');
     
-   function togglePricingFields() {
-    if (standardRadio.checked) {
-        standardFields.classList.remove('hidden');
-        budgetFields.classList.add('hidden');
+    function togglePricingFields() {
+        if (budgetRadio.checked) {
+            // Show budget-based fields when budget pricing is selected
+            budgetFields.classList.remove('hidden');
+            document.getElementById('indicative_price_per_unit').disabled = false;
+        } else {
+            // Hide budget-based fields when standard pricing is selected
+            budgetFields.classList.add('hidden');
+            document.getElementById('indicative_price_per_unit').disabled = true;
+        }
+        
+        // Price and stock fields remain enabled and visible for both pricing models
         document.getElementById('price').disabled = false;
         document.getElementById('quantity_in_stock').disabled = false;
-        document.getElementById('indicative_price_per_unit').disabled = true;
-    } else if (budgetRadio.checked) {
-        standardFields.classList.add('hidden');
-        budgetFields.classList.remove('hidden');
-        document.getElementById('price').disabled = true;
-        document.getElementById('quantity_in_stock').disabled = true;
-        document.getElementById('indicative_price_per_unit').disabled = false;
     }
-}
     
     standardRadio.addEventListener('change', togglePricingFields);
     budgetRadio.addEventListener('change', togglePricingFields);

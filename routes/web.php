@@ -19,8 +19,7 @@ use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Customer\CustomerPasswordController;
 use App\Http\Controllers\Customer\CustomerSavedAddressController;
 use App\Http\Controllers\Customer\CustomerProductController;
-use App\Http\Controllers\Customer\CustomerCategoryController;
-use App\Http\Controllers\Customer\CustomerVendorController;
+use App\Http\Controllers\Customer\CustomerShoppingCartController;
 
 
 //Customer Authentication Routes (Login & Register)
@@ -71,6 +70,18 @@ Route::get('/products/category/{categoryId}', [CustomerProductController::class,
 Route::get('/products/vendor/{vendorId}', [CustomerProductController::class, 'vendor'])->name('products.vendor');
 
 
+// Shopping Cart Routes (for authenticated customers)
+Route::middleware(['auth'])->group(function () {
+    // Cart display and management
+    Route::get('/cart', [CustomerShoppingCartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CustomerShoppingCartController::class, 'store'])->name('cart.store');
+    Route::put('/cart/{cartItem}', [CustomerShoppingCartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cartItem}', [CustomerShoppingCartController::class, 'destroy'])->name('cart.destroy');
+    Route::delete('/cart', [CustomerShoppingCartController::class, 'clear'])->name('cart.clear');
+    
+    // AJAX route for cart count
+    Route::get('/cart/count', [CustomerShoppingCartController::class, 'getCartCount'])->name('cart.count');
+});
 
 
 

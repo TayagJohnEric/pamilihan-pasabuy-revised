@@ -113,18 +113,12 @@
                 <!-- Stock Info -->
                 <div class="mb-6">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-gray-700">Availability:</span>
-                        @if($product->is_budget_based)
-                            <span class="text-sm {{ $product->is_available ? 'text-green-600' : 'text-red-600' }} font-medium">
-                                {{ $product->is_available ? 'Available' : 'Currently Unavailable' }}
-                            </span>
-                        @else
-                            <span class="text-sm {{ $product->quantity_in_stock <= 5 ? 'text-red-600' : 'text-green-600' }} font-medium">
-                                {{ $product->quantity_in_stock }} {{ $product->unit }} available
-                            </span>
-                        @endif
+                        <span class="text-sm font-medium text-gray-700">Stock Available:</span>
+                        <span class="text-sm {{ $product->quantity_in_stock <= 5 ? 'text-red-600' : 'text-green-600' }} font-medium">
+                            {{ $product->quantity_in_stock }} {{ $product->unit }}
+                        </span>
                     </div>
-                    @if(!$product->is_budget_based && $product->quantity_in_stock <= 5 && $product->quantity_in_stock > 0)
+                    @if($product->quantity_in_stock <= 5)
                         <p class="text-sm text-red-600">⚠️ Low stock - order soon!</p>
                     @endif
                 </div>
@@ -136,128 +130,19 @@
                     </div>
                 @endif
 
-                <!-- Add to Cart Section -->
-                <div class="space-y-4">
-                    @php
-                        $isInStock = $product->is_budget_based ? $product->is_available : ($product->quantity_in_stock > 0);
-                    @endphp
-                    
-                    @if($isInStock)
-                        <form method="POST" action="{{ route('cart.store') }}" class="space-y-4">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-
-                            @if($product->is_budget_based)
-                                <!-- Budget-based product form -->
-                                <div class="space-y-3">
-                                    <div>
-                                        <label for="budget-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Budget Amount <span class="text-red-500">*</span>
-                                        </label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
-                                            <input type="number" 
-                                                   id="budget-{{ $product->id }}"
-                                                   name="customer_budget" 
-                                                   value="{{ old('customer_budget') }}"
-                                                   step="0.01" 
-                                                   min="0.01"
-                                                   max="999999.99"
-                                                   required
-                                                   class="pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
-                                                   placeholder="0.00">
-                                        </div>
-                                        @if($product->indicative_price_per_unit)
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Indicative price: ~₱{{ number_format($product->indicative_price_per_unit, 2) }}/{{ $product->unit }}
-                                            </p>
-                                        @endif
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="notes-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Notes (Optional)
-                                        </label>
-                                        <textarea id="notes-{{ $product->id }}"
-                                                  name="customer_notes" 
-                                                  rows="3"
-                                                  placeholder="Special requests or preferences..."
-                                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none">{{ old('customer_notes') }}</textarea>
-                                    </div>
-                                </div>
-                            @else
-                                <!-- Standard product form -->
-                                <div class="flex items-center space-x-4">
-                                    <label for="quantity-{{ $product->id }}" class="text-sm font-medium text-gray-700">
-                                        Quantity:
-                                    </label>
-                                    <div class="flex items-center border border-gray-300 rounded-lg">
-                                        <button type="button" 
-                                                onclick="decreaseQuantity({{ $product->id }})" 
-                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-l-lg">
-                                            -
-                                        </button>
-                                        <input type="number" 
-                                               id="quantity-{{ $product->id }}"
-                                               name="quantity" 
-                                               value="1" 
-                                               min="1" 
-                                               max="{{ $product->quantity_in_stock }}"
-                                               data-price="{{ $product->price }}"
-                                               class="w-16 px-2 py-2 text-center border-0 focus:ring-0 focus:outline-none">
-                                        <button type="button" 
-                                                onclick="increaseQuantity({{ $product->id }})" 
-                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-r-lg">
-                                            +
-                                        </button>
-                                    </div>
-                                    <span class="text-sm text-gray-500">
-                                        ({{ $product->quantity_in_stock }} available)
-                                    </span>
-                                </div>
-
-                                <!-- Price Display for standard products -->
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Unit Price:</span>
-                                    <span class="font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</span>
-                                </div>
-
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Total:</span>
-                                    <span id="total-price-{{ $product->id }}" class="font-bold text-green-600">
-                                        ₱{{ number_format($product->price, 2) }}
-                                    </span>
-                                </div>
-                            @endif
-
-                            <button type="submit" 
-                                    class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 focus:ring-4 focus:ring-green-200">
-                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0H9m4 0h2"></path>
-                                </svg>
-                                Add to Cart
-                            </button>
-                        </form>
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    @if($product->quantity_in_stock > 0)
+                        <button class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200">
+                            Add to Cart
+                        </button>
+                        <button class="w-full bg-white border-2 border-green-600 text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors duration-200">
+                            Buy Now
+                        </button>
                     @else
-                        <div class="text-center py-4">
-                            <button class="w-full bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
-                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-                                </svg>
-                                @if($product->is_budget_based)
-                                    Currently Unavailable
-                                @else
-                                    Out of Stock
-                                @endif
-                            </button>
-                            <p class="text-sm text-gray-500 mt-2">
-                                @if($product->is_budget_based)
-                                    This service is temporarily unavailable
-                                @else
-                                    This item is currently unavailable
-                                @endif
-                            </p>
-                        </div>
+                        <button disabled class="w-full bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold cursor-not-allowed">
+                            Out of Stock
+                        </button>
                     @endif
                 </div>
 
@@ -359,7 +244,7 @@
                     <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                         <div class="aspect-square relative bg-gray-100">
                             @if($similarProduct->image_url)
-                                <img  src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $similarProduct->product_name }}" class="w-full h-full object-cover">
+                                <img src="{{ $similarProduct->image_url }}" alt="{{ $similarProduct->product_name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-400">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
@@ -387,103 +272,4 @@
         </div>
     @endif
 </div>
-
-<script>
-    function increaseQuantity(productId) {
-        const input = document.getElementById('quantity-' + productId);
-        if (!input) return; // Handle case where element doesn't exist (budget-based products)
-        
-        const max = parseInt(input.getAttribute('max'));
-        const current = parseInt(input.value);
-
-        if (current < max) {
-            input.value = current + 1;
-            updateTotalPrice(productId);
-        }
-    }
-
-    function decreaseQuantity(productId) {
-        const input = document.getElementById('quantity-' + productId);
-        if (!input) return; // Handle case where element doesn't exist (budget-based products)
-        
-        const current = parseInt(input.value);
-
-        if (current > 1) {
-            input.value = current - 1;
-            updateTotalPrice(productId);
-        }
-    }
-
-    function updateTotalPrice(productId) {
-        const quantityInput = document.getElementById('quantity-' + productId);
-        const totalElement = document.getElementById('total-price-' + productId);
-
-        if (quantityInput && totalElement) {
-            const quantity = parseInt(quantityInput.value);
-            const unitPrice = parseFloat(quantityInput.getAttribute('data-price')) || 0;
-            const total = quantity * unitPrice;
-
-            totalElement.textContent = '₱' + total.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-    }
-
-    function validateBudgetInput(input) {
-        const value = parseFloat(input.value);
-        const min = parseFloat(input.getAttribute('min'));
-        const max = parseFloat(input.getAttribute('max'));
-        
-        if (value < min) {
-            input.value = min;
-        } else if (value > max) {
-            input.value = max;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle quantity inputs for standard products
-        const quantityInputs = document.querySelectorAll('input[name="quantity"]');
-        quantityInputs.forEach(function(input) {
-            const productId = input.id.split('-')[1];
-            input.addEventListener('input', function() {
-                updateTotalPrice(productId);
-            });
-        });
-
-        // Handle budget inputs for budget-based products
-        const budgetInputs = document.querySelectorAll('input[name="customer_budget"]');
-        budgetInputs.forEach(function(input) {
-            input.addEventListener('input', function() {
-                validateBudgetInput(this);
-            });
-            
-            input.addEventListener('blur', function() {
-                validateBudgetInput(this);
-            });
-        });
-
-        // Handle form submission validation
-        const forms = document.querySelectorAll('form[action*="cart/store"]');
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                const budgetInput = form.querySelector('input[name="customer_budget"]');
-                if (budgetInput) {
-                    const value = parseFloat(budgetInput.value);
-                    const min = parseFloat(budgetInput.getAttribute('min'));
-                    const max = parseFloat(budgetInput.getAttribute('max'));
-                    
-                    if (isNaN(value) || value < min || value > max) {
-                        e.preventDefault();
-                        alert('Please enter a valid budget amount between ₱' + min.toLocaleString() + ' and ₱' + max.toLocaleString());
-                        budgetInput.focus();
-                        return false;
-                    }
-                }
-            });
-        });
-    });
-</script>
-
 @endsection

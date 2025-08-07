@@ -9,7 +9,7 @@ use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
-
+/** I MIGHT: rename this controller */
 class CustomerProductController extends Controller
 {
     

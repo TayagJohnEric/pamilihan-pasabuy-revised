@@ -66,8 +66,9 @@
                             <div class="mb-3">
                                 @if($product->is_budget_based)
                                     <p class="text-sm text-gray-700">
-                                        <span class="font-medium">Budget-based:</span> 
-                                        ₱{{ number_format($product->indicative_price_per_unit, 2) }}/{{ $product->unit }}
+                                        <p class="text-lg font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</p>
+                                        <span class="text-sm">Budget-based:</span> 
+                                        ₱{{ number_format($product->indicative_price_per_unit, 2) }}/piece
                                     </p>
                                 @else
                                     <p class="text-lg font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</p>

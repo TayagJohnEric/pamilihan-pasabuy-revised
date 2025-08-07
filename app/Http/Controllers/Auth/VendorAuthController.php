@@ -103,7 +103,35 @@ class VendorAuthController extends Controller
     ]);
 }
 
- public function logout(Request $request)
+
+// TEMPORARY: This is a test version of the logout function currently being used for development/testing purposes.
+//
+// This version does NOT include the logic that automatically sets `is_accepting_orders` to false for vendors upon logout.
+// It’s intended to simplify testing and isolate other features without triggering vendor status updates.
+//
+// Remember to remove or replace this with the original (production-ready) logout function when testing is complete.
+
+public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('vendor.login.form');
+    }
+
+
+/*
+// NOTE: This logout function is commented out for now because we are currently testing an alternative logout implementation.
+//
+// Purpose of this original version:
+// In the actual (production) scenario, when a vendor logs out, their `is_accepting_orders` status should be automatically set to `false`
+// to indicate that the vendor is offline and no longer accepting new orders.
+//
+// Uncomment this function when reverting to the intended production behavior.
+
+
+public function logout(Request $request)
 {
     $user = Auth::user();
 
@@ -124,5 +152,6 @@ class VendorAuthController extends Controller
 
     return redirect()->route('vendor.login.form');
 }
+*/
 
 }
