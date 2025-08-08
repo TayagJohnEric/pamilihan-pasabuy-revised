@@ -47,11 +47,15 @@ class CustomerShoppingCartController extends Controller
         $this->validateAddToCartRequest($request);
 
         try {
+            // Determine if this is a budget-based purchase
+            $isBudgetPurchase = $request->filled('customer_budget') && $request->customer_budget > 0;
+            
             $this->addToCart(
                 $request->product_id,
                 $request->quantity ?? 1,
-                $request->customer_budget,
-                $request->customer_notes
+                $isBudgetPurchase ? $request->customer_budget : null,
+                $isBudgetPurchase ? $request->customer_notes : null,
+                $isBudgetPurchase
             );
 
             // Get product name for success message
@@ -83,7 +87,10 @@ class CustomerShoppingCartController extends Controller
         }
 
         try {
-            if ($product->is_budget_based) {
+            // Check if this cart item is currently being used as budget-based
+            $isCurrentlyBudgetBased = !is_null($cartItem->customer_budget);
+            
+            if ($isCurrentlyBudgetBased) {
                 $validated = $request->validate([
                     'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
                     'customer_notes' => 'nullable|string|max:500',
@@ -167,6 +174,8 @@ class CustomerShoppingCartController extends Controller
             'count' => $cartSummary['item_count'],
             'subtotal' => $cartSummary['subtotal'],
             'items' => $cartSummary['items']->map(function ($item) {
+                $isBudgetBased = !is_null($item->customer_budget);
+                
                 return [
                     'id' => $item->id,
                     'product_name' => $item->product->product_name,
@@ -174,7 +183,7 @@ class CustomerShoppingCartController extends Controller
                     'quantity' => $item->quantity,
                     'price' => $item->product->price,
                     'subtotal' => $item->subtotal,
-                    'is_budget_based' => $item->product->is_budget_based,
+                    'is_budget_based' => $isBudgetBased,
                     'customer_budget' => $item->customer_budget,
                 ];
             }),
@@ -195,11 +204,15 @@ class CustomerShoppingCartController extends Controller
         try {
             $product = Product::findOrFail($request->product_id);
             
+            // Determine if this is a budget-based purchase
+            $isBudgetPurchase = $request->filled('customer_budget') && $request->customer_budget > 0;
+            
             $this->addToCart(
                 $request->product_id,
                 $request->quantity ?? 1,
-                $request->customer_budget,
-                $request->customer_notes
+                $isBudgetPurchase ? $request->customer_budget : null,
+                $isBudgetPurchase ? $request->customer_notes : null,
+                $isBudgetPurchase
             );
 
             $cartSummary = $this->getCartSummary();
@@ -221,39 +234,48 @@ class CustomerShoppingCartController extends Controller
 
     // ===== MERGED CART SERVICE METHODS =====
 
-    private function addToCart($productId, $quantity = 1, $customerBudget = null, $customerNotes = null)
+    private function addToCart($productId, $quantity = 1, $customerBudget = null, $customerNotes = null, $isBudgetPurchase = false)
     {
         $product = Product::findOrFail($productId);
         
         // Validate product availability
-        if (!$product->is_available || (!$product->is_budget_based && $product->quantity_in_stock <= 0)) {
+        if (!$product->is_available || (!$product->is_budget_based && !$isBudgetPurchase && $product->quantity_in_stock <= 0)) {
             throw new \Exception('Product is not available.');
         }
         
-        return DB::transaction(function () use ($product, $quantity, $customerBudget, $customerNotes) {
+        return DB::transaction(function () use ($product, $quantity, $customerBudget, $customerNotes, $isBudgetPurchase) {
+            // Look for existing cart item with same purchase type
             $cartItem = ShoppingCartItem::where('user_id', Auth::id())
                                       ->where('product_id', $product->id)
+                                      ->where(function($query) use ($isBudgetPurchase) {
+                                          if ($isBudgetPurchase) {
+                                              $query->whereNotNull('customer_budget');
+                                          } else {
+                                              $query->whereNull('customer_budget');
+                                          }
+                                      })
                                       ->first();
+            
             if ($cartItem) {
-                return $this->updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes);
+                return $this->updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes, $isBudgetPurchase);
             } else {
-                return $this->createNewCartItem($product, $quantity, $customerBudget, $customerNotes);
+                return $this->createNewCartItem($product, $quantity, $customerBudget, $customerNotes, $isBudgetPurchase);
             }
         });
     }
 
-    private function updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes)
+    private function updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes, $isBudgetPurchase)
     {
         $product = $cartItem->product;
         
-        if ($product->is_budget_based) {
+        if ($isBudgetPurchase) {
             $cartItem->update([
                 'customer_budget' => $customerBudget,
                 'customer_notes' => $customerNotes,
             ]);
         } else {
             $newQuantity = $cartItem->quantity + $quantity;
-            if ($newQuantity > $product->quantity_in_stock) {
+            if (!$product->is_budget_based && $newQuantity > $product->quantity_in_stock) {
                 $newQuantity = $product->quantity_in_stock;
             }
             $cartItem->update(['quantity' => $newQuantity]);
@@ -262,14 +284,14 @@ class CustomerShoppingCartController extends Controller
         return $cartItem;
     }
 
-    private function createNewCartItem($product, $quantity, $customerBudget, $customerNotes)
+    private function createNewCartItem($product, $quantity, $customerBudget, $customerNotes, $isBudgetPurchase)
     {
         return ShoppingCartItem::create([
             'user_id' => Auth::id(),
             'product_id' => $product->id,
-            'quantity' => $product->is_budget_based ? 1 : $quantity,
-            'customer_budget' => $product->is_budget_based ? $customerBudget : null,
-            'customer_notes' => $product->is_budget_based ? $customerNotes : null,
+            'quantity' => $isBudgetPurchase ? 1 : $quantity,
+            'customer_budget' => $isBudgetPurchase ? $customerBudget : null,
+            'customer_notes' => $isBudgetPurchase ? $customerNotes : null,
         ]);
     }
 
@@ -346,15 +368,20 @@ class CustomerShoppingCartController extends Controller
             'product_id' => 'required|exists:products,id',
         ];
 
-        if ($product->is_budget_based) {
+        // Check if this is a budget-based purchase request
+        $isBudgetRequest = $request->filled('customer_budget') && $request->customer_budget > 0;
+
+        if ($isBudgetRequest) {
             $rules['customer_budget'] = 'required|numeric|min:0.01|max:999999.99';
             $rules['customer_notes'] = 'nullable|string|max:500';
         } else {
+            // For regular purchases (including budget-based products at original price)
+            $maxQuantity = $product->is_budget_based ? 999 : $product->quantity_in_stock;
             $rules['quantity'] = [
                 'required',
                 'integer',
                 'min:1',
-                'max:' . $product->quantity_in_stock
+                'max:' . $maxQuantity
             ];
         }
 

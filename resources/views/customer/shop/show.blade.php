@@ -52,7 +52,7 @@
                     
                     @if($product->is_budget_based)
                         <span class="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                            Budget Based
+                            Budget Option Available
                         </span>
                     @endif
                 </div>
@@ -140,52 +140,16 @@
                 <div class="space-y-4">
                     @php
                         $isInStock = $product->is_budget_based ? $product->is_available : ($product->quantity_in_stock > 0);
+                        $maxQuantity = $product->is_budget_based ? 999 : $product->quantity_in_stock;
                     @endphp
                     
                     @if($isInStock)
-                        <form method="POST" action="{{ route('cart.store') }}" class="space-y-4">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <!-- Regular Purchase Form (Default) -->
+                        <div class="regular-form-{{ $product->id }}">
+                            <form method="POST" action="{{ route('cart.store') }}" class="space-y-4">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                            @if($product->is_budget_based)
-                                <!-- Budget-based product form -->
-                                <div class="space-y-3">
-                                    <div>
-                                        <label for="budget-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Budget Amount <span class="text-red-500">*</span>
-                                        </label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
-                                            <input type="number" 
-                                                   id="budget-{{ $product->id }}"
-                                                   name="customer_budget" 
-                                                   value="{{ old('customer_budget') }}"
-                                                   step="0.01" 
-                                                   min="0.01"
-                                                   max="999999.99"
-                                                   required
-                                                   class="pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
-                                                   placeholder="0.00">
-                                        </div>
-                                        @if($product->indicative_price_per_unit)
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Indicative price: ~₱{{ number_format($product->indicative_price_per_unit, 2) }}/{{ $product->unit }}
-                                            </p>
-                                        @endif
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="notes-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                            Notes (Optional)
-                                        </label>
-                                        <textarea id="notes-{{ $product->id }}"
-                                                  name="customer_notes" 
-                                                  rows="3"
-                                                  placeholder="Special requests or preferences..."
-                                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none">{{ old('customer_notes') }}</textarea>
-                                    </div>
-                                </div>
-                            @else
                                 <!-- Standard product form -->
                                 <div class="flex items-center space-x-4">
                                     <label for="quantity-{{ $product->id }}" class="text-sm font-medium text-gray-700">
@@ -202,7 +166,7 @@
                                                name="quantity" 
                                                value="1" 
                                                min="1" 
-                                               max="{{ $product->quantity_in_stock }}"
+                                               max="{{ $maxQuantity }}"
                                                data-price="{{ $product->price }}"
                                                class="w-16 px-2 py-2 text-center border-0 focus:ring-0 focus:outline-none">
                                         <button type="button" 
@@ -212,32 +176,112 @@
                                         </button>
                                     </div>
                                     <span class="text-sm text-gray-500">
-                                        ({{ $product->quantity_in_stock }} available)
+                                        ({{ $product->is_budget_based ? 'available' : $product->quantity_in_stock . ' available' }})
                                     </span>
                                 </div>
 
-                                <!-- Price Display for standard products -->
+                                <!-- Price Display -->
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-600">Unit Price:</span>
                                     <span class="font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</span>
                                 </div>
-
+                                
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-600">Total:</span>
                                     <span id="total-price-{{ $product->id }}" class="font-bold text-green-600">
                                         ₱{{ number_format($product->price, 2) }}
                                     </span>
                                 </div>
-                            @endif
 
-                            <button type="submit" 
-                                    class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 focus:ring-4 focus:ring-green-200">
-                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0H9m4 0h2"></path>
-                                </svg>
-                                Add to Cart
-                            </button>
-                        </form>
+                                <button type="submit" 
+                                        class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 focus:ring-4 focus:ring-green-200">
+                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0H9m4 0h2"></path>
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Budget-Based Option Toggle (only for budget-based products) -->
+                        @if($product->is_budget_based)
+                            <div class="pt-4 border-t border-gray-200">
+                                <div class="budget-toggle-{{ $product->id }}">
+                                    <button type="button" 
+                                            onclick="toggleBudgetForm({{ $product->id }})"
+                                            class="w-full px-6 py-3 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition-colors">
+                                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                        </svg>
+                                        Set Custom Budget Instead
+                                    </button>
+                                    <p class="text-xs text-gray-600 text-center mt-2">
+                                        Get a custom quote based on your specific budget and requirements
+                                    </p>
+                                </div>
+
+                                <!-- Budget-Based Form (Hidden by default) -->
+                                <div class="budget-form-{{ $product->id }} hidden">
+                                    <form method="POST" action="{{ route('cart.store') }}" class="space-y-4 mt-4">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label for="budget-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Budget Amount <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
+                                                    <input type="number" 
+                                                           id="budget-{{ $product->id }}"
+                                                           name="customer_budget" 
+                                                           value="{{ old('customer_budget') }}"
+                                                           step="0.01" 
+                                                           min="0.01"
+                                                           max="999999.99"
+                                                           required
+                                                           class="pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
+                                                           placeholder="0.00">
+                                                </div>
+                                                @if($product->indicative_price_per_unit)
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        Indicative price: ~₱{{ number_format($product->indicative_price_per_unit, 2) }}/{{ $product->unit }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                            
+                                            <div>
+                                                <label for="notes-{{ $product->id }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Notes (Optional)
+                                                </label>
+                                                <textarea id="notes-{{ $product->id }}"
+                                                          name="customer_notes" 
+                                                          rows="3"
+                                                          placeholder="Special requests or preferences..."
+                                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none">{{ old('customer_notes') }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex space-x-3">
+                                            <button type="button" 
+                                                    onclick="toggleBudgetForm({{ $product->id }})"
+                                                    class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                                                Back to Standard
+                                            </button>
+                                            <button type="submit" 
+                                                    class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 focus:ring-4 focus:ring-blue-200">
+                                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                </svg>
+                                                Add with Budget
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endif
+
                     @else
                         <div class="text-center py-4">
                             <button class="w-full bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
@@ -359,7 +403,7 @@
                     <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                         <div class="aspect-square relative bg-gray-100">
                             @if($similarProduct->image_url)
-                                <img  src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $similarProduct->product_name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . $similarProduct->image_url) }}" alt="{{ $similarProduct->product_name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-400">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
@@ -389,9 +433,27 @@
 </div>
 
 <script>
+    function toggleBudgetForm(productId) {
+        const regularForm = document.querySelector('.regular-form-' + productId);
+        const budgetForm = document.querySelector('.budget-form-' + productId);
+        const budgetToggle = document.querySelector('.budget-toggle-' + productId);
+
+        if (budgetForm.classList.contains('hidden')) {
+            // Show budget form, hide regular form and toggle button
+            budgetForm.classList.remove('hidden');
+            regularForm.classList.add('hidden');
+            budgetToggle.classList.add('hidden');
+        } else {
+            // Show regular form and toggle button, hide budget form
+            budgetForm.classList.add('hidden');
+            regularForm.classList.remove('hidden');
+            budgetToggle.classList.remove('hidden');
+        }
+    }
+
     function increaseQuantity(productId) {
         const input = document.getElementById('quantity-' + productId);
-        if (!input) return; // Handle case where element doesn't exist (budget-based products)
+        if (!input) return;
         
         const max = parseInt(input.getAttribute('max'));
         const current = parseInt(input.value);
@@ -404,7 +466,7 @@
 
     function decreaseQuantity(productId) {
         const input = document.getElementById('quantity-' + productId);
-        if (!input) return; // Handle case where element doesn't exist (budget-based products)
+        if (!input) return;
         
         const current = parseInt(input.value);
 
@@ -465,7 +527,7 @@
         });
 
         // Handle form submission validation
-        const forms = document.querySelectorAll('form[action*="cart/store"]');
+        const forms = document.querySelectorAll('form[action*="cart"]');
         forms.forEach(function(form) {
             form.addEventListener('submit', function(e) {
                 const budgetInput = form.querySelector('input[name="customer_budget"]');
