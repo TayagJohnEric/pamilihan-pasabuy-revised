@@ -3,29 +3,21 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AddToCartRequest;
 use App\Models\Product;
 use App\Models\ShoppingCartItem;
-use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomerShoppingCartController extends Controller
 {
-      protected $cartService;
-
-    public function __construct(CartService $cartService)
-    {
-        $this->cartService = $cartService;
-    }
-
     /**
      * Display the shopping cart
      */
     public function index()
     {
         // Validate cart items before displaying
-        $invalidItems = $this->cartService->validateCartItems();
+        $invalidItems = $this->validateCartItems();
         
         if (!empty($invalidItems)) {
             // Remove invalid items and notify user
@@ -36,7 +28,7 @@ class CustomerShoppingCartController extends Controller
             session()->flash('warning', 'Some items in your cart were removed because they are no longer available.');
         }
 
-        $cartSummary = $this->cartService->getCartSummary();
+        $cartSummary = $this->getCartSummary();
 
         return view('customer.cart.index', [
             'cartItems' => $cartSummary['items'],
@@ -49,10 +41,13 @@ class CustomerShoppingCartController extends Controller
     /**
      * Add item to cart
      */
-    public function store(AddToCartRequest $request)
+    public function store(Request $request)
     {
+        // Validate the request using the same logic as AddToCartRequest
+        $this->validateAddToCartRequest($request);
+
         try {
-            $this->cartService->addToCart(
+            $this->addToCart(
                 $request->product_id,
                 $request->quantity ?? 1,
                 $request->customer_budget,
@@ -74,49 +69,49 @@ class CustomerShoppingCartController extends Controller
      * Update cart item
      */
     public function update(Request $request, ShoppingCartItem $cartItem)
-{
-    if ($cartItem->user_id !== Auth::id()) {
-        abort(403, 'Unauthorized action.');
-    }
-
-    $product = $cartItem->product;
-
-    if (!$product->is_available) {
-        return $request->ajax()
-            ? response()->json(['message' => 'Product is no longer available.'], 400)
-            : redirect()->route('cart.index')->with('error', 'This product is no longer available.');
-    }
-
-    try {
-        if ($product->is_budget_based) {
-            $validated = $request->validate([
-                'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
-                'customer_notes' => 'nullable|string|max:500',
-            ]);
-
-            $cartItem->update($validated);
-        } else {
-            $validated = $request->validate([
-                'quantity' => 'required|integer|min:1|max:' . $product->quantity_in_stock,
-            ]);
-
-            $cartItem->update($validated);
+    {
+        if ($cartItem->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
-        if ($request->ajax()) {
-            return response()->json(['message' => 'Cart updated successfully.']);
+        $product = $cartItem->product;
+
+        if (!$product->is_available) {
+            return $request->ajax()
+                ? response()->json(['message' => 'Product is no longer available.'], 400)
+                : redirect()->route('cart.index')->with('error', 'This product is no longer available.');
         }
 
-        return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+        try {
+            if ($product->is_budget_based) {
+                $validated = $request->validate([
+                    'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
+                    'customer_notes' => 'nullable|string|max:500',
+                ]);
 
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        if ($request->ajax()) {
-            return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+                $cartItem->update($validated);
+            } else {
+                $validated = $request->validate([
+                    'quantity' => 'required|integer|min:1|max:' . $product->quantity_in_stock,
+                ]);
+
+                $cartItem->update($validated);
+            }
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Cart updated successfully.']);
+            }
+
+            return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+            }
+
+            return redirect()->route('cart.index')->withErrors($e->errors())->withInput();
         }
-
-        return redirect()->route('cart.index')->withErrors($e->errors())->withInput();
     }
-}
 
     /**
      * Remove item from cart
@@ -143,7 +138,7 @@ class CustomerShoppingCartController extends Controller
         $itemCount = Auth::user()->shoppingCartItems()->count();
         
         if ($itemCount > 0) {
-            $this->cartService->clearCart();
+            $this->clearCart();
             return redirect()->route('cart.index')
                            ->with('success', "All {$itemCount} item(s) have been removed from your cart.");
         }
@@ -162,11 +157,11 @@ class CustomerShoppingCartController extends Controller
     }
 
     /**
-     * Get cart summary for mini-cart display (AJAX)
+     * Get cart summary for mini-cart display (AJAX) IN THE HEADER
      */
-    public function getCartSummary()
+    public function getCartSummaryAjax()
     {
-        $cartSummary = $this->cartService->getCartSummary();
+        $cartSummary = $this->getCartSummary();
         
         return response()->json([
             'count' => $cartSummary['item_count'],
@@ -200,14 +195,14 @@ class CustomerShoppingCartController extends Controller
         try {
             $product = Product::findOrFail($request->product_id);
             
-            $this->cartService->addToCart(
+            $this->addToCart(
                 $request->product_id,
                 $request->quantity ?? 1,
                 $request->customer_budget,
                 $request->customer_notes
             );
 
-            $cartSummary = $this->cartService->getCartSummary();
+            $cartSummary = $this->getCartSummary();
 
             return response()->json([
                 'success' => true,
@@ -222,5 +217,154 @@ class CustomerShoppingCartController extends Controller
                 'message' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    // ===== MERGED CART SERVICE METHODS =====
+
+    private function addToCart($productId, $quantity = 1, $customerBudget = null, $customerNotes = null)
+    {
+        $product = Product::findOrFail($productId);
+        
+        // Validate product availability
+        if (!$product->is_available || (!$product->is_budget_based && $product->quantity_in_stock <= 0)) {
+            throw new \Exception('Product is not available.');
+        }
+        
+        return DB::transaction(function () use ($product, $quantity, $customerBudget, $customerNotes) {
+            $cartItem = ShoppingCartItem::where('user_id', Auth::id())
+                                      ->where('product_id', $product->id)
+                                      ->first();
+            if ($cartItem) {
+                return $this->updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes);
+            } else {
+                return $this->createNewCartItem($product, $quantity, $customerBudget, $customerNotes);
+            }
+        });
+    }
+
+    private function updateExistingCartItem($cartItem, $quantity, $customerBudget, $customerNotes)
+    {
+        $product = $cartItem->product;
+        
+        if ($product->is_budget_based) {
+            $cartItem->update([
+                'customer_budget' => $customerBudget,
+                'customer_notes' => $customerNotes,
+            ]);
+        } else {
+            $newQuantity = $cartItem->quantity + $quantity;
+            if ($newQuantity > $product->quantity_in_stock) {
+                $newQuantity = $product->quantity_in_stock;
+            }
+            $cartItem->update(['quantity' => $newQuantity]);
+        }
+        
+        return $cartItem;
+    }
+
+    private function createNewCartItem($product, $quantity, $customerBudget, $customerNotes)
+    {
+        return ShoppingCartItem::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+            'quantity' => $product->is_budget_based ? 1 : $quantity,
+            'customer_budget' => $product->is_budget_based ? $customerBudget : null,
+            'customer_notes' => $product->is_budget_based ? $customerNotes : null,
+        ]);
+    }
+
+    private function getCartSummary()
+    {
+        $cartItems = Auth::user()->shoppingCartItems()->with('product')->get();
+        
+        $subtotal = $cartItems->sum(function ($item) {
+            return $item->subtotal;
+        });
+        
+        $itemCount = $cartItems->count();
+        $totalQuantity = $cartItems->sum('quantity');
+        
+        return [
+            'items' => $cartItems,
+            'subtotal' => $subtotal,
+            'item_count' => $itemCount,
+            'total_quantity' => $totalQuantity,
+        ];
+    }
+
+    private function clearCart()
+    {
+        return Auth::user()->shoppingCartItems()->delete();
+    }
+
+    private function removeItem($cartItemId)
+    {
+        $cartItem = ShoppingCartItem::where('id', $cartItemId)
+                                   ->where('user_id', Auth::id())
+                                   ->first();
+                                   
+        if ($cartItem) {
+            return $cartItem->delete();
+        }
+        
+        return false;
+    }
+
+    private function validateCartItems()
+    {
+        $cartItems = Auth::user()->shoppingCartItems()->with('product')->get();
+        $invalidItems = [];
+        
+        foreach ($cartItems as $item) {
+            if (!$item->is_valid) {
+                $invalidItems[] = $item;
+            }
+        }
+        
+        return $invalidItems;
+    }
+
+    // ===== MERGED ADD TO CART REQUEST VALIDATION =====
+
+    private function validateAddToCartRequest(Request $request)
+    {
+        // Check authentication first
+        if (!auth()->check()) {
+            abort(401, 'Unauthorized');
+        }
+
+        $product = Product::find($request->product_id);
+        
+        if (!$product) {
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+            ]);
+            return;
+        }
+
+        $rules = [
+            'product_id' => 'required|exists:products,id',
+        ];
+
+        if ($product->is_budget_based) {
+            $rules['customer_budget'] = 'required|numeric|min:0.01|max:999999.99';
+            $rules['customer_notes'] = 'nullable|string|max:500';
+        } else {
+            $rules['quantity'] = [
+                'required',
+                'integer',
+                'min:1',
+                'max:' . $product->quantity_in_stock
+            ];
+        }
+
+        $messages = [
+            'customer_budget.required' => 'Budget amount is required for this item.',
+            'customer_budget.min' => 'Budget must be at least ₱0.01.',
+            'customer_budget.max' => 'Budget cannot exceed ₱999,999.99.',
+            'quantity.max' => 'Quantity cannot exceed available stock.',
+        ];
+
+        $request->validate($rules, $messages);
     }
 }
