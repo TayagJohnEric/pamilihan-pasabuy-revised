@@ -75,8 +75,15 @@ Route::middleware(['auth'])->group(function () {
     // Cart display and management
     Route::get('/cart', [CustomerShoppingCartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CustomerShoppingCartController::class, 'store'])->name('cart.store');
-    Route::put('/cart/{cartItem}', [CustomerShoppingCartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{cartItem}', [CustomerShoppingCartController::class, 'destroy'])->name('cart.destroy');
+
+Route::put('/cart/{cartItem}', [CustomerShoppingCartController::class, 'update'])
+    ->name('cart.update')
+    ->where('cartItem', '[0-9]+'); // Ensure only numeric IDs
+
+Route::delete('/cart/{cartItem}', [CustomerShoppingCartController::class, 'destroy'])
+    ->name('cart.destroy')
+    ->where('cartItem', '[0-9]+');
+    
     Route::delete('/cart', [CustomerShoppingCartController::class, 'clear'])->name('cart.clear');
     
     // AJAX route for cart count

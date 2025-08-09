@@ -8,6 +8,7 @@ use App\Models\ShoppingCartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomerShoppingCartController extends Controller
 {
@@ -70,117 +71,204 @@ class CustomerShoppingCartController extends Controller
     }
 
     /**
-     * Update cart item
+     * Update cart item with enhanced error handling
      */
-    public function update(Request $request, ShoppingCartItem $cartItem)
+    public function update(Request $request, $cartItemId)
     {
-        if ($cartItem->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $product = $cartItem->product;
-
-        if (!$product->is_available) {
-            return $request->ajax()
-                ? response()->json(['message' => 'Product is no longer available.'], 400)
-                : redirect()->route('cart.index')->with('error', 'This product is no longer available.');
-        }
-
         try {
-            // Check if this cart item is currently being used as budget-based
-            $isCurrentlyBudgetBased = !is_null($cartItem->customer_budget);
-            
-            // Check if this is a conversion to budget-based (from regular price)
-            $isConvertingToBudget = !$isCurrentlyBudgetBased && $request->filled('customer_budget') && $request->customer_budget > 0;
-            
-            if ($isConvertingToBudget) {
-                // Converting from regular price to budget-based
-                $validated = $request->validate([
-                    'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
-                    'customer_notes' => 'nullable|string|max:500',
-                ]);
+            // Use explicit model finding instead of route model binding for better control
+            $cartItem = ShoppingCartItem::where('id', $cartItemId)
+                ->where('user_id', Auth::id())
+                ->with('product')
+                ->first();
 
-                // Update the cart item to be budget-based
-                $cartItem->update([
-                    'customer_budget' => $validated['customer_budget'],
-                    'customer_notes' => $validated['customer_notes'],
-                    'quantity' => 1, // Budget-based items always have quantity 1
-                ]);
-
-                $message = 'Item converted to budget-based pricing successfully!';
-                
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => $message,
-                        'cart_summary' => $this->getCartSummary()
-                    ]);
-                }
-                
-                return redirect()->route('cart.index')->with('success', $message);
-                
-            } elseif ($isCurrentlyBudgetBased) {
-                // Updating existing budget-based item
-                $validated = $request->validate([
-                    'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
-                    'customer_notes' => 'nullable|string|max:500',
-                ]);
-
-                $cartItem->update($validated);
-                
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Budget updated successfully',
-                        'cart_summary' => $this->getCartSummary()
-                    ]);
-                }
-                
-                return redirect()->route('cart.index')->with('success', 'Budget-based item updated successfully!');
-                
-            } else {
-                // Updating regular price item
-                $validated = $request->validate([
-                    'quantity' => 'required|integer|min:1|max:' . $product->quantity_in_stock,
-                ]);
-
-                $cartItem->update($validated);
-                
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Cart updated successfully.',
-                        'cart_summary' => $this->getCartSummary()
-                    ]);
-                }
-                
-                return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+            if (!$cartItem) {
+                $message = 'Cart item not found or unauthorized access.';
+                return $request->ajax()
+                    ? response()->json(['success' => false, 'message' => $message], 404)
+                    : redirect()->route('cart.index')->with('error', $message);
             }
 
+            $product = $cartItem->product;
+
+            if (!$product->is_available) {
+                $message = 'Product is no longer available.';
+                return $request->ajax()
+                    ? response()->json(['success' => false, 'message' => $message], 400)
+                    : redirect()->route('cart.index')->with('error', $message);
+            }
+
+            return DB::transaction(function () use ($request, $cartItem, $product) {
+                // Check if this cart item is currently being used as budget-based
+                $isCurrentlyBudgetBased = !is_null($cartItem->customer_budget);
+                
+                // Check if this is a conversion to budget-based (from regular price)
+                $isConvertingToBudget = !$isCurrentlyBudgetBased && $request->filled('customer_budget') && $request->customer_budget > 0;
+                
+                if ($isConvertingToBudget) {
+                    return $this->handleBudgetConversion($request, $cartItem, $product);
+                } elseif ($isCurrentlyBudgetBased) {
+                    return $this->handleBudgetUpdate($request, $cartItem);
+                } else {
+                    return $this->handleQuantityUpdate($request, $cartItem, $product);
+                }
+            });
+
+        } catch (ModelNotFoundException $e) {
+            $message = 'Cart item not found.';
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => $message], 404)
+                : redirect()->route('cart.index')->with('error', $message);
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->ajax()) {
-                return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Validation failed.', 
+                    'errors' => $e->errors()
+                ], 422);
             }
-
             return redirect()->route('cart.index')->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \Log::error('Cart update error: ' . $e->getMessage(), [
+                'cart_item_id' => $cartItemId,
+                'user_id' => Auth::id(),
+                'request_data' => $request->all()
+            ]);
+            
+            $message = 'An error occurred while updating your cart. Please try again.';
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => $message], 500)
+                : redirect()->route('cart.index')->with('error', $message);
         }
+    }
+
+    /**
+     * Handle budget conversion with proper cleanup
+     */
+    private function handleBudgetConversion(Request $request, ShoppingCartItem $cartItem, Product $product)
+    {
+        $validated = $request->validate([
+            'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
+            'customer_notes' => 'nullable|string|max:500',
+        ]);
+
+        // Check if there's already a budget-based cart item for this product
+        $existingBudgetItem = ShoppingCartItem::where('user_id', Auth::id())
+            ->where('product_id', $product->id)
+            ->whereNotNull('customer_budget')
+            ->where('id', '!=', $cartItem->id)
+            ->first();
+
+        $deletedItemId = null;
+        if ($existingBudgetItem) {
+            $deletedItemId = $existingBudgetItem->id;
+            $existingBudgetItem->delete();
+        }
+
+        // Update the cart item to be budget-based
+        $cartItem->update([
+            'customer_budget' => $validated['customer_budget'],
+            'customer_notes' => $validated['customer_notes'],
+            'customer_notes' => $validated['customer_notes'] ?? null,
+            'quantity' => 1, // Budget-based items always have quantity 1
+        ]);
+
+        $message = 'Item converted to budget-based pricing successfully!';
+        $cartSummary = $this->getCartSummary();
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'cart_summary' => $cartSummary,
+                'converted_item_id' => $cartItem->id,
+                'deleted_item_id' => $deletedItemId
+            ]);
+        }
+        
+        return redirect()->route('cart.index')->with('success', $message);
+    }
+
+    /**
+     * Handle budget-based item updates
+     */
+    private function handleBudgetUpdate(Request $request, ShoppingCartItem $cartItem)
+    {
+        $validated = $request->validate([
+            'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
+            'customer_notes' => 'nullable|string|max:500',
+        ]);
+
+        $cartItem->update($validated);
+        
+        $cartSummary = $this->getCartSummary();
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Budget updated successfully',
+                'cart_summary' => $cartSummary
+            ]);
+        }
+        
+        return redirect()->route('cart.index')->with('success', 'Budget-based item updated successfully!');
+    }
+
+    /**
+     * Handle quantity updates for regular items
+     */
+    private function handleQuantityUpdate(Request $request, ShoppingCartItem $cartItem, Product $product)
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1|max:' . $product->quantity_in_stock,
+        ]);
+
+        $cartItem->update($validated);
+        
+        $cartSummary = $this->getCartSummary();
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart updated successfully.',
+                'cart_summary' => $cartSummary
+            ]);
+        }
+        
+        return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
     }
 
     /**
      * Remove item from cart
      */
-    public function destroy(ShoppingCartItem $cartItem)
+    public function destroy($cartItemId)
     {
-        // Ensure the cart item belongs to the authenticated user
-        if ($cartItem->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+        try {
+            $cartItem = ShoppingCartItem::where('id', $cartItemId)
+                ->where('user_id', Auth::id())
+                ->with('product')
+                ->first();
+
+            if (!$cartItem) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Cart item not found or unauthorized access.');
+            }
+
+            $productName = $cartItem->product->product_name;
+            $cartItem->delete();
+
+            return redirect()->route('cart.index')
+                           ->with('success', "'{$productName}' has been removed from your cart.");
+
+        } catch (\Exception $e) {
+            \Log::error('Cart item deletion error: ' . $e->getMessage(), [
+                'cart_item_id' => $cartItemId,
+                'user_id' => Auth::id()
+            ]);
+
+            return redirect()->route('cart.index')
+                           ->with('error', 'An error occurred while removing the item. Please try again.');
         }
-
-        $productName = $cartItem->product->product_name;
-        $cartItem->delete();
-
-        return redirect()->route('cart.index')
-                       ->with('success', "'{$productName}' has been removed from your cart.");
     }
 
     /**
