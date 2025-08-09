@@ -438,18 +438,11 @@
             });
         });
 
-        // Store previous values for error handling
-        $('input[name="quantity"]').each(function() {
-            $(this).data('previous-value', $(this).val());
-        });
-
-        $('input[name="quantity"]').on('focus', function() {
-            $(this).data('previous-value', $(this).val());
-        });
-
-        // For budget-based product - manual update only
+        // Handle budget conversion form submission
         $('form').on('submit', function(e) {
             const budgetInput = $(this).find('input[name="customer_budget"]');
+            const isBudgetConversion = $(this).closest('[id^="budget-conversion-"]').length > 0;
+            
             if (budgetInput.length > 0) {
                 const value = parseFloat(budgetInput.val());
                 const min = parseFloat(budgetInput.attr('min'));
@@ -462,6 +455,50 @@
                     return false;
                 }
             }
+            
+            // If this is a budget conversion form, handle it specially
+            if (isBudgetConversion) {
+                e.preventDefault();
+                
+                const form = $(this);
+                const formData = new FormData(form[0]);
+                const cartItemId = form.closest('[id^="budget-conversion-"]').attr('id').split('-')[2];
+                
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        showSuccessMessage('Item converted to budget-based pricing successfully!');
+                        // Reload the page to show the updated cart
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessage = Object.values(errors).flat().join('\n');
+                            alert('Validation Error:\n' + errorMessage);
+                        } else {
+                            alert(xhr.responseJSON?.message || 'Failed to convert item to budget-based pricing.');
+                        }
+                    }
+                });
+                
+                return false;
+            }
+        });
+
+        // Store previous values for error handling
+        $('input[name="quantity"]').each(function() {
+            $(this).data('previous-value', $(this).val());
+        });
+
+        $('input[name="quantity"]').on('focus', function() {
+            $(this).data('previous-value', $(this).val());
         });
     });
 

@@ -34,16 +34,28 @@ class ShoppingCartItem extends Model
     // Calculated attributes
     public function getSubtotalAttribute()
     {
-        if ($this->product->is_budget_based) {
-            return $this->customer_budget ?? 0;
+        // If this is a budget-based purchase (customer_budget is set), use that
+        if (!is_null($this->customer_budget)) {
+            return $this->customer_budget;
         }
+        
+        // For regular price purchases (including budget-based products at original price)
         return $this->product->price * $this->quantity;
     }
 
     public function getIsValidAttribute()
     {
-        // Check if product is still available and in stock
-        return $this->product->is_available && 
-               $this->product->quantity_in_stock >= $this->quantity;
+        // Check if product is still available
+        if (!$this->product->is_available) {
+            return false;
+        }
+        
+        // For budget-based purchases, no quantity validation needed
+        if (!is_null($this->customer_budget)) {
+            return true;
+        }
+        
+        // For regular price purchases, check stock quantity
+        return $this->product->quantity_in_stock >= $this->quantity;
     }
 }

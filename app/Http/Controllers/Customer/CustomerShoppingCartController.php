@@ -90,26 +90,48 @@ class CustomerShoppingCartController extends Controller
             // Check if this cart item is currently being used as budget-based
             $isCurrentlyBudgetBased = !is_null($cartItem->customer_budget);
             
-            if ($isCurrentlyBudgetBased) {
+            // Check if this is a conversion to budget-based (from regular price)
+            $isConvertingToBudget = !$isCurrentlyBudgetBased && $request->filled('customer_budget') && $request->customer_budget > 0;
+            
+            if ($isConvertingToBudget) {
+                // Converting from regular price to budget-based
+                $validated = $request->validate([
+                    'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
+                    'customer_notes' => 'nullable|string|max:500',
+                ]);
+
+                // Update the cart item to be budget-based
+                $cartItem->update([
+                    'customer_budget' => $validated['customer_budget'],
+                    'customer_notes' => $validated['customer_notes'],
+                    'quantity' => 1, // Budget-based items always have quantity 1
+                ]);
+
+                $message = 'Item converted to budget-based pricing successfully!';
+            } elseif ($isCurrentlyBudgetBased) {
+                // Updating existing budget-based item
                 $validated = $request->validate([
                     'customer_budget' => 'required|numeric|min:0.01|max:999999.99',
                     'customer_notes' => 'nullable|string|max:500',
                 ]);
 
                 $cartItem->update($validated);
+                $message = 'Budget-based item updated successfully!';
             } else {
+                // Updating regular price item
                 $validated = $request->validate([
                     'quantity' => 'required|integer|min:1|max:' . $product->quantity_in_stock,
                 ]);
 
                 $cartItem->update($validated);
+                $message = 'Cart updated successfully!';
             }
 
             if ($request->ajax()) {
-                return response()->json(['message' => 'Cart updated successfully.']);
+                return response()->json(['message' => $message]);
             }
 
-            return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
+            return redirect()->route('cart.index')->with('success', $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->ajax()) {
