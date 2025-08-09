@@ -223,7 +223,7 @@
                         <div class="aspect-square relative overflow-hidden bg-gray-50">
                             @if($product->image_url)
                                 <img 
-                                    src="{{ $product->image_url }}" 
+                                    src="{{ asset('storage/' . $product->image_url) }}"
                                     alt="{{ $product->product_name }}"
                                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                 >

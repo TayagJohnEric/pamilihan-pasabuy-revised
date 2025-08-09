@@ -108,6 +108,17 @@ class CustomerShoppingCartController extends Controller
                 ]);
 
                 $message = 'Item converted to budget-based pricing successfully!';
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => $message,
+                        'cart_summary' => $this->getCartSummary()
+                    ]);
+                }
+                
+                return redirect()->route('cart.index')->with('success', $message);
+                
             } elseif ($isCurrentlyBudgetBased) {
                 // Updating existing budget-based item
                 $validated = $request->validate([
@@ -116,7 +127,17 @@ class CustomerShoppingCartController extends Controller
                 ]);
 
                 $cartItem->update($validated);
-                $message = 'Budget-based item updated successfully!';
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Budget updated successfully',
+                        'cart_summary' => $this->getCartSummary()
+                    ]);
+                }
+                
+                return redirect()->route('cart.index')->with('success', 'Budget-based item updated successfully!');
+                
             } else {
                 // Updating regular price item
                 $validated = $request->validate([
@@ -124,14 +145,17 @@ class CustomerShoppingCartController extends Controller
                 ]);
 
                 $cartItem->update($validated);
-                $message = 'Cart updated successfully!';
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Cart updated successfully.',
+                        'cart_summary' => $this->getCartSummary()
+                    ]);
+                }
+                
+                return redirect()->route('cart.index')->with('success', 'Cart updated successfully!');
             }
-
-            if ($request->ajax()) {
-                return response()->json(['message' => $message]);
-            }
-
-            return redirect()->route('cart.index')->with('success', $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->ajax()) {

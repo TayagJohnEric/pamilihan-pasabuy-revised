@@ -110,50 +110,10 @@
 
                                     <!-- Edit Form -->
                                     <div class="mt-4 pt-4 border-t border-gray-100">
-                                        <form method="POST" action="{{ route('cart.update', $item) }}" class="space-y-4">
-                                            @csrf
-                                            @method('PUT')
-                                            
-                                            <div class="flex flex-col sm:flex-row gap-4 items-start">
-                                                @if($isBudgetBased)
-                                                    <!-- Budget-based item form -->
-                                                    <div class="flex-grow space-y-3">
-                                                        <div>
-                                                            <label for="budget-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                                                Budget Amount <span class="text-red-500">*</span>
-                                                            </label>
-                                                            <div class="relative">
-                                                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
-                                                                <input type="number" 
-                                                                       id="budget-{{ $item->id }}"
-                                                                       name="customer_budget" 
-                                                                       value="{{ $item->customer_budget }}" 
-                                                                       step="0.01" 
-                                                                       min="0.01"
-                                                                       max="999999.99"
-                                                                       required
-                                                                       class="pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full sm:w-40">
-                                                            </div>
-                                                            @if($item->product->indicative_price_per_unit)
-                                                                <p class="text-xs text-gray-500 mt-1">
-                                                                    Indicative: ~₱{{ number_format($item->product->indicative_price_per_unit, 2) }}/{{ $item->product->unit }}
-                                                                </p>
-                                                            @endif
-                                                        </div>
-                                                        
-                                                        <div>
-                                                            <label for="notes-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">
-                                                                Special Notes (Optional)
-                                                            </label>
-                                                            <textarea id="notes-{{ $item->id }}"
-                                                                      name="customer_notes" 
-                                                                      rows="2"
-                                                                      placeholder="Special requests or preferences..."
-                                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none">{{ $item->customer_notes }}</textarea>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <!-- Standard item form -->
+                                        @if(!$isBudgetBased)
+                                            <!-- Standard item form (no form wrapper needed for AJAX) -->
+                                            <div class="space-y-4">
+                                                <div class="flex flex-col sm:flex-row gap-4 items-start">
                                                     <div>
                                                         <label for="quantity-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">
                                                             Quantity
@@ -183,22 +143,70 @@
                                                             {{ $item->product->is_budget_based ? 'Available' : $item->product->quantity_in_stock . ' available' }}
                                                         </p>
                                                     </div>
-                                                @endif
 
-                                                <!-- Action Buttons -->
-                                                <div class="flex gap-2">
-                                                    <button type="submit"
-                                                            class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors text-sm">
-                                                        Update
-                                                    </button>
-                                                    <button type="button" 
-                                                            onclick="removeItem({{ $item->id }})"
-                                                            class="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors text-sm">
-                                                        Remove
-                                                    </button>
+                                                    <!-- Action Buttons -->
+                                                    <div class="flex gap-2">
+                                                        <button type="button" 
+                                                                onclick="removeItem({{ $item->id }})"
+                                                                class="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors text-sm">
+                                                            Remove
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </form>
+                                        @else
+                                            <!-- Budget-based item form (no form wrapper needed for AJAX) -->
+                                            <div class="space-y-4">
+                                                <div class="flex flex-col sm:flex-row gap-4 items-start">
+                                                    <div class="flex-grow space-y-3">
+                                                        <div>
+                                                            <label for="budget-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                                                Budget Amount <span class="text-red-500">*</span>
+                                                            </label>
+                                                            <div class="relative">
+                                                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
+                                                                <input type="number" 
+                                                                       id="budget-{{ $item->id }}"
+                                                                       name="customer_budget" 
+                                                                       value="{{ $item->customer_budget }}" 
+                                                                       step="0.01" 
+                                                                       min="0.01"
+                                                                       max="999999.99"
+                                                                       required
+                                                                       class="pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full sm:w-40"
+                                                                       data-item-id="{{ $item->id }}">
+                                                            </div>
+                                                            @if($item->product->indicative_price_per_unit)
+                                                                <p class="text-xs text-gray-500 mt-1">
+                                                                    Indicative: ~₱{{ number_format($item->product->indicative_price_per_unit, 2) }}/{{ $item->product->unit }}
+                                                                </p>
+                                                            @endif
+                                                        </div>
+                                                        
+                                                        <div>
+                                                            <label for="notes-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                                                Special Notes (Optional)
+                                                            </label>
+                                                            <textarea id="notes-{{ $item->id }}"
+                                                                      name="customer_notes" 
+                                                                      rows="2"
+                                                                      placeholder="Special requests or preferences..."
+                                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                                                                      data-item-id="{{ $item->id }}">{{ $item->customer_notes }}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Action Buttons -->
+                                                    <div class="flex gap-2">
+                                                        <button type="button" 
+                                                                onclick="removeItem({{ $item->id }})"
+                                                                class="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors text-sm">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         <!-- Hidden Remove Form -->
                                         <form id="remove-form-{{ $item->id }}" method="POST" action="{{ route('cart.destroy', $item) }}" class="hidden">
@@ -292,9 +300,6 @@
                             <div class="text-2xl font-bold text-gray-800">
                                 Total: <span class="text-green-600">₱{{ number_format($subtotal, 2) }}</span>
                             </div>
-                            <p class="text-gray-600 text-sm mt-1">
-                                {{ $itemCount }} item(s) • {{ $totalQuantity }} total pieces
-                            </p>
                             @if($cartItems->where('customer_budget', '!=', null)->count() > 0)
                                 <p class="text-blue-600 text-xs mt-1">
                                     * Budget-based items subject to vendor confirmation
@@ -392,11 +397,8 @@
     function updateCartItemTotal(itemId) {
         const quantityInput = document.getElementById('quantity-' + itemId);
         if (quantityInput) {
-            // Auto-submit the form after a short delay
-            clearTimeout(window.updateTimeout);
-            window.updateTimeout = setTimeout(function() {
-                quantityInput.closest('form').submit();
-            }, 1000);
+            // Trigger the change event to update via AJAX
+            quantityInput.dispatchEvent(new Event('change'));
         }
     }
 
@@ -407,9 +409,6 @@
             let quantity = input.val();
             let cartItemId = input.data('item-id') || input.attr('id').split('-')[1];
 
-            // Clear any pending timeout
-            clearTimeout(window.updateTimeout);
-
             $.ajax({
                 url: `/cart/${cartItemId}`,
                 method: 'POST',
@@ -419,10 +418,10 @@
                     quantity: quantity
                 },
                 success: function (response) {
-                    // Show success message without full page reload
-                    showSuccessMessage('Cart updated successfully');
-                    // Update the total display
-                    location.reload();
+                    // Update cart summary silently without success message
+                    if (response.cart_summary) {
+                        updateCartSummary(response.cart_summary);
+                    }
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {
@@ -436,6 +435,59 @@
                     input.val(input.data('previous-value') || 1);
                 }
             });
+        });
+
+        // For budget-based products - auto-update on budget or notes change
+        $('input[name="customer_budget"], textarea[name="customer_notes"]').on('change', function (e) {
+            let input = $(this);
+            let cartItemId = input.data('item-id');
+            let budgetInput = $(`input[name="customer_budget"][data-item-id="${cartItemId}"]`);
+            let notesInput = $(`textarea[name="customer_notes"][data-item-id="${cartItemId}"]`);
+            
+            // Clear any pending timeout
+            clearTimeout(window.budgetUpdateTimeout);
+            
+            // Validate budget input
+            if (budgetInput.length > 0) {
+                const value = parseFloat(budgetInput.val());
+                const min = parseFloat(budgetInput.attr('min'));
+                const max = parseFloat(budgetInput.attr('max'));
+                
+                if (isNaN(value) || value < min || value > max) {
+                    alert('Please enter a valid budget amount between ₱' + min.toLocaleString() + ' and ₱' + max.toLocaleString());
+                    budgetInput.focus();
+                    return;
+                }
+            }
+            
+            // Auto-update after a short delay
+            window.budgetUpdateTimeout = setTimeout(function() {
+                $.ajax({
+                    url: `/cart/${cartItemId}`,
+                    method: 'POST',
+                    data: {
+                        _method: 'PUT',
+                        _token: '{{ csrf_token() }}',
+                        customer_budget: budgetInput.val(),
+                        customer_notes: notesInput.val()
+                    },
+                    success: function (response) {
+                        if (response.success && response.cart_summary) {
+                            // Update cart summary silently without success message
+                            updateCartSummary(response.cart_summary);
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessage = Object.values(errors).flat().join('\n');
+                            alert('Validation Error:\n' + errorMessage);
+                        } else {
+                            alert(xhr.responseJSON?.message || 'Failed to update budget.');
+                        }
+                    }
+                });
+            }, 1000);
         });
 
         // Handle budget conversion form submission
@@ -471,11 +523,16 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                        showSuccessMessage('Item converted to budget-based pricing successfully!');
-                        // Reload the page to show the updated cart
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
+                        if (response.success && response.cart_summary) {
+                            // Update cart summary silently without success message
+                            updateCartSummary(response.cart_summary);
+                            // Hide the conversion form
+                            hideBudgetConversion(cartItemId);
+                            // Reload the page to show the updated cart structure
+                            setTimeout(function() {
+                                location.reload();
+                            }, 500);
+                        }
                     },
                     error: function (xhr) {
                         if (xhr.status === 422) {
@@ -501,6 +558,12 @@
             $(this).data('previous-value', $(this).val());
         });
     });
+
+    // Function to update cart summary without page reload
+    function updateCartSummary(cartSummary) {
+        // Update the cart total
+        $('.text-2xl.font-bold.text-gray-800 .text-green-600').text('₱' + parseFloat(cartSummary.subtotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    }
 
     function showSuccessMessage(message) {
         // Create a temporary success message
