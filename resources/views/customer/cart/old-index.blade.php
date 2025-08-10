@@ -67,11 +67,6 @@
                                             <p class="text-gray-600 text-sm mt-1">
                                                 by {{ $item->product->vendor->vendor_name }}
                                             </p>
-                                            @if($item->product->description)
-                                                <p class="text-gray-600 text-sm mt-1">
-                                                    {{ Str::limit($item->product->description, 100) }}
-                                                </p>
-                                            @endif
                                             
                                             <div class="mt-2">
                                                 @if($isBudgetBased)
@@ -583,6 +578,7 @@ function showSuccessMessage(message) {
     // Remove any existing messages
     $('.temp-alert').remove();
     
+    //Toast Success
     const alertDiv = $(`
         <div class="temp-alert bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 fixed top-4 right-4 z-50 shadow-lg">
             <div class="flex items-center">
@@ -608,6 +604,7 @@ function showErrorMessage(message) {
     // Remove any existing messages
     $('.temp-alert').remove();
     
+    //Toast Error
     const alertDiv = $(`
         <div class="temp-alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 fixed top-4 right-4 z-50 shadow-lg">
             <div class="flex items-center">
