@@ -2,11 +2,14 @@
 @section('title', $product->product_name . ' - ' . $product->vendor->vendor_name)
 @section('content')
 <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
     <!-- Breadcrumb -->
     <nav class="flex mb-6 text-sm">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-green-600">Home</a>
+                <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-emerald-600 transition-colors">Home</a>
             </li>
             @if($product->category)
             <li>
@@ -14,7 +17,7 @@
                     <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                     </svg>
-                    <a href="{{ route('products.category', $product->category->id) }}" class="text-gray-600 hover:text-green-600">
+                    <a href="{{ route('products.category', $product->category->id) }}" class="text-gray-600 hover:text-emerald-600 transition-colors">
                         {{ $product->category->category_name }}
                     </a>
                 </div>
@@ -31,11 +34,11 @@
         </ol>
     </nav>
 
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
         <div class="lg:flex">
             <!-- Product Image -->
             <div class="lg:w-1/2">
-                <div class="aspect-square relative bg-gray-100">
+                <div class="aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100">
                     @if($product->image_url)
                         <img 
                              src="{{ asset('storage/' . $product->image_url) }}"
@@ -51,7 +54,7 @@
                     @endif
                     
                     @if($product->is_budget_based)
-                        <span class="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        <span class="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                             Budget Option Available
                         </span>
                     @endif
@@ -62,17 +65,17 @@
             <div class="lg:w-1/2 p-6 lg:p-8">
                 <div class="mb-4">
                     @if($product->category)
-                        <span class="inline-block bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+                        <span class="inline-block bg-emerald-50 text-emerald-700 text-sm px-3 py-1 rounded-full font-medium">
                             {{ $product->category->category_name }}
                         </span>
                     @endif
                 </div>
 
-                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">{{ $product->product_name }}</h1>
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">{{ $product->product_name }}</h1>
                 
                 <div class="mb-6">
-                    <div class="flex items-center mb-2">
-                        <span class="text-3xl font-bold text-green-600">₱{{ number_format($product->price, 2) }}</span>
+                    <div class="flex items-baseline mb-2">
+                        <span class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">₱{{ number_format($product->price, 2) }}</span>
                         <span class="text-lg text-gray-500 ml-2">per {{ $product->unit }}</span>
                     </div>
                     
@@ -88,7 +91,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600">Sold by</p>
-                            <a href="{{ route('products.vendor', $product->vendor->id) }}" class="text-lg font-semibold text-green-600 hover:underline">
+                            <a href="{{ route('products.vendor', $product->vendor->id) }}" class="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:from-emerald-700 hover:to-teal-700 transition-all">
                                 {{ $product->vendor->vendor_name }}
                             </a>
                             @if($product->vendor->average_rating)
@@ -105,7 +108,7 @@
                             @endif
                         </div>
                         @if($product->vendor->shop_logo_url)
-                            <img src="{{ $product->vendor->shop_logo_url }}" alt="{{ $product->vendor->vendor_name }}" class="w-16 h-16 rounded-full object-cover">
+                            <img src="{{ $product->vendor->shop_logo_url }}" alt="{{ $product->vendor->vendor_name }}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-100 shadow-sm">
                         @endif
                     </div>
                 </div>
@@ -115,17 +118,22 @@
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-gray-700">Availability:</span>
                         @if($product->is_budget_based)
-                            <span class="text-sm {{ $product->is_available ? 'text-green-600' : 'text-red-600' }} font-medium">
+                            <span class="text-sm {{ $product->is_available ? 'text-emerald-600' : 'text-red-600' }} font-medium">
                                 {{ $product->is_available ? 'Available' : 'Currently Unavailable' }}
                             </span>
                         @else
-                            <span class="text-sm {{ $product->quantity_in_stock <= 5 ? 'text-red-600' : 'text-green-600' }} font-medium">
+                            <span class="text-sm {{ $product->quantity_in_stock <= 5 ? 'text-red-600' : 'text-emerald-600' }} font-medium">
                                 {{ $product->quantity_in_stock }} {{ $product->unit }} available
                             </span>
                         @endif
                     </div>
                     @if(!$product->is_budget_based && $product->quantity_in_stock <= 5 && $product->quantity_in_stock > 0)
-                        <p class="text-sm text-red-600">⚠️ Low stock - order soon!</p>
+                        <div class="flex items-center text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Low stock - order soon!
+                        </div>
                     @endif
                 </div>
 
@@ -146,7 +154,7 @@
                     @if($isInStock)
                         <!-- Regular Purchase Form (Default) -->
                         <div class="regular-form-{{ $product->id }}">
-                            <form method="POST" action="{{ route('cart.store') }}" class="space-y-4">
+                            <form id="regular-cart-form-{{ $product->id }}" class="space-y-4" data-product-id="{{ $product->id }}">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
@@ -155,10 +163,10 @@
                                     <label for="quantity-{{ $product->id }}" class="text-sm font-medium text-gray-700">
                                         Quantity:
                                     </label>
-                                    <div class="flex items-center border border-gray-300 rounded-lg">
+                                    <div class="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-transparent">
                                         <button type="button" 
                                                 onclick="decreaseQuantity({{ $product->id }})" 
-                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-l-lg">
+                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-l-lg transition-colors">
                                             -
                                         </button>
                                         <input type="number" 
@@ -171,7 +179,7 @@
                                                class="w-16 px-2 py-2 text-center border-0 focus:ring-0 focus:outline-none">
                                         <button type="button" 
                                                 onclick="increaseQuantity({{ $product->id }})" 
-                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-r-lg">
+                                                class="px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-r-lg transition-colors">
                                             +
                                         </button>
                                     </div>
@@ -181,24 +189,27 @@
                                 </div>
 
                                 <!-- Price Display -->
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Unit Price:</span>
-                                    <span class="font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</span>
-                                </div>
-                                
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Total:</span>
-                                    <span id="total-price-{{ $product->id }}" class="font-bold text-green-600">
-                                        ₱{{ number_format($product->price, 2) }}
-                                    </span>
+                                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-600">Unit Price:</span>
+                                        <span class="font-semibold text-gray-800">₱{{ number_format($product->price, 2) }}</span>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center text-lg border-t pt-2">
+                                        <span class="text-gray-800 font-medium">Total:</span>
+                                        <span id="total-price-{{ $product->id }}" class="font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                            ₱{{ number_format($product->price, 2) }}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <button type="submit" 
-                                        class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 focus:ring-4 focus:ring-green-200">
-                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        id="regular-cart-btn-{{ $product->id }}"
+                                        class="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 transition-all duration-200 focus:ring-4 focus:ring-emerald-200 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0H9m4 0h2"></path>
                                     </svg>
-                                    Add to Cart
+                                    <span class="btn-text">Add to Cart</span>
                                 </button>
                             </form>
                         </div>
@@ -209,7 +220,7 @@
                                 <div class="budget-toggle-{{ $product->id }}">
                                     <button type="button" 
                                             onclick="toggleBudgetForm({{ $product->id }})"
-                                            class="w-full px-6 py-3 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 transition-colors">
+                                            class="w-full px-6 py-3 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 rounded-lg font-semibold hover:from-blue-100 hover:to-blue-200 transition-all border border-blue-200">
                                         <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                         </svg>
@@ -222,7 +233,7 @@
 
                                 <!-- Budget-Based Form (Hidden by default) -->
                                 <div class="budget-form-{{ $product->id }} hidden">
-                                    <form method="POST" action="{{ route('cart.store') }}" class="space-y-4 mt-4">
+                                    <form id="budget-cart-form-{{ $product->id }}" class="space-y-4 mt-4" data-product-id="{{ $product->id }}">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
 
@@ -241,7 +252,7 @@
                                                            min="0.01"
                                                            max="999999.99"
                                                            required
-                                                           class="pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent w-full"
+                                                           class="pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
                                                            placeholder="0.00">
                                                 </div>
                                                 @if($product->indicative_price_per_unit)
@@ -259,7 +270,7 @@
                                                           name="customer_notes" 
                                                           rows="3"
                                                           placeholder="Special requests or preferences..."
-                                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none">{{ old('customer_notes') }}</textarea>
+                                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none">{{ old('customer_notes') }}</textarea>
                                             </div>
                                         </div>
 
@@ -270,11 +281,12 @@
                                                 Back to Standard
                                             </button>
                                             <button type="submit" 
-                                                    class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 focus:ring-4 focus:ring-blue-200">
-                                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    id="budget-cart-btn-{{ $product->id }}"
+                                                    class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 focus:ring-4 focus:ring-blue-200 flex items-center justify-center">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                                                 </svg>
-                                                Add with Budget
+                                                <span class="btn-text">Add with Budget</span>
                                             </button>
                                         </div>
                                     </form>
@@ -322,7 +334,7 @@
                         @endif
                         @if($product->vendor->accepts_cod)
                             <div class="col-span-2">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                                     ✓ Cash on Delivery Available
                                 </span>
                             </div>
@@ -335,7 +347,7 @@
 
     <!-- Vendor Ratings Section -->
     @if($product->vendor && $product->vendor->ratingsReceived && $product->vendor->ratingsReceived->count() > 0)
-        <div class="bg-white rounded-lg shadow-lg mt-8 p-6">
+        <div class="bg-white rounded-xl shadow-lg mt-8 p-6 border border-gray-100">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Customer Reviews for {{ $product->vendor->vendor_name }}</h3>
             <div class="space-y-4">
                 @foreach($product->vendor->ratingsReceived as $rating)
@@ -364,12 +376,12 @@
 
     <!-- Related Products from Same Vendor -->
     @if($relatedProducts->count() > 0)
-        <div class="bg-white rounded-lg shadow-lg mt-8 p-6">
+        <div class="bg-white rounded-xl shadow-lg mt-8 p-6 border border-gray-100">
             <h3 class="text-xl font-bold text-gray-900 mb-6">More from {{ $product->vendor->vendor_name }}</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($relatedProducts as $relatedProduct)
-                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                        <div class="aspect-square relative bg-gray-100">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 hover:border-emerald-300">
+                        <div class="aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100">
                             @if($relatedProduct->image_url)
                                 <img src="{{ asset('storage/' . $relatedProduct->image_url) }}" alt="{{ $relatedProduct->product_name }}" class="w-full h-full object-cover">
                             @else
@@ -382,11 +394,11 @@
                         </div>
                         <div class="p-3">
                             <h4 class="font-medium text-gray-900 mb-1 line-clamp-2">
-                                <a href="{{ route('products.show', $relatedProduct->id) }}" class="hover:text-green-600">
+                                <a href="{{ route('products.show', $relatedProduct->id) }}" class="hover:text-emerald-600 transition-colors">
                                     {{ $relatedProduct->product_name }}
                                 </a>
                             </h4>
-                            <p class="text-green-600 font-semibold">₱{{ number_format($relatedProduct->price, 2) }}</p>
+                            <p class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent font-semibold">₱{{ number_format($relatedProduct->price, 2) }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -396,12 +408,12 @@
 
     <!-- Similar Products -->
     @if($similarProducts->count() > 0)
-        <div class="bg-white rounded-lg shadow-lg mt-8 p-6">
+        <div class="bg-white rounded-xl shadow-lg mt-8 p-6 border border-gray-100">
             <h3 class="text-xl font-bold text-gray-900 mb-6">Similar Products</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($similarProducts as $similarProduct)
-                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                        <div class="aspect-square relative bg-gray-100">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 hover:border-emerald-300">
+                        <div class="aspect-square relative bg-gradient-to-br from-gray-50 to-gray-100">
                             @if($similarProduct->image_url)
                                 <img src="{{ asset('storage/' . $similarProduct->image_url) }}" alt="{{ $similarProduct->product_name }}" class="w-full h-full object-cover">
                             @else
@@ -414,16 +426,16 @@
                         </div>
                         <div class="p-3">
                             <h4 class="font-medium text-gray-900 mb-1 line-clamp-2">
-                                <a href="{{ route('products.show', $similarProduct->id) }}" class="hover:text-green-600">
+                                <a href="{{ route('products.show', $similarProduct->id) }}" class="hover:text-emerald-600 transition-colors">
                                     {{ $similarProduct->product_name }}
                                 </a>
                             </h4>
                             <p class="text-sm text-gray-600 mb-1">
-                                by <a href="{{ route('products.vendor', $similarProduct->vendor->id) }}" class="text-green-600 hover:underline">
+                                by <a href="{{ route('products.vendor', $similarProduct->vendor->id) }}" class="text-emerald-600 hover:underline">
                                     {{ $similarProduct->vendor->vendor_name }}
                                 </a>
                             </p>
-                            <p class="text-green-600 font-semibold">₱{{ number_format($similarProduct->price, 2) }}</p>
+                            <p class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent font-semibold">₱{{ number_format($similarProduct->price, 2) }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -432,7 +444,132 @@
     @endif
 </div>
 
+<!-- jQuery CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <script>
+    // Toast notification function
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toast-container');
+        const toastId = 'toast-' + Date.now();
+        
+        const toastHtml = `
+            <div id="${toastId}" class="max-w-md mx-auto rounded-md border ${type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'} p-4 flex items-center justify-between shadow-lg transform transition-all duration-300 translate-x-full opacity-0">
+                <div class="flex items-center space-x-2 ${type === 'success' ? 'text-green-700' : 'text-red-700'} text-sm font-semibold leading-tight">
+                    <i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button onclick="removeToast('${toastId}')" aria-label="Close" class="${type === 'success' ? 'text-green-400 hover:text-green-600' : 'text-red-400 hover:text-red-600'} focus:outline-none transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        
+        // Animate in
+        setTimeout(() => {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+                toast.classList.add('translate-x-0', 'opacity-100');
+            }
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => removeToast(toastId), 5000);
+    }
+
+    function removeToast(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }
+
+    // AJAX form submission
+    function submitCartForm(form, isRegular = true) {
+        const productId = form.dataset.productId;
+        const button = form.querySelector('button[type="submit"]');
+        const buttonText = button.querySelector('.btn-text');
+        const originalText = buttonText.textContent;
+        
+        // Show loading state
+        button.disabled = true;
+        button.classList.add('opacity-75', 'cursor-not-allowed');
+        buttonText.textContent = 'Adding...';
+        
+        // Add spinner
+        const spinner = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>`;
+        
+        buttonText.innerHTML = spinner + 'Adding...';
+        
+        // Prepare form data
+        const formData = new FormData(form);
+        
+        // Submit via AJAX
+        $.ajax({
+            url: '{{ route("cart.store") }}',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast(response.message, 'success');
+                    
+                    // Update cart count if element exists
+                    if (response.cart_count !== undefined) {
+                        $('.cart-count').text(response.cart_count);
+                    }
+                    
+                    // Reset form if it's regular form
+                    if (isRegular) {
+                        const quantityInput = form.querySelector('input[name="quantity"]');
+                        if (quantityInput) {
+                            quantityInput.value = 1;
+                            updateTotalPrice(productId);
+                        }
+                    } else {
+                        // Reset budget form
+                        form.reset();
+                    }
+                } else {
+                    showToast(response.message || 'An error occurred. Please try again.', 'error');
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'An error occurred. Please try again.';
+                
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON.errors) {
+                        const errors = Object.values(xhr.responseJSON.errors).flat();
+                        errorMessage = errors[0] || errorMessage;
+                    }
+                }
+                
+                showToast(errorMessage, 'error');
+            },
+            complete: function() {
+                // Reset button state
+                button.disabled = false;
+                button.classList.remove('opacity-75', 'cursor-not-allowed');
+                buttonText.innerHTML = originalText;
+            }
+        });
+    }
+
+    // Toggle budget form function
     function toggleBudgetForm(productId) {
         const regularForm = document.querySelector('.regular-form-' + productId);
         const budgetForm = document.querySelector('.budget-form-' + productId);
@@ -504,7 +641,19 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    $(document).ready(function() {
+        // Handle regular form submission
+        $('form[id^="regular-cart-form-"]').on('submit', function(e) {
+            e.preventDefault();
+            submitCartForm(this, true);
+        });
+        
+        // Handle budget form submission
+        $('form[id^="budget-cart-form-"]').on('submit', function(e) {
+            e.preventDefault();
+            submitCartForm(this, false);
+        });
+
         // Handle quantity inputs for standard products
         const quantityInputs = document.querySelectorAll('input[name="quantity"]');
         quantityInputs.forEach(function(input) {
@@ -526,24 +675,21 @@
             });
         });
 
-        // Handle form submission validation
-        const forms = document.querySelectorAll('form[action*="cart"]');
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                const budgetInput = form.querySelector('input[name="customer_budget"]');
-                if (budgetInput) {
-                    const value = parseFloat(budgetInput.value);
-                    const min = parseFloat(budgetInput.getAttribute('min'));
-                    const max = parseFloat(budgetInput.getAttribute('max'));
-                    
-                    if (isNaN(value) || value < min || value > max) {
-                        e.preventDefault();
-                        alert('Please enter a valid budget amount between ₱' + min.toLocaleString() + ' and ₱' + max.toLocaleString());
-                        budgetInput.focus();
-                        return false;
-                    }
+        // Handle form submission validation for budget forms
+        $('form[id^="budget-cart-form-"]').on('submit', function(e) {
+            const budgetInput = this.querySelector('input[name="customer_budget"]');
+            if (budgetInput) {
+                const value = parseFloat(budgetInput.value);
+                const min = parseFloat(budgetInput.getAttribute('min'));
+                const max = parseFloat(budgetInput.getAttribute('max'));
+                
+                if (isNaN(value) || value < min || value > max) {
+                    e.preventDefault();
+                    showToast('Please enter a valid budget amount between ₱' + min.toLocaleString() + ' and ₱' + max.toLocaleString(), 'error');
+                    budgetInput.focus();
+                    return false;
                 }
-            });
+            }
         });
     });
 </script>
