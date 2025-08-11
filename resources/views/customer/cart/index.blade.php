@@ -1,5 +1,4 @@
 @extends('layout.customer')
-<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('title', 'Shopping Cart')
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
@@ -20,7 +19,7 @@ class CustomerShoppingCartController extends Controller
         // Validate cart items before displaying
         $invalidItems = $this->validateCartItems();
         
-        if (!empty($invalidItems)) {
+        if (!empty($invalidItems)) {    
             // Remove invalid items and notify user
             foreach ($invalidItems as $item) {
                 $item->delete();
@@ -39,36 +38,84 @@ class CustomerShoppingCartController extends Controller
         ]);
     }
 
-    /**
-     * Add item to cart
-     */
-    public function store(Request $request)
-    {
-        // Validate the request using the same logic as AddToCartRequest
-        $this->validateAddToCartRequest($request);
+   /**
+ * Add item to cart - Enhanced with AJAX support
+ */
+public function store(Request $request)
+{
+    // Validate the request using the same logic as AddToCartRequest
+    $this->validateAddToCartRequest($request);
 
-        try {
-            // Determine if this is a budget-based purchase
-            $isBudgetPurchase = $request->filled('customer_budget') && $request->customer_budget > 0;
+    try {
+        // Determine if this is a budget-based purchase
+        $isBudgetPurchase = $request->filled('customer_budget') && $request->customer_budget > 0;
+        
+        $cartItem = $this->addToCart(
+            $request->product_id,
+            $request->quantity ?? 1,
+            $isBudgetPurchase ? $request->customer_budget : null,
+            $isBudgetPurchase ? $request->customer_notes : null,
+            $isBudgetPurchase
+        );
+
+        // Get product name for success message
+        $product = Product::find($request->product_id);
+        $message = "'{$product->product_name}' has been added to your cart!";
+
+        // Handle AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
+            $cartSummary = $this->getCartSummary();
             
-            $this->addToCart(
-                $request->product_id,
-                $request->quantity ?? 1,
-                $isBudgetPurchase ? $request->customer_budget : null,
-                $isBudgetPurchase ? $request->customer_notes : null,
-                $isBudgetPurchase
-            );
-
-            // Get product name for success message
-            $product = Product::find($request->product_id);
-            $message = "'{$product->product_name}' has been added to your cart!";
-
-            return redirect()->back()->with('success', $message);
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'cart_count' => $cartSummary['item_count'],
+                'cart_subtotal' => $cartSummary['subtotal'],
+                'cart_total_quantity' => $cartSummary['total_quantity'],
+                'cart_item' => [
+                    'id' => $cartItem->id,
+                    'product_id' => $cartItem->product_id,
+                    'quantity' => $cartItem->quantity,
+                    'customer_budget' => $cartItem->customer_budget,
+                    'subtotal' => $cartItem->subtotal,
+                    'is_budget_based' => !is_null($cartItem->customer_budget)
+                ]
+            ]);
         }
+
+        // Handle regular form submissions (fallback)
+        return redirect()->back()->with('success', $message);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        }
+        
+        return redirect()->back()->withErrors($e->errors())->withInput();
+        
+    } catch (\Exception $e) {
+        \Log::error('Cart store error: ' . $e->getMessage(), [
+            'product_id' => $request->product_id,
+            'user_id' => Auth::id(),
+            'request_data' => $request->all()
+        ]);
+
+        $errorMessage = $e->getMessage() ?: 'An error occurred while adding the item to your cart. Please try again.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage
+            ], 500);
+        }
+        
+        return redirect()->back()->with('error', $errorMessage);
     }
+}
 
     /**
      * Update cart item with enhanced error handling
