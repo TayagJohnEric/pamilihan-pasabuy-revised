@@ -1,9 +1,48 @@
 @extends('layout.customer')
 @section('title', $category->category_name . ' - Browse Products')
 @section('content')
+
+<style>
+
+/* Custom animations */
+    @keyframes slideIn {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+.animate-slide-in {
+        animation: slideIn 0.6s ease-out forwards;
+    }
+
+    /* Search input with icon styles */
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper input {
+        padding-right: 3.5rem;
+    }
+
+    .search-input-wrapper .search-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        pointer-events: none;
+    }
+
+</style>
+
 <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Breadcrumb -->
-    <nav class="flex mb-6 text-sm">
+    <nav class="flex mb-6 text-sm animate-slide-in ">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-green-600">Home</a>
@@ -20,160 +59,87 @@
     </nav>
 
     <!-- Category Header -->
-    <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg shadow-lg mb-8 p-6 sm:p-8 text-white">
+    <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-lg shadow-lg mb-8 p-6 sm:p-8 text-white animate-slide-in">
         <div class="max-w-3xl">
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">{{ $category->category_name }}</h1>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 leading-tight">{{ $category->category_name }}</h1>
             @if($category->description)
-                <p class="text-lg sm:text-xl mb-6 text-green-100">{{ $category->description }}</p>
+                <p class="text-md sm:text-lg mb-5 text-emerald-100 max-w-2xl">{{ $category->description }}</p>
             @endif
             
-            <!-- Search Bar -->
-            <form method="GET" class="flex flex-col sm:flex-row gap-2 max-w-2xl">
-                <div class="flex-1">
-                    <input 
-                        type="text" 
-                        name="search" 
-                        value="{{ request('search') }}"
-                        placeholder="Search in {{ $category->category_name }}..." 
-                        class="w-full px-4 py-3 rounded-lg text-gray-900 border-0 focus:ring-2 focus:ring-green-300"
-                    >
+           <!-- Search Bar -->
+            <form method="GET" action="{{ route('products.search') }}" class="max-w-3xl">
+                <div class="search-input-wrapper">
+                    <label for="product-search" class="sr-only">Search products</label>
+                    <input id="product-search" type="text" name="q" value="{{ request('search') }}" placeholder="Search products, vendors, or categories..." class="w-full px-5 py-4 rounded-xl text-gray-900 border-0 focus:ring-4 focus:ring-emerald-300/50 shadow-lg placeholder-gray-500 text-lg" aria-label="Search products, vendors, or categories">
+                    <button type="submit" class="search-icon" aria-label="Search products">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
                 </div>
-                <button 
-                    type="submit" 
-                    class="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-                >
-                    Search
-                </button>
             </form>
         </div>
     </div>
 
-    <!-- Filter and Sort Section -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
-        <form method="GET" class="space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
-            <div class="flex flex-col sm:flex-row gap-4">
-                <!-- Price Range -->
-                <div class="flex gap-2">
-                    <input 
-                        type="number" 
-                        name="min_price" 
-                        value="{{ request('min_price') }}"
-                        placeholder="Min Price" 
-                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                    <input 
-                        type="number" 
-                        name="max_price" 
-                        value="{{ request('max_price') }}"
-                        placeholder="Max Price" 
-                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
+    <!-- Category Navigation -->
+        @if($categories->count() > 0)
+            <div class="animate-slide-in mb-7">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Browse by Category:</h3>
+                <div class="relative">
+                    <div id="category-carousel" class="category-carousel flex gap-3 overflow-x-auto pb-2">
+                        @foreach($categories->take(12) as $cat)
+                            <a href="{{ route('products.category', $cat->id) }}"
+                            class="flex-none px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium whitespace-nowrap rounded-full transition-all duration-200
+                            {{ $cat->id == $category->id 
+                                ? 'bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 hover:text-white' 
+                                : 'bg-white text-gray-600 hover:bg-emerald-100 hover:text-emerald-700' }}">
+                                {{ $cat->category_name }}
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
             </div>
+        @endif
 
-            <div class="flex gap-2">
-                <!-- Sort Options -->
-                <select name="sort" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                    <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
-                    <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                    <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                </select>
 
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                    Apply
-                </button>
+    <!-- Products Grid -Mobile Optimized -->
+   <div class="animate-slide-in">
+        <div class="sm:max-w-[90rem] sm:mx-auto">
+            <div class="p-1">
+                <h2 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                   Products in {{ $category->category_name }}
+                </h2>
             </div>
-            
-            <!-- Preserve search term -->
-            @if(request('search'))
-                <input type="hidden" name="search" value="{{ request('search') }}">
-            @endif
-        </form>
-    </div>
 
-    <!-- Category Navigation -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
-        <div class="flex flex-wrap gap-2">
-            <a href="{{ route('products.index') }}" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                All Categories
-            </a>
-            @foreach($categories as $cat)
-                <a 
-                    href="{{ route('products.category', $cat->id) }}" 
-                    class="px-4 py-2 rounded-lg transition-colors text-sm {{ $cat->id == $category->id ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}"
-                >
-                    {{ $cat->category_name }}
-                </a>
-            @endforeach
-        </div>
-    </div>
+            @if($products->count() > 0)
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-10">
+                    @foreach($products as $product)
+                        <a href="{{ route('products.show', $product->id) }}" class="product-card bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:border-emerald-300">
+                            <div class="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                                @if($product->image_url)
+                                    <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->product_name }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                        <svg class="w-12 h-12 sm:w-16 sm:h-16" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                @endif
 
-    <!-- Products Grid -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">
-                Products in {{ $category->category_name }}
-            </h2>
-            <p class="text-gray-600">{{ $products->total() }} products found</p>
-        </div>
+                                @if($product->is_budget_based)
+                                    <span class="absolute top-2 left-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg">Budget</span>
+                                @endif
+                            </div>
 
-        @if($products->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                @foreach($products as $product)
-                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                        <div class="aspect-square relative overflow-hidden bg-gray-50">
-                            @if($product->image_url)
-                                <img 
-                                     src="{{ asset('storage/' . $product->image_url) }}"
-                                    alt="{{ $product->product_name }}"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                >
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                                    </svg>
+                            <div class="p-3 sm:p-4">
+                                <div class="mb-2">
+                                    @if($product->category)
+                                        <span class="inline-block bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-1 rounded-full">{{ $product->category->category_name }}</span>
+                                    @endif
                                 </div>
-                            @endif
-                            
-                            @if($product->is_budget_based)
-                                <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Budget Based
-                                </span>
-                            @endif
-
-                            @if($product->quantity_in_stock <= 5 && $product->quantity_in_stock > 0)
-                                <span class="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Low Stock
-                                </span>
-                            @elseif($product->quantity_in_stock == 0)
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Out of Stock
-                                </span>
-                            @endif
-
-                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300"></div>
-                        </div>
-                        
-                        <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">
-                                <a href="{{ route('products.show', $product->id) }}" class="hover:text-green-600 transition-colors">
-                                    {{ $product->product_name }}
-                                </a>
-                            </h3>
-                            
-                            @if($product->description)
-                                <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ $product->description }}</p>
-                            @endif
-                            
-                            <p class="text-sm text-gray-600 mb-3">
-                                by <a href="{{ route('products.vendor', $product->vendor->id) }}" class="text-green-600 hover:underline font-medium">
-                                    {{ $product->vendor->vendor_name }}
-                                </a>
-                            </p>
-                            
-                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2 text-sm sm:text-base">{{ $product->product_name }}</h3>
+                                <p class="text-xs sm:text-sm text-gray-600 mb-3">by <span class="text-emerald-600 font-medium">{{ $product->vendor->vendor_name }}</span></p>
+                                <div class="flex items-center justify-between mb-3">
                                 <div>
                                     <span class="text-lg font-bold text-green-600">₱{{ number_format($product->price, 2) }}</span>
                                     <span class="text-sm text-gray-500">/ {{ $product->unit }}</span>
@@ -192,62 +158,57 @@
                                     </div>
                                 @endif
                             </div>
-                            
-                            <div class="text-sm mb-3">
-                                @if($product->quantity_in_stock > 10)
-                                    <span class="text-green-600">In Stock ({{ $product->quantity_in_stock }} {{ $product->unit }})</span>
-                                @elseif($product->quantity_in_stock > 0)
-                                    <span class="text-orange-600">Low Stock ({{ $product->quantity_in_stock }} {{ $product->unit }})</span>
-                                @else
-                                    <span class="text-red-600">Out of Stock</span>
-                                @endif
                             </div>
-                            
-                            <a 
-                                href="{{ route('products.show', $product->id) }}" 
-                                class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium"
-                            >
-                                View Details
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+                        </a>
+                    @endforeach
+                </div>
 
-            <!-- Pagination -->
-            <div class="flex justify-center">
-                {{ $products->links() }}
-            </div>
-        @else
-            <!-- No Products Found -->
-            <div class="text-center py-12">
-                <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m0 0V9a2 2 0 012-2h8a2 2 0 012 2v4M6 13h8"></path>
-                </svg>
-                <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
-                @if(request('search'))
-                    <p class="text-gray-500 mb-4">
-                        No products found for "{{ request('search') }}" in {{ $category->category_name }}.
-                    </p>
-                    <a href="{{ route('products.category', $category->id) }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <div class="flex justify-center">
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        {{ $products->links() }}
+                    </div>
+                </div>
+            @else
+                <div class="text-center py-16">
+                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                         </svg>
-                        Clear Search
-                    </a>
-                @else
-                    <p class="text-gray-500 mb-4">
-                        There are no products available in the {{ $category->category_name }} category at the moment.
-                    </p>
-                    <a href="{{ route('products.index') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
-                        </svg>
-                        Browse All Products
-                    </a>
-                @endif
-            </div>
-        @endif
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-700 mb-3">No products found</h3>
+                    <p class="text-gray-500 mb-6 max-w-md mx-auto">We couldn't find any products matching your search criteria. Try adjusting your filters or search terms.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <a href="{{ route('products.index') }}" class="inline-block px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl">View All Products</a>
+                        <button onclick="document.querySelector('form').reset()" class="inline-block px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold">Clear Filters</button>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
+
+<script>
+
+// Enhanced search functionality with debouncing
+    const searchInput = document.getElementById('product-search');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                // Optional: implement live search here
+            }, 300);
+        });
+        
+        // Submit form when search icon is clicked
+        const searchIcon = document.querySelector('.search-icon');
+        if (searchIcon) {
+            searchIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.closest('form').submit();
+            });
+        }
+    }
+
+</script>
 @endsection
