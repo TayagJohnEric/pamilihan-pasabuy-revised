@@ -14,6 +14,17 @@ class RiderSeeder extends Seeder
     {
         $now = Carbon::now();
 
+        // Check if user with this phone number already exists to avoid duplicates
+        $existingPhoneNumber = DB::table('users')
+            ->where('phone_number', '09331234567')
+            ->first();
+            
+        if ($existingPhoneNumber) {
+            $this->command->warn('User with phone number 09331234567 already exists');
+            $this->command->info('Skipping seeder to avoid duplicate entries.');
+            return;
+        }
+
         // Create rider user
         $riderUserId = DB::table('users')->insertGetId([
             'role' => 'rider',

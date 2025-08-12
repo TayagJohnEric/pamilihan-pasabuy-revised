@@ -153,6 +153,7 @@
                  aria-label="Vendor cards carousel">
                 <div class="flex gap-3 sm:gap-4 px-1">
                     @foreach($vendors as $vendor)
+                      <a href="{{ route('products.vendor', $vendor->id) }}"> 
                         <article class="w-64 sm:w-72 bg-white rounded-2xl overflow-hidden flex-shrink-0 
                                        shadow-sm hover:shadow-xl border border-gray-100 
                                        transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1
@@ -262,17 +263,10 @@
                                         <div></div> <!-- Spacer -->
                                     @endif
                                     
-                                    <!-- View Store Button -->
-                                    <button class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                                        <a href="{{ route('products.vendor', $vendor->id) }}" class="hidden sm:inline">View Store</a>
-                                        <span class="sm:hidden">View</span>
-                                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0.5 sm:ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                        </svg>
-                                    </button>
                                 </div>
                             </div>
                         </article>
+                      </a>
                     @endforeach
                 </div>
             </div>

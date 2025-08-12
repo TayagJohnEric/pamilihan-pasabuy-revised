@@ -15,6 +15,18 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if users with these phone numbers already exist to avoid duplicates
+        $existingPhoneNumbers = DB::table('users')
+            ->whereIn('phone_number', ['09171234567', '09191234567'])
+            ->pluck('phone_number')
+            ->toArray();
+            
+        if (!empty($existingPhoneNumbers)) {
+            $this->command->warn('Users with phone numbers already exist: ' . implode(', ', $existingPhoneNumbers));
+            $this->command->info('Skipping seeder to avoid duplicate entries.');
+            return;
+        }
+
         DB::table('users')->insert([
             [
                 'role' => 'customer',
@@ -32,7 +44,7 @@ class CustomerSeeder extends Seeder
                 'first_name' => 'Maria',
                 'last_name' => 'Reyes',
                 'email' => 'customer2@example.com',
-                'phone_number' => '09181234567',
+                'phone_number' => '09191234567',
                 'password' => Hash::make('password123'),
                 'is_active' => true,
                 'created_at' => Carbon::now(),
