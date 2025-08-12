@@ -89,7 +89,7 @@
                     <div id="category-carousel" class="category-carousel flex gap-3 overflow-x-auto pb-2">
                         @foreach($categories->take(12) as $cat)
                             <a href="{{ route('products.category', $cat->id) }}"
-                            class="flex-none px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium whitespace-nowrap rounded-full transition-all duration-200
+                            class="flex-none px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium whitespace-nowrap rounded-xl transition-all duration-200
                             {{ $cat->id == $category->id 
                                 ? 'bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 hover:text-white' 
                                 : 'bg-white text-gray-600 hover:bg-emerald-100 hover:text-emerald-700' }}">

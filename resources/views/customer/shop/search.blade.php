@@ -306,21 +306,40 @@
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             
-                                            <!-- Quantity Input for non-budget products -->
-                                            @if(!$product->is_budget_based)
+                                           <!-- Quantity Input for non-budget products -->
+                                                @if(!$product->is_budget_based)
                                                 <div class="flex items-center space-x-2">
                                                     <label for="quantity-{{ $product->id }}" class="text-xs font-medium text-gray-700 flex-shrink-0">Qty:</label>
-                                                    <input type="number" 
-                                                        id="quantity-{{ $product->id }}"
-                                                        name="quantity" 
-                                                        value="1"
-                                                        min="1" 
-                                                        max="{{ $product->quantity_in_stock }}"
-                                                        class="flex-1 px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-xs sm:text-sm">
+                                                    
+                                                    <div class="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                                                        <!-- Minus Button -->
+                                                        <button type="button" 
+                                                                onclick="let qty=document.getElementById('quantity-{{ $product->id }}'); if(qty.value>1) qty.value--;" 
+                                                                class="px-3 py-1 bg-white hover:bg-gray-100 text-gray-700 text-lg font-semibold">
+                                                            -
+                                                        </button>
+                                                        
+                                                        <!-- Quantity Display -->
+                                                        <input type="number" 
+                                                            id="quantity-{{ $product->id }}"
+                                                            name="quantity" 
+                                                            value="1"
+                                                            min="1" 
+                                                            max="{{ $product->quantity_in_stock }}"
+                                                            class="w-12 text-center border-0 focus:ring-0 text-sm sm:text-base">
+
+                                                        <!-- Plus Button -->
+                                                        <button type="button" 
+                                                                onclick="let qty=document.getElementById('quantity-{{ $product->id }}'); if(qty.value < {{ $product->quantity_in_stock }}) qty.value++;" 
+                                                                class="px-3 py-1 bg-white hover:bg-gray-100 text-gray-700 text-lg font-semibold">
+                                                            +
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            @else
-                                                <input type="hidden" name="quantity" value="1">
-                                            @endif
+                                                @else
+                                                    <input type="hidden" name="quantity" value="1">
+                                                @endif
+
 
                                             <button type="submit" 
                                                     class="w-full px-2 py-2 sm:px-3 sm:py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 focus:ring-4 focus:ring-emerald-200 shadow-lg hover:shadow-xl text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
@@ -343,10 +362,7 @@
                                                 <button type="button" 
                                                         onclick="toggleBudgetForm({{ $product->id }})"
                                                         class="w-full px-2 py-1.5 sm:px-3 sm:py-2 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-colors duration-200 text-xs sm:text-sm border border-blue-200">
-                                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                                                    </svg>
-                                                    Set Custom Budget
+                                                    Custom Budget
                                                 </button>
                                             </div>
 

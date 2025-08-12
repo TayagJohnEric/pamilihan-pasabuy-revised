@@ -119,11 +119,89 @@
         </div>
     @endif
 
+    <!--Vendors-->
+@if($vendors->count() > 0)
+    <div class="animate-slide-in mb-7">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" w-6 h-6 text-emerald-600 mr-2 lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg>             
+            Meet the Vendors
+        </h3>
+
+        <div class="relative">
+            <div id="vendor-carousel" class="category-carousel overflow-x-auto pb-4">
+                <div class="flex gap-4">
+                    @foreach($vendors as $vendor)
+                        <div class="w-48 sm:w-64 bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 flex-shrink-0">
+                            <!-- Banner -->
+                            @if($vendor->shop_banner_url)
+                                <div class="h-20 sm:h-24 overflow-hidden">
+                                    <img src="{{ asset('storage/' . $vendor->shop_banner_url) }}" alt="{{ $vendor->vendor_name }} Banner" class="w-full h-full object-cover">
+                                </div>
+                            @else
+                                <div class="h-20 sm:h-24 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+                            @endif
+
+                            <!-- Content -->
+                            <div class="p-3 sm:p-4">
+                                <!-- Logo + Name -->
+                                <div class="flex items-center gap-3 mb-3">
+                                    @if($vendor->shop_logo_url)
+                                        <img src="{{ asset('storage/' . $vendor->shop_logo_url) }}" alt="{{ $vendor->vendor_name }} Logo" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-md -mt-8">
+                                    @else
+                                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-md -mt-8">
+                                            {{ strtoupper(substr($vendor->vendor_name, 0, 1)) }}
+                                        </div>
+                                    @endif
+
+                                    <div class="flex-1 min-w-0">
+                                        <h2 class="font-bold text-sm sm:text-base text-gray-900 truncate">{{ $vendor->vendor_name }}</h2>
+                                        @if($vendor->verification_status === 'verified')
+                                            <span class="text-green-600 text-xs font-medium">✔ Verified</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                @if($vendor->description)
+                                    <p class="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{{ $vendor->description }}</p>
+                                @endif
+
+                                <!-- Rating -->
+                                @if($vendor->average_rating)
+                                    <div class="flex items-center mb-3">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        <span class="text-xs sm:text-sm text-gray-700">{{ number_format($vendor->average_rating, 1) }}</span>
+                                    </div>
+                                @endif
+
+                                <!-- Status & COD -->
+                                <div class="flex justify-between items-center">
+                                    <span class="px-2 py-1 text-xs rounded-full {{ $vendor->is_accepting_orders ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                        {{ $vendor->is_accepting_orders ? 'Open' : 'Closed' }}
+                                    </span>
+
+                                    @if($vendor->accepts_cod)
+                                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">COD</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
+
     <!-- Featured Products -->
     @if($featuredProducts->count() > 0)
         <div class="animate-slide-in mb-7">
             <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" w-6 h-6 text-emerald-600 mr-2 lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>                Featured Products
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" w-6 h-6 text-emerald-600 mr-2 lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>            
+                    Featured Products
             </h3>
 
             <div class="relative">
@@ -159,6 +237,14 @@
                                             <span class="text-xs text-gray-500">/ {{ $product->unit }}</span>
                                         </div>
                                     </div>
+                                  @if($product->vendor->average_rating)
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        {{ number_format($product->vendor->average_rating, 1) }}
+                                    </div>
+                                @endif
                                 </div>
                             </a>
                         @endforeach
@@ -216,6 +302,14 @@
                                         <span class="text-xs text-gray-500">/ {{ $product->unit }}</span>
                                     </div>
                                 </div>
+                                  @if($product->vendor->average_rating)
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        {{ number_format($product->vendor->average_rating, 1) }}
+                                    </div>
+                                @endif
                             </div>
                         </a>
                     @endforeach
@@ -250,7 +344,23 @@
     // Enhanced carousel functionality
     function scrollCarousel(direction, carouselId) {
         const carousel = document.getElementById(carouselId);
-        const cardWidth = carouselId === 'featured-carousel' ? 288 + 16 : 120 + 12; // card width + gap
+        let cardWidth;
+        
+        // Set card width based on carousel type
+        switch(carouselId) {
+            case 'featured-carousel':
+                cardWidth = 288 + 16; // featured product card width + gap
+                break;
+            case 'vendor-carousel':
+                cardWidth = window.innerWidth < 640 ? 192 + 16 : 256 + 16; // vendor card width + gap (responsive)
+                break;
+            case 'category-carousel':
+                cardWidth = 120 + 12; // category card width + gap
+                break;
+            default:
+                cardWidth = 200 + 16;
+        }
+        
         const scrollAmount = direction === 'left' ? -cardWidth * 2 : cardWidth * 2;
         
         carousel.scrollBy({
@@ -280,12 +390,46 @@
     // Start auto-scroll when page loads
     document.addEventListener('DOMContentLoaded', function() {
         const featuredCarousel = document.getElementById('featured-carousel');
+        const vendorCarousel = document.getElementById('vendor-carousel');
+        
         if (featuredCarousel) {
             startAutoScroll();
             
             // Pause auto-scroll on hover
             featuredCarousel.addEventListener('mouseenter', stopAutoScroll);
             featuredCarousel.addEventListener('mouseleave', startAutoScroll);
+        }
+        
+        // Add touch scrolling support for vendor carousel on mobile
+        if (vendorCarousel) {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            
+            vendorCarousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                vendorCarousel.classList.add('cursor-grabbing');
+                startX = e.pageX - vendorCarousel.offsetLeft;
+                scrollLeft = vendorCarousel.scrollLeft;
+            });
+            
+            vendorCarousel.addEventListener('mouseleave', () => {
+                isDown = false;
+                vendorCarousel.classList.remove('cursor-grabbing');
+            });
+            
+            vendorCarousel.addEventListener('mouseup', () => {
+                isDown = false;
+                vendorCarousel.classList.remove('cursor-grabbing');
+            });
+            
+            vendorCarousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - vendorCarousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                vendorCarousel.scrollLeft = scrollLeft - walk;
+            });
         }
     });
     

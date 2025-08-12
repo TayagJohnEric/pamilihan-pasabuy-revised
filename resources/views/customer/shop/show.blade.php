@@ -122,26 +122,45 @@
             <div class="border-t border-b border-gray-200 py-3 lg:py-4 mb-4 lg:mb-6">
                 <div class="flex items-start justify-between gap-3">
                     <div class="flex-grow min-w-0">
-                        <p class="text-xs sm:text-sm text-gray-600">Sold by</p>
-                        <a href="{{ route('products.vendor', $product->vendor->id) }}" 
-                           class="text-sm sm:text-base lg:text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:from-emerald-700 hover:to-teal-700 transition-all break-words">
-                            {{ $product->vendor->vendor_name }}
-                        </a>
                         
-                        {{-- Vendor Rating --}}
-                        @if($product->vendor->average_rating)
-                            <div class="flex items-center mt-1">
-                                <div class="flex items-center" aria-label="Rating: {{ number_format($product->vendor->average_rating, 1) }} out of 5 stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 {{ $i <= $product->vendor->average_rating ? 'text-yellow-400' : 'text-gray-300' }}" 
-                                             fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    @endfor
+                     
+                      <div class="flex items-center gap-3">
+                            <!-- Shop Profile Picture -->
+                            @if($product->vendor->shop_logo_url)
+                                <img 
+                                    src="{{ asset('storage/' . $product->vendor->shop_logo_url) }}" 
+                                    alt="{{ $product->vendor->vendor_name }} Logo" 
+                                    class="h-12 w-12 rounded-full object-cover"
+                                >
+                            @else
+                                <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold text-white">
+                                    {{ strtoupper(substr($product->vendor->vendor_name, 0, 1)) }}
                                 </div>
-                                <span class="ml-2 text-xs sm:text-sm text-gray-600">{{ number_format($product->vendor->average_rating, 1) }} rating</span>
-                            </div>
-                        @endif
+                            @endif
+
+                            <!-- Vendor Info -->
+                            <div class="flex flex-col">
+                                <p class="text-xs sm:text-sm text-gray-600 leading-none">Sold by</p>
+                                <a href="{{ route('products.vendor', $product->vendor->id) }}" 
+                                class="text-sm sm:text-base lg:text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent hover:from-emerald-700 hover:to-teal-700 transition-all break-words">
+                                    {{ $product->vendor->vendor_name }}
+                                </a>
+                                 {{-- Vendor Rating --}}
+                                @if($product->vendor->average_rating)
+                                    <div class="flex items-center mt-1">
+                                        <div class="flex items-center" aria-label="Rating: {{ number_format($product->vendor->average_rating, 1) }} out of 5 stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <svg class="w-3 h-3 sm:w-4 sm:h-4 {{ $i <= $product->vendor->average_rating ? 'text-yellow-400' : 'text-gray-300' }}" 
+                                                    fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            @endfor
+                                        </div>
+                                        <span class="ml-2 text-xs sm:text-sm text-gray-600">{{ number_format($product->vendor->average_rating, 1) }} rating</span>
+                                    </div>
+                                @endif
+                            </div>    
+                        </div>
                     </div>
                     
                     {{-- Vendor Logo --}}
@@ -486,15 +505,20 @@
                                     <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2 text-sm sm:text-base">
                                         {{ $relatedProduct->product_name }}
                                     </h3>
-                                    <p class="text-xs sm:text-sm text-gray-600 mb-3">
-                                        by <span class="text-emerald-600 font-medium">{{ $relatedProduct->vendor->vendor_name }}</span>
-                                    </p>
                                     <div class="flex items-center justify-between mb-3">
                                         <div>
                                             <span class="text-lg font-bold text-emerald-600">₱{{ number_format($relatedProduct->price, 2) }}</span>
                                             <span class="text-xs text-gray-500">/ {{ $relatedProduct->unit }}</span>
                                         </div>
                                     </div>
+                                     @if($relatedProduct->vendor->average_rating)
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        {{ number_format($relatedProduct->vendor->average_rating, 1) }}
+                                    </div>
+                                @endif
                                 </div>
                             </a>
                         @endforeach
@@ -561,6 +585,14 @@
                                         <span class="text-xs text-gray-500">/ {{ $similarProduct->unit }}</span>
                                     </div>
                                 </div>
+                                 @if($similarProduct->vendor->average_rating)
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        {{ number_format($similarProduct->vendor->average_rating, 1) }}
+                                    </div>
+                                @endif
                             </div>
                         </a>
                     @endforeach

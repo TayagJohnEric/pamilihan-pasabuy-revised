@@ -69,6 +69,8 @@ class CustomerProductController extends Controller
 
         $products = $query->paginate(12)->withQueryString();
         $categories = Category::orderBy('category_name')->get();
+        //  Get 5 random vendors
+        $vendors = Vendor::inRandomOrder()->take(5)->get();
         
         // Get featured products for homepage
         $featuredProducts = Product::with(['vendor.user', 'category'])
@@ -81,7 +83,7 @@ class CustomerProductController extends Controller
             ->take(8)
             ->get();
 
-        return view('customer.shop.index', compact('products', 'categories', 'featuredProducts'));
+        return view('customer.shop.index', compact('products', 'categories', 'featuredProducts', 'vendors'));
     }
 
     /**
