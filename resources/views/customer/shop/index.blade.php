@@ -119,82 +119,166 @@
         </div>
     @endif
 
-    <!--Vendors-->
+<!--Vendors-->
 @if($vendors->count() > 0)
-    <div class="animate-slide-in mb-7">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" w-6 h-6 text-emerald-600 mr-2 lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg>             
-            Meet the Vendors
-        </h3>
+    <section class="animate-slide-in mb-8" role="region" aria-label="Vendor listings">
+        <!-- Section Header -->
+        <header class="mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     width="24" height="24" viewBox="0 0 24 24" 
+                     fill="none" stroke="currentColor" stroke-width="2" 
+                     stroke-linecap="round" stroke-linejoin="round" 
+                     class="w-6 h-6 text-emerald-600 mr-3 flex-shrink-0"
+                     aria-hidden="true">
+                    <path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/>
+                    <path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/>
+                    <path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/>
+                </svg>             
+                Meet the Vendors
+            </h2>
+            <p class="text-sm text-gray-600">Discover trusted vendors in the San Fernando Market</p>
+        </header>
 
-        <div class="relative">
-            <div id="vendor-carousel" class="category-carousel overflow-x-auto pb-4">
-                <div class="flex gap-4">
+        <!-- Carousel Container -->
+        <div class="relative group">
+            <!-- Scroll Hint Gradients -->
+            <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <!-- Carousel -->
+            <div id="vendor-carousel" 
+                 class="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+                 role="list"
+                 aria-label="Vendor cards carousel">
+                <div class="flex gap-3 sm:gap-4 px-1">
                     @foreach($vendors as $vendor)
-                        <div class="w-48 sm:w-64 bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 flex-shrink-0">
-                            <!-- Banner -->
-                            @if($vendor->shop_banner_url)
-                                <div class="h-20 sm:h-24 overflow-hidden">
-                                    <img src="{{ asset('storage/' . $vendor->shop_banner_url) }}" alt="{{ $vendor->vendor_name }} Banner" class="w-full h-full object-cover">
-                                </div>
-                            @else
-                                <div class="h-20 sm:h-24 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-                            @endif
-
-                            <!-- Content -->
-                            <div class="p-3 sm:p-4">
-                                <!-- Logo + Name -->
-                                <div class="flex items-center gap-3 mb-3">
-                                    @if($vendor->shop_logo_url)
-                                        <img src="{{ asset('storage/' . $vendor->shop_logo_url) }}" alt="{{ $vendor->vendor_name }} Logo" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-md -mt-8">
-                                    @else
-                                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white text-sm sm:text-base shadow-md -mt-8">
-                                            {{ strtoupper(substr($vendor->vendor_name, 0, 1)) }}
-                                        </div>
+                        <article class="w-64 sm:w-72 bg-white rounded-2xl overflow-hidden flex-shrink-0 
+                                       shadow-sm hover:shadow-xl border border-gray-100 
+                                       transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1
+                                       focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2"
+                                 role="listitem"
+                                 tabindex="0">
+                            
+                            <!-- Banner Section -->
+                            <div class="relative h-20 sm:h-24 overflow-hidden">
+                                @if($vendor->shop_banner_url)
+                                    <img src="{{ asset('storage/' . $vendor->shop_banner_url) }}" 
+                                         alt="Banner for {{ $vendor->vendor_name }}" 
+                                         class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                                         loading="lazy">
+                                @else
+                                    <div class="w-full h-full bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"></div>
+                                @endif
+                                
+                                <!-- Status Badge Overlay -->
+                                <div class="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
+                                     @if($vendor->verification_status === 'verified')
+                                                <span class="inline-flex items-center text-green-800 bg-green-100 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm flex-shrink-0"
+                                                      title="Verified vendor">
+                                                    <svg class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Verified
+                                                </span>
                                     @endif
 
-                                    <div class="flex-1 min-w-0">
-                                        <h2 class="font-bold text-sm sm:text-base text-gray-900 truncate">{{ $vendor->vendor_name }}</h2>
-                                        @if($vendor->verification_status === 'verified')
-                                            <span class="text-green-600 text-xs font-medium">✔ Verified</span>
+                                    <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm
+                                                {{ $vendor->is_accepting_orders 
+                                                   ? 'bg-green-100 text-green-800 border border-green-200' 
+                                                   : 'bg-red-100 text-red-800 border border-red-200' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5 
+                                                    {{ $vendor->is_accepting_orders ? 'bg-green-400' : 'bg-red-400' }}"></span>
+                                        {{ $vendor->is_accepting_orders ? 'Open' : 'Closed' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Content Section -->
+                            <div class="p-4 sm:p-5">
+                                <!-- Vendor Header -->
+                                <div class="flex items-start gap-2 sm:gap-3 mb-3 sm:mb-4">
+                                    <!-- Logo -->
+                                    <div class="relative -mt-8 sm:-mt-10 flex-shrink-0">
+                                        @if($vendor->shop_logo_url)
+                                            <img src="{{ asset('storage/' . $vendor->shop_logo_url) }}" 
+                                                 alt="{{ $vendor->vendor_name }} logo" 
+                                                 class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border-3 border-white shadow-lg"
+                                                 loading="lazy">
+                                        @else
+                                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-100
+                                                       flex items-center justify-center font-bold text-gray-500 text-base sm:text-lg 
+                                                       border-3 border-white shadow-lg">
+                                                {{ strtoupper(substr($vendor->vendor_name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Name and Verification -->
+                                    <div class="flex-1 min-w-0 pt-1 sm:pt-2">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h3 class="font-bold text-sm sm:text-base text-gray-900 truncate pr-1">
+                                                {{ $vendor->vendor_name }}
+                                            </h3>
+                                        </div>
+                                        
+                                        <!-- Rating -->
+                                        @if($vendor->average_rating)
+                                            <div class="flex items-center">
+                                                <div class="flex items-center mr-1 sm:mr-2" role="img" aria-label="Rating: {{ number_format($vendor->average_rating, 1) }} out of 5 stars">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 {{ $i <= $vendor->average_rating ? 'text-yellow-400' : 'text-gray-300' }}" 
+                                                             fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    @endfor
+                                                </div>
+                                                <span class="text-xs sm:text-sm font-medium text-gray-700">
+                                                    {{ number_format($vendor->average_rating, 1) }}
+                                                </span>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
 
                                 <!-- Description -->
                                 @if($vendor->description)
-                                    <p class="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{{ $vendor->description }}</p>
+                                    <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
+                                        {{ $vendor->description }}
+                                    </p>
                                 @endif
 
-                                <!-- Rating -->
-                                @if($vendor->average_rating)
-                                    <div class="flex items-center mb-3">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                        <span class="text-xs sm:text-sm text-gray-700">{{ number_format($vendor->average_rating, 1) }}</span>
-                                    </div>
-                                @endif
-
-                                <!-- Status & COD -->
-                                <div class="flex justify-between items-center">
-                                    <span class="px-2 py-1 text-xs rounded-full {{ $vendor->is_accepting_orders ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                        {{ $vendor->is_accepting_orders ? 'Open' : 'Closed' }}
-                                    </span>
-
+                                <!-- Footer -->
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
                                     @if($vendor->accepts_cod)
-                                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">COD</span>
+                                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            </svg>
+                                            <span class="hidden sm:inline">COD Available</span>
+                                            <span class="sm:hidden">COD</span>
+                                        </span>
+                                    @else
+                                        <div></div> <!-- Spacer -->
                                     @endif
+                                    
+                                    <!-- View Store Button -->
+                                    <button class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                                        <a href="{{ route('products.vendor', $vendor->id) }}" class="hidden sm:inline">View Store</a>
+                                        <span class="sm:hidden">View</span>
+                                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0.5 sm:ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 @endif
-
 
     <!-- Featured Products -->
     @if($featuredProducts->count() > 0)
@@ -204,9 +288,15 @@
                     Featured Products
             </h3>
 
-            <div class="relative">
-                <div id="featured-carousel" class="featured-carousel overflow-x-auto pb-4">
-                    <div class="flex gap-4">
+            <!-- Carousel Container with Scroll Hints -->
+            <div class="relative group">
+                <!-- Scroll Hint Gradients -->
+                <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <!-- Carousel -->
+                <div id="featured-carousel" class="featured-carousel overflow-x-auto pb-4 scroll-smooth">
+                    <div class="flex gap-4 px-1">
                         @foreach($featuredProducts->take(8) as $product)
                             <a href="{{ route('products.show', $product->id) }}" class="product-card w-48 bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:border-emerald-300 flex-shrink-0">
                                 <div class="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
