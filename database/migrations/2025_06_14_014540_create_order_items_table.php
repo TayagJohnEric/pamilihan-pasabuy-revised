@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->restrictOnDelete();
+            $table->string('status')->default('pending'); // e.g., 'pending', 'preparing', 'ready_for_pickup'
             $table->string('product_name_snapshot');
             $table->unsignedInteger('quantity_requested');
             $table->decimal('unit_price_snapshot', 10, 2);

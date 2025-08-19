@@ -14,6 +14,7 @@ class Order extends Model
     protected $fillable = [
         'customer_user_id',
         'rider_user_id',
+        'preferred_rider_id',
         'delivery_address_id',
         'order_date',
         'status',
@@ -43,6 +44,11 @@ class Order extends Model
     public function rider()
     {
         return $this->belongsTo(User::class, 'rider_user_id');
+    }
+
+     public function preferredRider()
+    {
+        return $this->belongsTo(User::class, 'preferred_rider_id');
     }
 
     public function deliveryAddress()

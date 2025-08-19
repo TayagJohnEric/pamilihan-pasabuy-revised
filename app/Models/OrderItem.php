@@ -11,6 +11,7 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'status', // Added
         'product_name_snapshot',
         'quantity_requested',
         'unit_price_snapshot',
@@ -28,6 +29,7 @@ class OrderItem extends Model
         'customer_budget_requested' => 'decimal:2',
         'actual_item_price' => 'decimal:2',
         'is_substituted' => 'boolean',
+        'status' => 'string', 
     ];
 
     // Relationships
