@@ -12,7 +12,6 @@ class Notification extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'id',
         'user_id',
         'type',
         'title',
@@ -35,6 +34,6 @@ class Notification extends Model
 
     public function relatedEntity()
     {
-        return $this->morphTo('related_entity');
+        return $this->morphTo();
     }
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id(); // auto-increment primary key
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('type');
             $table->string('title')->nullable();
