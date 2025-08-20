@@ -20,6 +20,7 @@ use App\Http\Controllers\Customer\CustomerPasswordController;
 use App\Http\Controllers\Customer\CustomerSavedAddressController;
 use App\Http\Controllers\Customer\CustomerProductController;
 use App\Http\Controllers\Customer\CustomerShoppingCartController;
+use App\Http\Controllers\Customer\CustomerCheckoutController;
 
 
 //Customer Authentication Routes (Login & Register)
@@ -88,6 +89,16 @@ Route::delete('/cart/{cartItem}', [CustomerShoppingCartController::class, 'destr
     
     // AJAX route for cart count
     Route::get('/cart/count', [CustomerShoppingCartController::class, 'getCartCount'])->name('cart.count');
+});
+
+//Checkout Route
+Route::middleware(['auth'])->group(function () {
+    Route::get('/checkout', [CustomerCheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/delivery-fee', [CustomerCheckoutController::class, 'getDeliveryFee'])->name('checkout.delivery-fee');
+    Route::post('/checkout/process', [CustomerCheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/payment-confirmation', [CustomerCheckoutController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation'); //it has no view yet
+    Route::get('/checkout/confirmation', [CustomerCheckoutController::class, 'confirmation'])->name('checkout.confirmation'); //it has no view yet
+    Route::post('/checkout/place-order', [CustomerCheckoutController::class, 'placeOrder'])->name('checkout.place-order');
 });
 
 
