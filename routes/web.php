@@ -21,6 +21,8 @@ use App\Http\Controllers\Customer\CustomerSavedAddressController;
 use App\Http\Controllers\Customer\CustomerProductController;
 use App\Http\Controllers\Customer\CustomerShoppingCartController;
 use App\Http\Controllers\Customer\CustomerCheckoutController;
+use App\Http\Controllers\Customer\CustomerPaymentController;
+
 
 
 //Customer Authentication Routes (Login & Register)
@@ -96,13 +98,55 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [CustomerCheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/delivery-fee', [CustomerCheckoutController::class, 'getDeliveryFee'])->name('checkout.delivery-fee');
     Route::post('/checkout/process', [CustomerCheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/payment-confirmation', [CustomerCheckoutController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation'); //it has no view yet
-    Route::get('/checkout/confirmation', [CustomerCheckoutController::class, 'confirmation'])->name('checkout.confirmation'); //it has no view yet
+    Route::get('/checkout/confirmation', [CustomerCheckoutController::class, 'confirmation'])->name('checkout.confirmation'); 
     Route::post('/checkout/place-order', [CustomerCheckoutController::class, 'placeOrder'])->name('checkout.place-order');
 });
 
 
+//Payment Route
+Route::middleware(['auth', 'verified'])->prefix('customer')->name('customer.')->group(function () {
+    
+    // Payment & Confirmation Routes
+    Route::prefix('payment')->name('payment.')->group(function () {
+        
+        // Payment confirmation page (for online payments)
+        Route::get('/confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])
+            ->name('confirmation');
+        
+        // Process online payment (create PayMongo checkout)
+        Route::post('/process-online', [CustomerPaymentController::class, 'processOnlinePayment'])
+            ->name('process-online');
+        
+        // Process Cash on Delivery order
+        Route::post('/process-cod', [CustomerPaymentController::class, 'processCOD'])
+            ->name('process-cod');
+    });
+});
 
+// PayMongo Callback Routes (no auth middleware needed for callbacks)
+Route::prefix('payment')->name('payment.')->group(function () {
+    
+    // PayMongo success callback
+    Route::get('/success', [CustomerPaymentController::class, 'paymentSuccess'])
+        ->name('success');
+    
+    // PayMongo failure/cancel callback  
+    Route::get('/failed', [CustomerPaymentController::class, 'paymentFailed'])
+        ->name('failed');
+    
+    // Alternative naming for callbacks
+    Route::get('/callback/success', [CustomerPaymentController::class, 'paymentSuccess'])
+        ->name('callback.success');
+    
+    Route::get('/callback/failed', [CustomerPaymentController::class, 'paymentFailed'])
+        ->name('callback.failed');
+});
+
+// Optional: Webhook endpoint for PayMongo notifications (for production)
+Route::post('/webhooks/paymongo', [CustomerPaymentController::class, 'handleWebhook'])
+    ->name('webhooks.paymongo');
+
+    
 
 
 //-------------------------------------------------Vendor Route-------------------------------------------------// 

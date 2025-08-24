@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+     /*
+    |--------------------------------------------------------------------------
+    | PayMongo Configuration
+    |--------------------------------------------------------------------------
+    |
+    | PayMongo payment gateway configuration for processing online payments.
+    | These credentials should be set in your .env file for security.
+    |
+    */
+    'paymongo' => [
+        'public_key' => env('PAYMONGO_PUBLIC_KEY'),
+        'secret_key' => env('PAYMONGO_SECRET_KEY'),
+        'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET'), // Optional for webhook verification
+    ],
+
 ];

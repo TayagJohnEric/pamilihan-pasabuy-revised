@@ -280,102 +280,41 @@ class CustomerCheckoutController extends Controller
                 ->with('success', 'Please review your order before final confirmation.');
         }
     }
-    
+
     /**
-     * Display payment confirmation page for online payments (PayMongo)
-     * 
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
-     */
-    public function paymentConfirmation()
-    {
-        $orderSummary = session('order_summary');
-        
-        if (!$orderSummary || $orderSummary['payment_method'] !== 'online_payment') {
-            return redirect()->route('checkout.index')
-                ->with('error', 'Invalid checkout session. Please try again.');
-        }
-        
-        return view('customer.checkout.payment-confirmation', compact('orderSummary'));
+ * Display final confirmation page for COD orders
+ * 
+ * This method shows the final confirmation page before placing a COD order.
+ * It validates the order summary from session and prepares COD-specific data.
+ * 
+ * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+ */
+public function confirmation()
+{
+    // Get order summary from session (set by checkout process)
+    $orderSummary = session('order_summary');
+    
+    if (!$orderSummary) {
+        return redirect()->route('checkout.index')
+            ->with('error', 'Order session expired. Please complete checkout again.');
     }
     
-    /**
-     * Display final order confirmation page
-     * 
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
-     */
-    public function confirmation()
-    {
-        $orderSummary = session('order_summary');
-        
-        if (!$orderSummary) {
-            return redirect()->route('checkout.index')
-                ->with('error', 'Invalid checkout session. Please try again.');
-        }
-        
-        return view('customer.checkout.confirmation', compact('orderSummary'));
+    // Validate that payment method is COD
+    if ($orderSummary['payment_method'] !== 'cash_on_delivery') {
+        return redirect()->route('checkout.payment-confirmation')
+            ->with('info', 'Redirected to payment confirmation for online payment.');
     }
     
-    /**
-     * Place the final order (this would integrate with your Order creation logic)
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function placeOrder(Request $request)
-    {
-        $orderSummary = session('order_summary');
-        
-        if (!$orderSummary) {
-            return redirect()->route('checkout.index')
-                ->with('error', 'Invalid checkout session. Please start over.');
-        }
-        
-        try {
-            DB::transaction(function () use ($orderSummary, $request) {
-                // Here you would implement your Order creation logic
-                // This is a placeholder for the actual order creation
-                
-                /*
-                Example Order creation (adjust according to your Order model):
-                
-                $order = Order::create([
-                    'customer_user_id' => Auth::id(),
-                    'rider_user_id' => $orderSummary['selected_rider']->id,
-                    'delivery_address_id' => $orderSummary['delivery_address']->id,
-                    'payment_method' => $orderSummary['payment_method'],
-                    'subtotal' => $orderSummary['subtotal'],
-                    'delivery_fee' => $orderSummary['delivery_fee'],
-                    'total_amount' => $orderSummary['total_amount'],
-                    'status' => 'pending',
-                ]);
-                
-                // Create order items from cart
-                foreach ($orderSummary['cart_items'] as $cartItem) {
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cartItem->product_id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $cartItem->product->price,
-                        'subtotal' => $cartItem->subtotal,
-                        'customer_budget' => $cartItem->customer_budget,
-                        'customer_notes' => $cartItem->customer_notes,
-                    ]);
-                }
-                */
-                
-                // Clear cart after successful order
-                ShoppingCartItem::where('user_id', Auth::id())->delete();
-                
-                // Clear session
-                session()->forget('order_summary');
-            });
-            
-            return redirect()->route('orders.success')
-                ->with('success', 'Your order has been placed successfully!');
-                
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Failed to place order. Please try again.');
-        }
+    // Re-validate cart items to ensure they're still available
+    $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
+        ->where('user_id', Auth::id())
+        ->get();
+    
+    if ($cartItems->isEmpty() || $cartItems->count() !== $orderSummary['item_count']) {
+        return redirect()->route('cart.index')
+            ->with('error', 'Your cart has changed. Please review and try again.');
     }
+    
+    return view('customer.checkout.confirmation', compact('orderSummary'));
+}
 }
