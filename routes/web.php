@@ -99,28 +99,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkout/delivery-fee', [CustomerCheckoutController::class, 'getDeliveryFee'])->name('checkout.delivery-fee');
     Route::post('/checkout/process', [CustomerCheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/checkout/confirmation', [CustomerCheckoutController::class, 'confirmation'])->name('checkout.confirmation'); 
-    Route::post('/checkout/place-order', [CustomerCheckoutController::class, 'placeOrder'])->name('checkout.place-order');
+    Route::get('/checkout/payment-confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation');
 });
 
-
 //Payment Route
-Route::middleware(['auth', 'verified'])->prefix('customer')->name('customer.')->group(function () {
-    
-    // Payment & Confirmation Routes
-    Route::prefix('payment')->name('payment.')->group(function () {
-        
-        // Payment confirmation page (for online payments)
-        Route::get('/confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])
-            ->name('confirmation');
-        
-        // Process online payment (create PayMongo checkout)
-        Route::post('/process-online', [CustomerPaymentController::class, 'processOnlinePayment'])
-            ->name('process-online');
-        
-        // Process Cash on Delivery order
-        Route::post('/process-cod', [CustomerPaymentController::class, 'processCOD'])
-            ->name('process-cod');
-    });
+Route::middleware(['auth'])->group(function () {
+    Route::match(['GET', 'POST'], '/payment/confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])->name('payment.confirmation');
+    Route::post('/payment/process-online', [CustomerPaymentController::class, 'processOnlinePayment'])->name('payment.process-online');
+    Route::post('/payment/process-cod', [CustomerPaymentController::class, 'processCOD'])->name('payment.process-cod');
 });
 
 // PayMongo Callback Routes (no auth middleware needed for callbacks)

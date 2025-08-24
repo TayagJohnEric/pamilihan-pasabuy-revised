@@ -25,25 +25,120 @@ class CustomerPaymentController extends Controller
      * 
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
-    public function paymentConfirmation()
+    public function paymentConfirmation(Request $request)
     {
-        // Get order summary from session (set by checkout process)
-        $orderSummary = session('order_summary');
+        $user = Auth::user();
         
-        if (!$orderSummary) {
-            return redirect()->route('checkout.index')
-                ->with('error', 'Order session expired. Please complete checkout again.');
-        }
-        
-        // Validate that payment method is online payment
-        if ($orderSummary['payment_method'] !== 'online_payment') {
-            return redirect()->route('checkout.confirmation')
-                ->with('info', 'Redirected to order confirmation for COD.');
+        // Check if this is a direct form submission from checkout
+        if ($request->isMethod('post')) {
+            // Validate the checkout form data
+            $validated = $request->validate([
+                'delivery_address_id' => [
+                    'required',
+                    'exists:saved_addresses,id',
+                    function ($attribute, $value, $fail) use ($user) {
+                        $address = SavedAddress::where('id', $value)
+                            ->where('user_id', $user->id)
+                            ->first();
+                        if (!$address) {
+                            $fail('Invalid delivery address selected.');
+                        }
+                    }
+                ],
+                'payment_method' => [
+                    'required',
+                    'in:online_payment'
+                ],
+                'rider_selection_type' => [
+                    'required',
+                    'in:choose_rider,system_assign'
+                ],
+                'selected_rider_id' => [
+                    'required_if:rider_selection_type,choose_rider',
+                    'nullable',
+                    'exists:users,id'
+                ]
+            ]);
+            
+            // Get cart items
+            $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
+                ->where('user_id', $user->id)
+                ->get();
+            
+            if ($cartItems->isEmpty()) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Your cart is empty.');
+            }
+            
+            // Get delivery address with district
+            $deliveryAddress = SavedAddress::with('district')
+                ->where('id', $validated['delivery_address_id'])
+                ->where('user_id', $user->id)
+                ->first();
+            
+            // Process rider selection
+            $selectedRider = null;
+            if ($validated['rider_selection_type'] === 'choose_rider') {
+                $selectedRider = User::with('rider')
+                    ->where('id', $validated['selected_rider_id'])
+                    ->first();
+            } else {
+                // System assign: randomly select an available rider
+                $availableRiders = User::with('rider')
+                    ->whereHas('rider', function ($query) {
+                        $query->where('is_available', true)
+                            ->where('verification_status', 'verified');
+                    })
+                    ->where('role', 'rider')
+                    ->where('is_active', true)
+                    ->get();
+                
+                if ($availableRiders->isNotEmpty()) {
+                    $selectedRider = $availableRiders->random();
+                }
+            }
+            
+            // Calculate totals
+            $subtotal = $cartItems->sum('subtotal');
+            $deliveryFee = $deliveryAddress->district->delivery_fee;
+            $totalAmount = $subtotal + $deliveryFee;
+            
+            // Prepare order summary data
+            $orderSummary = [
+                'cart_items' => $cartItems,
+                'delivery_address' => $deliveryAddress,
+                'selected_rider' => $selectedRider,
+                'payment_method' => 'online_payment',
+                'rider_selection_type' => $validated['rider_selection_type'],
+                'subtotal' => $subtotal,
+                'delivery_fee' => $deliveryFee,
+                'total_amount' => $totalAmount,
+                'item_count' => $cartItems->count(),
+                'has_budget_items' => $cartItems->where('customer_budget', '!=', null)->count() > 0
+            ];
+            
+            // Store order summary in session for payment processing
+            session(['order_summary' => $orderSummary]);
+            
+        } else {
+            // Get order summary from session (set by checkout process)
+            $orderSummary = session('order_summary');
+            
+            if (!$orderSummary) {
+                return redirect()->route('checkout.index')
+                    ->with('error', 'Order session expired. Please complete checkout again.');
+            }
+            
+            // Validate that payment method is online payment
+            if ($orderSummary['payment_method'] !== 'online_payment') {
+                return redirect()->route('checkout.confirmation')
+                    ->with('info', 'Redirected to order confirmation for COD.');
+            }
         }
         
         // Re-validate cart items to ensure they're still available
         $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
-            ->where('user_id', Auth::id())
+            ->where('user_id', $user->id)
             ->get();
         
         if ($cartItems->isEmpty() || $cartItems->count() !== $orderSummary['item_count']) {

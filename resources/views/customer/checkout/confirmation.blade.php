@@ -7,7 +7,7 @@
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full pointer-events-none"></div>
 
 <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         
         <!-- Page Header -->
         <div class="mb-6 lg:mb-8">
@@ -220,7 +220,7 @@
                         </div>
                         
                         <!-- Special Instructions -->
-                        <form id="cod-form" method="POST" action="{{ route('customer.payment.process-cod') }}" class="space-y-4">
+                        <form id="cod-form" method="POST" action="{{ route('payment.process-cod') }}" class="space-y-4">
                             @csrf
                             
                             <div>

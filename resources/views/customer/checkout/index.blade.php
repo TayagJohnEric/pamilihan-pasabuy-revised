@@ -37,6 +37,9 @@
         <form id="checkout-form" method="POST" action="{{ route('checkout.process') }}" class="space-y-8">
             @csrf
             
+            <!-- Hidden field to track payment method for dynamic form submission -->
+            <input type="hidden" id="selected-payment-method" name="selected_payment_method" value="cash_on_delivery">
+            
             <!-- Desktop Layout: Two Columns -->
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
                 
@@ -595,6 +598,7 @@ $(document).ready(function() {
     // Update submit button text based on payment method
     $('input[name="payment_method"]').on('change', function() {
         updateSubmitButtonText();
+        updatePaymentMethodField();
     });
 
     function updateSubmitButtonText() {
@@ -606,6 +610,11 @@ $(document).ready(function() {
         } else {
             submitBtnText.text('Place Order');
         }
+    }
+
+    function updatePaymentMethodField() {
+        const paymentMethod = $('input[name="payment_method"]:checked').val();
+        $('#selected-payment-method').val(paymentMethod);
     }
 
     // Form validation and submission
@@ -629,12 +638,26 @@ $(document).ready(function() {
         submitBtn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed');
         $('#submit-btn-text').text(paymentMethod === 'online_payment' ? 'Redirecting...' : 'Processing...');
 
+        // Determine the action URL and method based on payment method
+        let actionUrl = '{{ route('checkout.process') }}';
+        let formMethod = 'POST';
+        
+        if (paymentMethod === 'online_payment') {
+            actionUrl = '{{ route('payment.confirmation') }}';
+            formMethod = 'POST'; // Both routes use POST
+        }
+
+        // Update the form's action attribute and method
+        $('#checkout-form').attr('action', actionUrl);
+        $('#checkout-form').attr('method', formMethod);
+
         // Submit the form
         e.currentTarget.submit();
     });
 
-    // Initialize button text on page load
+    // Initialize button text and payment method field on page load
     updateSubmitButtonText();
+    updatePaymentMethodField();
 });
 </script>
 @endsection
