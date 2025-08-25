@@ -123,7 +123,7 @@
                         <div>
                             <h3 class="font-medium text-gray-900 mb-3">Rider Assignment</h3>
                             <div class="bg-gray-50 rounded-lg p-4">
-                                @if($orderSummary['rider_selection_type'] === 'choose_rider')
+                                @if($orderSummary['rider_selection_type'] === 'system_assign')
                                     <div class="flex items-center">
                                         <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
                                             <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -135,6 +135,47 @@
                                             <p class="text-sm text-gray-600">Rider will be assigned automatically</p>
                                         </div>
                                     </div>
+                                @elseif($orderSummary['rider_selection_type'] === 'choose_rider' && !empty($orderSummary['selected_rider']))
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 mr-3">
+                                            @if($orderSummary['selected_rider']->profile_image_url)
+                                                <img src="{{ asset('storage/' . $orderSummary['selected_rider']->profile_image_url) }}"
+                                                     alt="{{ $orderSummary['selected_rider']->first_name }} {{ $orderSummary['selected_rider']->last_name }}"
+                                                     class="w-10 h-10 rounded-full object-cover border-2 border-gray-200">
+                                            @else
+                                                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center border-2 border-gray-200">
+                                                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">
+                                                {{ $orderSummary['selected_rider']->first_name }} {{ $orderSummary['selected_rider']->last_name }}
+                                            </h4>
+                                            <div class="flex items-center text-xs text-gray-600 mt-0.5">
+                                                @if(optional($orderSummary['selected_rider']->rider)->average_rating)
+                                                    <div class="flex items-center mr-3">
+                                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                        <span>{{ number_format($orderSummary['selected_rider']->rider->average_rating, 1) }}</span>
+                                                    </div>
+                                                @endif
+                                                @if(optional($orderSummary['selected_rider']->rider)->total_deliveries !== null)
+                                                    <span>{{ $orderSummary['selected_rider']->rider->total_deliveries }} deliveries</span>
+                                                @endif
+                                                @if(optional($orderSummary['selected_rider']->rider)->vehicle_type)
+                                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-800">
+                                                        {{ ucfirst($orderSummary['selected_rider']->rider->vehicle_type) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="text-sm text-gray-600">Rider details will be available soon.</p>
                                 @endif
                             </div>
                         </div>

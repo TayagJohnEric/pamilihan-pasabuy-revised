@@ -315,6 +315,6 @@ public function confirmation()
             ->with('error', 'Your cart has changed. Please review and try again.');
     }
     
-    return view('customer.checkout.confirmation', compact('orderSummary'));
+    return view('customer.checkout.order-confirmation', compact('orderSummary'));
 }
 }

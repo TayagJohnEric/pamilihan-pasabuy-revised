@@ -146,7 +146,7 @@ class CustomerPaymentController extends Controller
                 ->with('error', 'Your cart has changed. Please review and try again.');
         }
         
-        return view('customer.payment.confirmation', compact('orderSummary'));
+        return view('customer.checkout.payment-confirmation', compact('orderSummary'));
     }
     
     /**
