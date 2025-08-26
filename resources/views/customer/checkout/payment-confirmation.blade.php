@@ -414,6 +414,11 @@ $(document).ready(function() {
         const submitBtn = $('#payment-submit-btn');
         const btnText = $('#payment-btn-text');
         
+        // Debug: Log form data
+        console.log('Form submission started');
+        console.log('Form action:', $(this).attr('action'));
+        console.log('Form method:', $(this).attr('method'));
+        
         // Disable submit button to prevent duplicate submissions
         submitBtn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed');
         btnText.text('Redirecting to Payment...');
@@ -423,6 +428,7 @@ $(document).ready(function() {
         
         // Submit the form after a brief delay for UX
         setTimeout(() => {
+            console.log('Submitting form...');
             e.currentTarget.submit();
         }, 1000);
     });

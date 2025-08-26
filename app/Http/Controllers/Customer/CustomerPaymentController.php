@@ -165,7 +165,17 @@ class CustomerPaymentController extends Controller
         $user = Auth::user();
         $orderSummary = session('order_summary');
         
+        Log::info('Payment processing started', [
+            'user_id' => $user->id,
+            'has_order_summary' => !empty($orderSummary),
+            'payment_method' => $orderSummary['payment_method'] ?? 'none'
+        ]);
+        
         if (!$orderSummary || $orderSummary['payment_method'] !== 'online_payment') {
+            Log::warning('Invalid payment session', [
+                'user_id' => $user->id,
+                'order_summary' => $orderSummary
+            ]);
             return redirect()->route('checkout.index')
                 ->with('error', 'Invalid payment session. Please try again.');
         }
@@ -193,11 +203,12 @@ class CustomerPaymentController extends Controller
             foreach ($orderSummary['cart_items'] as $cartItem) {
                 $order->orderItems()->create([
                     'product_id' => $cartItem->product_id,
-                    'quantity_ordered' => $cartItem->quantity ?? 1,
-                    'unit_price' => $cartItem->product->price,
-                    'subtotal' => $cartItem->subtotal,
-                    'customer_budget' => $cartItem->customer_budget,
-                    'customer_notes' => $cartItem->customer_notes,
+                    'status' => 'pending',
+                    'product_name_snapshot' => $cartItem->product->product_name,
+                    'quantity_requested' => $cartItem->quantity ?? 1,
+                    'unit_price_snapshot' => $cartItem->product->price,
+                    'customer_budget_requested' => $cartItem->customer_budget,
+                    'customerNotes_snapshot' => $cartItem->customer_notes,
                 ]);
             }
             
@@ -237,10 +248,24 @@ class CustomerPaymentController extends Controller
             
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('PayMongo checkout creation failed: ' . $e->getMessage());
+            Log::error('PayMongo checkout creation failed: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'order_summary' => $orderSummary,
+                'exception' => $e
+            ]);
+            
+            // Provide more specific error messages
+            $errorMessage = 'Payment processing failed. ';
+            if (str_contains($e->getMessage(), 'Payment gateway not configured')) {
+                $errorMessage .= 'Payment system is currently unavailable. Please contact support.';
+            } elseif (str_contains($e->getMessage(), 'SQLSTATE')) {
+                $errorMessage .= 'Database error occurred. Please try again.';
+            } else {
+                $errorMessage .= 'Please try again or contact support if the problem persists.';
+            }
             
             return redirect()->back()
-                ->with('error', 'Payment processing failed. Please try again.');
+                ->with('error', $errorMessage);
         }
     }
     
@@ -288,11 +313,12 @@ class CustomerPaymentController extends Controller
             foreach ($orderSummary['cart_items'] as $cartItem) {
                 $order->orderItems()->create([
                     'product_id' => $cartItem->product_id,
-                    'quantity_ordered' => $cartItem->quantity ?? 1,
-                    'unit_price' => $cartItem->product->price,
-                    'subtotal' => $cartItem->subtotal,
-                    'customer_budget' => $cartItem->customer_budget,
-                    'customer_notes' => $cartItem->customer_notes,
+                    'status' => 'pending',
+                    'product_name_snapshot' => $cartItem->product->product_name,
+                    'quantity_requested' => $cartItem->quantity ?? 1,
+                    'unit_price_snapshot' => $cartItem->product->price,
+                    'customer_budget_requested' => $cartItem->customer_budget,
+                    'customerNotes_snapshot' => $cartItem->customer_notes,
                 ]);
             }
             
@@ -454,7 +480,14 @@ class CustomerPaymentController extends Controller
     private function createPayMongoCheckout(Order $order, array $orderSummary): ?array
     {
         try {
-            $response = Http::withBasicAuth(config('services.paymongo.secret_key'), '')
+            // Check if PayMongo credentials are configured
+            $secretKey = config('services.paymongo.secret_key');
+            if (empty($secretKey)) {
+                Log::error('PayMongo secret key not configured');
+                throw new Exception('Payment gateway not configured. Please contact support.');
+            }
+
+            $response = Http::withBasicAuth($secretKey, '')
                 ->post('https://api.paymongo.com/v1/checkout_sessions', [
                     'data' => [
                         'attributes' => [
@@ -478,6 +511,10 @@ class CustomerPaymentController extends Controller
             
             if ($response->successful()) {
                 $data = $response->json();
+                Log::info('PayMongo checkout session created successfully', [
+                    'order_id' => $order->id,
+                    'checkout_session_id' => $data['data']['id']
+                ]);
                 return [
                     'id' => $data['data']['id'],
                     'checkout_url' => $data['data']['attributes']['checkout_url'],
@@ -485,11 +522,18 @@ class CustomerPaymentController extends Controller
                 ];
             }
             
-            Log::error('PayMongo API Error: ' . $response->body());
+            Log::error('PayMongo API Error: ' . $response->body(), [
+                'order_id' => $order->id,
+                'status_code' => $response->status(),
+                'response_body' => $response->body()
+            ]);
             return null;
             
         } catch (Exception $e) {
-            Log::error('PayMongo checkout creation exception: ' . $e->getMessage());
+            Log::error('PayMongo checkout creation exception: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'exception' => $e
+            ]);
             return null;
         }
     }
@@ -526,6 +570,132 @@ class CustomerPaymentController extends Controller
         } catch (Exception $e) {
             Log::error('PayMongo verification exception: ' . $e->getMessage());
             return 'failed';
+        }
+    }
+    
+    /**
+     * Handle PayMongo webhook notifications
+     * 
+     * This method processes webhook notifications from PayMongo
+     * to update payment statuses in real-time.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function handleWebhook(Request $request)
+    {
+        try {
+            $payload = $request->all();
+            Log::info('PayMongo webhook received', ['payload' => $payload]);
+            
+            // Verify webhook signature if webhook secret is configured
+            $webhookSecret = config('services.paymongo.webhook_secret');
+            if ($webhookSecret) {
+                // Add webhook signature verification logic here
+                // This is important for production security
+            }
+            
+            // Process the webhook based on event type
+            $eventType = $payload['type'] ?? '';
+            
+            switch ($eventType) {
+                case 'payment_intent.succeeded':
+                    // Handle successful payment
+                    $this->handlePaymentSuccess($payload);
+                    break;
+                    
+                case 'payment_intent.payment_failed':
+                    // Handle failed payment
+                    $this->handlePaymentFailure($payload);
+                    break;
+                    
+                default:
+                    Log::info('Unhandled webhook event type: ' . $eventType);
+            }
+            
+            return response()->json(['status' => 'success'], 200);
+            
+        } catch (Exception $e) {
+            Log::error('Webhook processing failed: ' . $e->getMessage());
+            return response()->json(['status' => 'error'], 500);
+        }
+    }
+    
+    /**
+     * Handle payment success from webhook
+     * 
+     * @param array $payload
+     * @return void
+     */
+    private function handlePaymentSuccess(array $payload): void
+    {
+        try {
+            $paymentIntentId = $payload['data']['id'] ?? null;
+            
+            if ($paymentIntentId) {
+                $order = Order::where('payment_intent_id', $paymentIntentId)->first();
+                
+                if ($order) {
+                    $order->update([
+                        'status' => 'processing',
+                        'payment_status' => 'paid'
+                    ]);
+                    
+                    // Update payment record
+                    $payment = $order->payment;
+                    if ($payment) {
+                        $payment->update([
+                            'status' => 'completed',
+                            'payment_processed_at' => now(),
+                            'payment_gateway_response' => ['status' => 'paid', 'webhook_processed_at' => now()]
+                        ]);
+                    }
+                    
+                    // Clear shopping cart
+                    ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
+                    
+                    Log::info('Payment success processed via webhook', ['order_id' => $order->id]);
+                }
+            }
+        } catch (Exception $e) {
+            Log::error('Webhook payment success processing failed: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Handle payment failure from webhook
+     * 
+     * @param array $payload
+     * @return void
+     */
+    private function handlePaymentFailure(array $payload): void
+    {
+        try {
+            $paymentIntentId = $payload['data']['id'] ?? null;
+            
+            if ($paymentIntentId) {
+                $order = Order::where('payment_intent_id', $paymentIntentId)->first();
+                
+                if ($order) {
+                    $order->update([
+                        'status' => 'failed',
+                        'payment_status' => 'failed'
+                    ]);
+                    
+                    // Update payment record
+                    $payment = $order->payment;
+                    if ($payment) {
+                        $payment->update([
+                            'status' => 'failed',
+                            'payment_gateway_response' => ['status' => 'failed', 'webhook_processed_at' => now()]
+                        ]);
+                    }
+                    
+                    Log::info('Payment failure processed via webhook', ['order_id' => $order->id]);
+                }
+            }
+        } catch (Exception $e) {
+            Log::error('Webhook payment failure processing failed: ' . $e->getMessage());
         }
     }
 }

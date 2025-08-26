@@ -132,6 +132,21 @@ Route::prefix('payment')->name('payment.')->group(function () {
 Route::post('/webhooks/paymongo', [CustomerPaymentController::class, 'handleWebhook'])
     ->name('webhooks.paymongo');
 
+// Debug route for testing PayMongo configuration (remove in production)
+Route::get('/test/paymongo-config', function() {
+    $config = [
+        'secret_key' => config('services.paymongo.secret_key') ? 'Configured' : 'Not configured',
+        'public_key' => config('services.paymongo.public_key') ? 'Configured' : 'Not configured',
+        'webhook_secret' => config('services.paymongo.webhook_secret') ? 'Configured' : 'Not configured',
+    ];
+    
+    return response()->json([
+        'message' => 'PayMongo Configuration Status',
+        'config' => $config,
+        'timestamp' => now()
+    ]);
+})->name('test.paymongo.config');
+
     
 
 
