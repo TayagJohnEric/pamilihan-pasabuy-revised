@@ -115,92 +115,85 @@ class CustomerOrderFulfillmentController extends Controller
     }
 
     /**
-     * Finalize order - process order items, update stock, clear cart, and notify vendors
-     * This runs for COD orders immediately, and for online orders after payment verification
-     */
-    public function finalizeOrder(Order $order)
-    {
-        try {
-            Log::info("Starting finalizeOrder for order {$order->id}", [
-                'order_status' => $order->status,
-                'payment_method' => $order->payment_method
-            ]);
+ * Finalize order - process order items, update stock, clear cart, and notify vendors
+ * This runs for COD orders immediately, and for online orders after payment verification
+ */
+public function finalizeOrder(Order $order)
+{
+    try {
+        // Enable query logging for debugging
+        DB::enableQueryLog();
+        
+        Log::info("Starting finalizeOrder for order {$order->id}", [
+            'order_status' => $order->status,
+            'payment_method' => $order->payment_method,
+            'payment_status' => $order->payment_status,
+            'order_items_count' => $order->orderItems()->count(),
+            'cart_items_count' => ShoppingCartItem::where('user_id', $order->customer_user_id)->count(),
+            'called_from' => debug_backtrace()[1]['function'] ?? 'unknown'
+        ]);
+        
+        DB::beginTransaction();
+        Log::info("Database transaction started for order {$order->id}", [
+            'connection_name' => DB::connection()->getName(),
+            'transaction_level' => DB::transactionLevel()
+        ]);
+
+        // Check if order items already exist (online payment case)
+        $existingOrderItems = $order->orderItems()->count();
+        
+        Log::info("Order {$order->id} has {$existingOrderItems} existing order items");
+        
+        if ($existingOrderItems === 0) {
+            // This should not happen for online payments, but handle gracefully
+            Log::warning("Order {$order->id} has no order items during finalization");
             
-            // Check if order has already been finalized to prevent double-processing
-            if ($order->status === 'processing' && $order->payment_status === 'paid') {
-                // Check if we already have order items and if stock was already decremented
-                $existingOrderItems = $order->orderItems()->count();
-                if ($existingOrderItems > 0) {
-                    // Check if any product stock was already decremented by looking at the first order item
-                    $firstOrderItem = $order->orderItems()->first();
-                    if ($firstOrderItem && $firstOrderItem->product) {
-                        $product = $firstOrderItem->product;
-                        // If this is a non-budget item and stock is already decremented, skip processing
-                        if (is_null($firstOrderItem->customer_budget_requested)) {
-                            // Check if stock was already decremented by comparing with expected stock
-                            $expectedStock = $product->quantity_in_stock + $firstOrderItem->quantity_requested;
-                            if ($product->quantity_in_stock < $expectedStock) {
-                                Log::info("Order {$order->id} already finalized - stock already decremented, skipping");
-                                return;
-                            }
-                        }
-                    }
+            // Copy items from cart to order_items (fallback for COD orders)
+            $cartItems = ShoppingCartItem::where('user_id', $order->customer_user_id)
+                ->with('product')
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                throw new \Exception('Cart is empty, cannot finalize order');
+            }
+
+            // Copy items from cart to order_items
+            foreach ($cartItems as $cartItem) {
+                $product = $cartItem->product;
+
+                // Check stock availability for non-budget purchases
+                if (is_null($cartItem->customer_budget) && $product->quantity_in_stock < $cartItem->quantity) {
+                    throw new \Exception("Insufficient stock for product: {$product->product_name}");
+                }
+
+                // Create order item
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $cartItem->product_id,
+                    'status' => 'pending',
+                    'product_name_snapshot' => $product->product_name,
+                    'quantity_requested' => $cartItem->quantity,
+                    'unit_price_snapshot' => $product->price,
+                    'customer_budget_requested' => $cartItem->customer_budget,
+                    'customerNotes_snapshot' => $cartItem->customer_notes,
+                ]);
+
+                // Decrement stock for non-budget purchases
+                if (is_null($cartItem->customer_budget)) {
+                    $this->decrementProductStock($product, $cartItem->quantity);
                 }
             }
+        } else {
+            // Order items already exist (online payment case)
+            $orderItems = $order->orderItems()->with('product')->get();
             
-            DB::beginTransaction();
-
-            // Check if order items already exist (online payment case)
-            $existingOrderItems = $order->orderItems()->count();
+            // For online payments, we need to check if stock was already decremented during COD processing
+            // The safest way is to check if this order's payment_method is online_payment and status was pending_payment
+            // If so, we need to decrement stock now
+            $shouldDecrementStock = ($order->payment_method === 'online_payment');
             
-            Log::info("Order {$order->id} has {$existingOrderItems} existing order items");
-            
-            if ($existingOrderItems === 0) {
-                // This should not happen for online payments, but handle gracefully
-                Log::warning("Order {$order->id} has no order items during finalization");
-                
-                // Copy items from cart to order_items (fallback for COD orders)
-                $cartItems = ShoppingCartItem::where('user_id', $order->customer_user_id)
-                    ->with('product')
-                    ->get();
-
-                if ($cartItems->isEmpty()) {
-                    throw new \Exception('Cart is empty, cannot finalize order');
-                }
-
-                // Copy items from cart to order_items
-                foreach ($cartItems as $cartItem) {
-                    $product = $cartItem->product;
-
-                    // Check stock availability for non-budget purchases
-                    if (is_null($cartItem->customer_budget) && $product->quantity_in_stock < $cartItem->quantity) {
-                        throw new \Exception("Insufficient stock for product: {$product->product_name}");
-                    }
-
-                    // Create order item
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cartItem->product_id,
-                        'status' => 'pending',
-                        'product_name_snapshot' => $product->product_name,
-                        'quantity_requested' => $cartItem->quantity,
-                        'unit_price_snapshot' => $product->price,
-                        'customer_budget_requested' => $cartItem->customer_budget,
-                        'customerNotes_snapshot' => $cartItem->customer_notes,
-                    ]);
-
-                    // Decrement stock for non-budget purchases
-                    if (is_null($cartItem->customer_budget)) {
-                        $product->decrement('quantity_in_stock', $cartItem->quantity);
-                    }
-                }
-
-                // Clear the user's cart
-                ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
-                Log::info("Cart cleared for order {$order->id} (items copied from cart)");
-            } else {
-                // Order items already exist (online payment case)
-                $orderItems = $order->orderItems()->with('product')->get();
+            if ($shouldDecrementStock) {
+                Log::info("Online payment order - processing stock decrement for order {$order->id}");
                 
                 foreach ($orderItems as $orderItem) {
                     $product = $orderItem->product;
@@ -217,76 +210,131 @@ class CustomerOrderFulfillmentController extends Controller
                         if ($product->quantity_in_stock < $orderItem->quantity_requested) {
                             throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->quantity_in_stock}, Requested: {$orderItem->quantity_requested}");
                         }
-                        $product->decrement('quantity_in_stock', $orderItem->quantity_requested);
-                        Log::info("Stock decremented for product {$product->id}", [
-                            'new_stock' => $product->fresh()->quantity_in_stock
-                        ]);
+                        
+                        $this->decrementProductStock($product, $orderItem->quantity_requested);
                     }
                 }
-                
-                // Clear the user's cart for online payments
-                $cartItemsDeleted = ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
-                Log::info("Cart cleared for online payment order {$order->id} - {$cartItemsDeleted} items deleted");
+            } else {
+                Log::info("COD order - stock already processed during order creation for order {$order->id}");
             }
-
-            // Update payment record if it exists (for online payments)
-            $payment = Payment::where('order_id', $order->id)->first();
-            if ($payment) {
-                $payment->update([
-                    'status' => 'completed',
-                    'payment_processed_at' => now(),
-                ]);
-            }
-
-            // Log status in history
-            $this->logOrderStatusChange($order->id, 'processing', 'Order finalized successfully', null);
-
-            // Send notifications to vendors
-            $this->notifyVendorsOfNewOrder($order);
-
-            // Notify customer that order is being prepared
-            $this->createNotification(
-                $order->customer_user_id,
-                'order_processing',
-                'Order is Being Prepared',
-                [
-                    'order_id' => $order->id,
-                    'message' => 'Your order is now being prepared by our vendors. You will be notified when it\'s ready for pickup.'
-                ],
-                Order::class,
-                $order->id
-            );
-
-            DB::commit();
-            Log::info("Order {$order->id} finalized successfully");
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            Log::error("Error finalizing order {$order->id}: " . $e->getMessage(), [
-                'order_id' => $order->id,
-                'exception' => $e,
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            // Update order status to failed
-            $order->update(['status' => 'failed']);
-            
-            // Notify customer of error
-            $this->createNotification(
-                $order->customer_user_id,
-                'order_failed',
-                'Order Processing Failed',
-                [
-                    'order_id' => $order->id,
-                    'message' => 'There was an issue processing your order. Please contact support.'
-                ],
-                Order::class,
-                $order->id
-            );
-
-            throw $e;
         }
+
+        // Always clear the user's cart
+        $cartItemsBefore = ShoppingCartItem::where('user_id', $order->customer_user_id)->count();
+        
+        // Use raw SQL delete for reliability
+        $cartItemsDeleted = DB::table('shopping_cart_items')
+            ->where('user_id', $order->customer_user_id)
+            ->delete();
+            
+        $cartItemsAfter = ShoppingCartItem::where('user_id', $order->customer_user_id)->count();
+        
+        Log::info("Cart clearing for order {$order->id}", [
+            'cart_items_before' => $cartItemsBefore,
+            'cart_items_deleted' => $cartItemsDeleted,
+            'cart_items_after' => $cartItemsAfter,
+            'user_id' => $order->customer_user_id,
+            'payment_method' => $order->payment_method
+        ]);
+
+        // Update payment record if it exists (for online payments)
+        $payment = Payment::where('order_id', $order->id)->first();
+        if ($payment) {
+            $payment->update([
+                'status' => 'completed',
+                'payment_processed_at' => now(),
+            ]);
+        }
+
+        // Log status in history
+        $this->logOrderStatusChange($order->id, 'processing', 'Order finalized successfully', null);
+
+        // Send notifications to vendors
+        $this->notifyVendorsOfNewOrder($order);
+
+        // Notify customer that order is being prepared
+        $this->createNotification(
+            $order->customer_user_id,
+            'order_processing',
+            'Order is Being Prepared',
+            [
+                'order_id' => $order->id,
+                'message' => 'Your order is now being prepared by our vendors. You will be notified when it\'s ready for pickup.'
+            ],
+            Order::class,
+            $order->id
+        );
+
+        DB::commit();
+        Log::info("Order {$order->id} finalized successfully", [
+            'transaction_committed' => true,
+            'final_cart_items_count' => ShoppingCartItem::where('user_id', $order->customer_user_id)->count(),
+            'queries_executed' => count(DB::getQueryLog())
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        Log::error("Error finalizing order {$order->id}: " . $e->getMessage(), [
+            'order_id' => $order->id,
+            'exception' => $e,
+            'trace' => $e->getTraceAsString(),
+            'database_connection' => DB::connection()->getName()
+        ]);
+
+        // Update order status to failed
+        $order->update(['status' => 'failed']);
+        
+        // Notify customer of error
+        $this->createNotification(
+            $order->customer_user_id,
+            'order_failed',
+            'Order Processing Failed',
+            [
+                'order_id' => $order->id,
+                'message' => 'There was an issue processing your order. Please contact support.'
+            ],
+            Order::class,
+            $order->id
+        );
+
+        throw $e;
     }
+}
+
+/**
+ * Helper method to decrement product stock safely
+ */
+private function decrementProductStock(Product $product, int $quantity)
+{
+    $oldStock = $product->quantity_in_stock;
+    $newStock = $oldStock - $quantity;
+    
+    // Force refresh from database to get latest stock value
+    $product->refresh();
+    
+    // Update stock using raw SQL for reliability with optimistic locking
+    $updated = DB::table('products')
+        ->where('id', $product->id)
+        ->where('quantity_in_stock', $oldStock) // Optimistic locking
+        ->update(['quantity_in_stock' => $newStock]);
+    
+    if (!$updated) {
+        Log::error("Failed to update stock for product {$product->id} - stock may have changed");
+        throw new \Exception("Failed to update stock for product: {$product->product_name}. Please try again.");
+    }
+    
+    // Refresh the product model to get updated stock
+    $product->refresh();
+    
+    Log::info("Stock decremented for product {$product->id}", [
+        'product_name' => $product->product_name,
+        'quantity_decremented' => $quantity,
+        'old_stock' => $oldStock,
+        'new_stock' => $newStock,
+        'verified_stock' => $product->quantity_in_stock,
+        'update_successful' => $updated
+    ]);
+}
 
     /**
      * Process COD order finalization (called immediately after order creation)
@@ -322,6 +370,7 @@ class CustomerOrderFulfillmentController extends Controller
 
         try {
             DB::beginTransaction();
+            Log::info("Database transaction started for vendor item ready");
 
             // Update order items status to ready_for_pickup
             OrderItem::whereIn('id', $request->order_item_ids)
@@ -657,5 +706,65 @@ class CustomerOrderFulfillmentController extends Controller
         
         // Placeholder implementation - replace with actual signature validation
         return true;
+    }
+
+    /**
+     * Test method to verify stock updates are working (for debugging)
+     * This should be removed in production
+     */
+    public function testStockUpdate(Request $request)
+    {
+        try {
+            $productId = $request->input('product_id');
+            $quantity = $request->input('quantity', 1);
+            
+            if (!$productId) {
+                return response()->json(['error' => 'Product ID required'], 400);
+            }
+            
+            $product = Product::find($productId);
+            if (!$product) {
+                return response()->json(['error' => 'Product not found'], 404);
+            }
+            
+            $oldStock = $product->quantity_in_stock;
+            $newStock = $oldStock - $quantity;
+            
+            Log::info("Testing stock update for product {$productId}", [
+                'old_stock' => $oldStock,
+                'quantity_to_decrement' => $quantity,
+                'new_stock' => $newStock
+            ]);
+            
+            // Test raw SQL update
+            $updated = DB::table('products')
+                ->where('id', $productId)
+                ->where('quantity_in_stock', $oldStock)
+                ->update(['quantity_in_stock' => $newStock]);
+            
+            if (!$updated) {
+                return response()->json([
+                    'error' => 'Stock update failed',
+                    'old_stock' => $oldStock,
+                    'current_stock' => $product->fresh()->quantity_in_stock
+                ], 400);
+            }
+            
+            // Refresh and verify
+            $product->refresh();
+            
+            return response()->json([
+                'success' => true,
+                'product_id' => $productId,
+                'old_stock' => $oldStock,
+                'new_stock' => $product->quantity_in_stock,
+                'quantity_decremented' => $quantity,
+                'update_successful' => $updated
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Test stock update failed: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

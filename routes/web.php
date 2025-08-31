@@ -167,8 +167,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Webhook Routes (No authentication - external services)
-Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentController::class, 'handlePaymentWebhook'])
-    ->name('webhooks.paymongo.payment');
+Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentController::class, 'handlePaymentWebhook']);
+
+// Test route for debugging stock updates (remove in production)
+Route::post('/test/stock-update', [CustomerOrderFulfillmentController::class, 'testStockUpdate'])->name('test.stock-update');
 
 // Notification Routes (following your reference implementation)
 Route::middleware(['auth'])->group(function () {
