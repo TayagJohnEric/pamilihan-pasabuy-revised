@@ -294,7 +294,7 @@ class CustomerPaymentController extends Controller
         $user = Auth::user();
         $orderSummary = session('order_summary');
         
-        if (!$orderSummary || $orderSummary['payment_method'] !== 'cash_on_delivery') {
+        if (!$orderSummary || $orderSummary['payment_method'] !== 'cod') {
             return redirect()->route('checkout.index')
                 ->with('error', 'Invalid order session. Please try again.');
         }
@@ -475,26 +475,51 @@ class CustomerPaymentController extends Controller
      */
     public function paymentSuccess(Request $request)
     {
-        $checkoutSessionId = $request->query('checkout_session_id');
-        
-        if (!$checkoutSessionId) {
-            return redirect()->route('customer.orders.index')
-                ->with('error', 'Invalid payment callback.');
-        }
+        // For PayMongo, we need to find the order differently since they don't pass session ID in redirect
+        // We'll look for the most recent pending payment order for the current user
+        $user = Auth::user();
         
         try {
-            // Find order by payment intent ID
-            $order = Order::where('payment_intent_id', $checkoutSessionId)->first();
+            Log::info('Payment success callback received', [
+                'user_id' => $user->id,
+                'request_query' => $request->query()
+            ]);
+            
+            // Find the most recent pending payment order for this user
+            $order = Order::where('customer_user_id', $user->id)
+                ->where('payment_method', 'online_payment')
+                ->where('status', 'pending_payment')
+                ->latest()
+                ->first();
             
             if (!$order) {
+                Log::warning('No pending payment order found for user', [
+                    'user_id' => $user->id
+                ]);
                 return redirect()->route('customer.orders.index')
                     ->with('error', 'Order not found.');
             }
             
-            // Verify payment status with PayMongo
-            $paymentStatus = $this->verifyPayMongoPayment($checkoutSessionId);
+            Log::info('Found pending payment order', [
+                'order_id' => $order->id,
+                'payment_intent_id' => $order->payment_intent_id,
+                'amount' => $order->final_total_amount
+            ]);
+            
+            // Verify payment status with PayMongo using the order's payment intent ID
+            $paymentStatus = $this->verifyPayMongoPayment($order->payment_intent_id);
+            
+            Log::info('PayMongo payment verification result', [
+                'order_id' => $order->id,
+                'payment_status' => $paymentStatus,
+                'payment_intent_id' => $order->payment_intent_id
+            ]);
             
             if ($paymentStatus === 'paid') {
+                Log::info('Payment verified as paid, processing order finalization', [
+                    'order_id' => $order->id
+                ]);
+                
                 DB::beginTransaction();
                 
                 try {
@@ -502,6 +527,12 @@ class CustomerPaymentController extends Controller
                     $order->update([
                         'status' => 'processing',
                         'payment_status' => 'paid'
+                    ]);
+                    
+                    Log::info('Order status updated to processing', [
+                        'order_id' => $order->id,
+                        'new_status' => 'processing',
+                        'new_payment_status' => 'paid'
                     ]);
                     
                     // Log status change for online payment
@@ -521,31 +552,54 @@ class CustomerPaymentController extends Controller
                             'payment_processed_at' => now(),
                             'payment_gateway_response' => ['status' => 'paid', 'verified_at' => now()]
                         ]);
+                        
+                        Log::info('Payment record updated to completed', [
+                            'payment_id' => $payment->id,
+                            'order_id' => $order->id
+                        ]);
                     }
                     
-                    // Clear shopping cart
-                    ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
-                    
                     DB::commit();
+                    Log::info('Transaction committed successfully, triggering order fulfillment', [
+                        'order_id' => $order->id
+                    ]);
                     
                     // Trigger order fulfillment after transaction is committed
                     $orderFulfillmentController->finalizeOrder($order);
+                    
+                    Log::info('Order fulfillment completed successfully', [
+                        'order_id' => $order->id
+                    ]);
                     
                     return redirect()->route('customer.orders.show', $order->id)
                         ->with('success', 'Payment successful! Your order is now being processed.');
                     
                 } catch (Exception $e) {
                     DB::rollBack();
+                    Log::error('Error during payment success processing', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
                     throw $e;
                 }
             } else {
+                Log::warning('Payment verification failed or pending', [
+                    'order_id' => $order->id,
+                    'payment_status' => $paymentStatus
+                ]);
+                
                 // Payment failed or pending
                 return redirect()->route('customer.orders.show', $order->id)
                     ->with('warning', 'Payment verification pending. Please contact support if needed.');
             }
             
         } catch (Exception $e) {
-            Log::error('Payment success callback failed: ' . $e->getMessage());
+            Log::error('Payment success callback failed: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return redirect()->route('customer.orders.index')
                 ->with('error', 'Payment verification failed. Please contact support.');
@@ -563,13 +617,18 @@ class CustomerPaymentController extends Controller
      */
     public function paymentFailed(Request $request)
     {
-        $checkoutSessionId = $request->query('checkout_session_id');
+        // For PayMongo, we need to find the order differently since they don't pass session ID in redirect
+        // We'll look for the most recent pending payment order for the current user
+        $user = Auth::user();
         
-        if ($checkoutSessionId) {
-            // Find and update order
-            $order = Order::where('payment_intent_id', $checkoutSessionId)->first();
-            
-            if ($order) {
+        // Find the most recent pending payment order for this user
+        $order = Order::where('customer_user_id', $user->id)
+            ->where('payment_method', 'online_payment')
+            ->where('status', 'pending_payment')
+            ->latest()
+            ->first();
+        
+        if ($order) {
                 $order->update([
                     'status' => 'failed',
                     'payment_status' => 'failed'
@@ -595,7 +654,6 @@ class CustomerPaymentController extends Controller
                 
                 return redirect()->route('customer.orders.show', $order->id)
                     ->with('error', 'Payment failed. You can try placing the order again or use a different payment method.');
-            }
         }
         
         return redirect()->route('checkout.index')
@@ -626,8 +684,8 @@ class CustomerPaymentController extends Controller
                 ->post('https://api.paymongo.com/v1/checkout_sessions', [
                     'data' => [
                         'attributes' => [
-                            'cancel_url' => route('payment.failed', ['checkout_session_id' => '__CHECKOUT_SESSION_ID__']),
-                            'success_url' => route('payment.success', ['checkout_session_id' => '__CHECKOUT_SESSION_ID__']),
+                            'cancel_url' => route('payment.failed'),
+                            'success_url' => route('payment.success'),
                             'line_items' => [
                                 [
                                     'name' => 'Order #' . $order->id . ' - ' . $orderSummary['item_count'] . ' items',

@@ -85,7 +85,7 @@ class CustomerCheckoutController extends Controller
         
         // Payment methods available
         $paymentMethods = [
-            'cash_on_delivery' => 'Cash on Delivery',
+            'cod' => 'Cash on Delivery',
             'online_payment' => 'Online Payment'
         ];
         
@@ -167,7 +167,7 @@ class CustomerCheckoutController extends Controller
             ],
             'payment_method' => [
                 'required',
-                Rule::in(['cash_on_delivery', 'online_payment'])
+                Rule::in(['cod', 'online_payment'])
             ],
             'rider_selection_type' => [
                 'required',
@@ -299,8 +299,8 @@ public function confirmation()
             ->with('error', 'Order session expired. Please complete checkout again.');
     }
     
-    // Validate that payment method is COD
-    if ($orderSummary['payment_method'] !== 'cash_on_delivery') {
+            // Validate that payment method is COD
+        if ($orderSummary['payment_method'] !== 'cod') {
         return redirect()->route('checkout.payment-confirmation')
             ->with('info', 'Redirected to payment confirmation for online payment.');
     }

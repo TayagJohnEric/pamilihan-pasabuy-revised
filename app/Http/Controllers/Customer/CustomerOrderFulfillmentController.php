@@ -52,10 +52,18 @@ class CustomerOrderFulfillmentController extends Controller
                 return response()->json(['error' => 'Order not found'], 404);
             }
 
+            Log::info("Processing webhook for order {$order->id}", [
+                'order_status' => $order->status,
+                'payment_status' => $order->payment_status,
+                'payment_method' => $order->payment_method
+            ]);
+
             // Check if payment was successful
             $paymentStatus = $payload['data']['attributes']['status'] ?? null;
             
             if ($paymentStatus === 'succeeded') {
+                Log::info("Payment succeeded for order {$order->id}, updating status and finalizing");
+                
                 // Update order payment status
                 $order->update([
                     'status' => 'processing',
@@ -68,8 +76,11 @@ class CustomerOrderFulfillmentController extends Controller
                 // Trigger order finalization
                 $this->finalizeOrder($order);
 
+                Log::info("Order {$order->id} finalized successfully via webhook");
                 return response()->json(['success' => true]);
             } else {
+                Log::warning("Payment failed for order {$order->id} with status: {$paymentStatus}");
+                
                 // Handle failed payment
                 $order->update([
                     'status' => 'failed',
@@ -95,7 +106,10 @@ class CustomerOrderFulfillmentController extends Controller
             }
 
         } catch (\Exception $e) {
-            Log::error('Webhook processing error: ' . $e->getMessage());
+            Log::error('Webhook processing error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json(['error' => 'Internal error'], 500);
         }
     }
@@ -112,6 +126,28 @@ class CustomerOrderFulfillmentController extends Controller
                 'payment_method' => $order->payment_method
             ]);
             
+            // Check if order has already been finalized to prevent double-processing
+            if ($order->status === 'processing' && $order->payment_status === 'paid') {
+                // Check if we already have order items and if stock was already decremented
+                $existingOrderItems = $order->orderItems()->count();
+                if ($existingOrderItems > 0) {
+                    // Check if any product stock was already decremented by looking at the first order item
+                    $firstOrderItem = $order->orderItems()->first();
+                    if ($firstOrderItem && $firstOrderItem->product) {
+                        $product = $firstOrderItem->product;
+                        // If this is a non-budget item and stock is already decremented, skip processing
+                        if (is_null($firstOrderItem->customer_budget_requested)) {
+                            // Check if stock was already decremented by comparing with expected stock
+                            $expectedStock = $product->quantity_in_stock + $firstOrderItem->quantity_requested;
+                            if ($product->quantity_in_stock < $expectedStock) {
+                                Log::info("Order {$order->id} already finalized - stock already decremented, skipping");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            
             DB::beginTransaction();
 
             // Check if order items already exist (online payment case)
@@ -120,7 +156,10 @@ class CustomerOrderFulfillmentController extends Controller
             Log::info("Order {$order->id} has {$existingOrderItems} existing order items");
             
             if ($existingOrderItems === 0) {
-                // COD case: Copy items from cart to order_items
+                // This should not happen for online payments, but handle gracefully
+                Log::warning("Order {$order->id} has no order items during finalization");
+                
+                // Copy items from cart to order_items (fallback for COD orders)
                 $cartItems = ShoppingCartItem::where('user_id', $order->customer_user_id)
                     ->with('product')
                     ->get();
@@ -158,36 +197,36 @@ class CustomerOrderFulfillmentController extends Controller
 
                 // Clear the user's cart
                 ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
+                Log::info("Cart cleared for order {$order->id} (items copied from cart)");
             } else {
-                // Online payment case: Order items already exist, just update stock
-                // For COD orders, stock is already decremented during order creation
-                if ($order->payment_method === 'cod') {
-                    Log::info("Order {$order->id} is COD - stock already decremented during order creation");
-                } else {
-                    $orderItems = $order->orderItems()->with('product')->get();
+                // Order items already exist (online payment case)
+                $orderItems = $order->orderItems()->with('product')->get();
+                
+                foreach ($orderItems as $orderItem) {
+                    $product = $orderItem->product;
                     
-                    foreach ($orderItems as $orderItem) {
-                        $product = $orderItem->product;
-                        
-                        Log::info("Processing order item {$orderItem->id} for product {$product->id}", [
-                            'product_name' => $product->product_name,
-                            'current_stock' => $product->quantity_in_stock,
-                            'quantity_requested' => $orderItem->quantity_requested,
-                            'customer_budget_requested' => $orderItem->customer_budget_requested
-                        ]);
-                        
-                        // Decrement stock for non-budget purchases
-                        if (is_null($orderItem->customer_budget_requested)) {
-                            if ($product->quantity_in_stock < $orderItem->quantity_requested) {
-                                throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->quantity_in_stock}, Requested: {$orderItem->quantity_requested}");
-                            }
-                            $product->decrement('quantity_in_stock', $orderItem->quantity_requested);
-                            Log::info("Stock decremented for product {$product->id}", [
-                                'new_stock' => $product->fresh()->quantity_in_stock
-                            ]);
+                    Log::info("Processing order item {$orderItem->id} for product {$product->id}", [
+                        'product_name' => $product->product_name,
+                        'current_stock' => $product->quantity_in_stock,
+                        'quantity_requested' => $orderItem->quantity_requested,
+                        'customer_budget_requested' => $orderItem->customer_budget_requested
+                    ]);
+                    
+                    // Decrement stock for non-budget purchases
+                    if (is_null($orderItem->customer_budget_requested)) {
+                        if ($product->quantity_in_stock < $orderItem->quantity_requested) {
+                            throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->quantity_in_stock}, Requested: {$orderItem->quantity_requested}");
                         }
+                        $product->decrement('quantity_in_stock', $orderItem->quantity_requested);
+                        Log::info("Stock decremented for product {$product->id}", [
+                            'new_stock' => $product->fresh()->quantity_in_stock
+                        ]);
                     }
                 }
+                
+                // Clear the user's cart for online payments
+                $cartItemsDeleted = ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
+                Log::info("Cart cleared for online payment order {$order->id} - {$cartItemsDeleted} items deleted");
             }
 
             // Update payment record if it exists (for online payments)
@@ -601,7 +640,22 @@ class CustomerOrderFulfillmentController extends Controller
         $signature = $request->header('X-PayMongo-Signature');
         $payload = $request->getContent();
         
-        // TODO: Implement actual signature validation
-        return true; // Placeholder
+        Log::info('Webhook signature validation', [
+            'has_signature_header' => !empty($signature),
+            'signature_header' => $signature,
+            'payload_length' => strlen($payload),
+            'webhook_source' => 'PayMongo'
+        ]);
+        
+        // TODO: Implement actual signature validation based on PayMongo documentation
+        // For now, we'll log the signature for debugging but allow the webhook to proceed
+        // In production, you should implement proper signature validation
+        
+        if (empty($signature)) {
+            Log::warning('No webhook signature provided - this should be investigated');
+        }
+        
+        // Placeholder implementation - replace with actual signature validation
+        return true;
     }
 }

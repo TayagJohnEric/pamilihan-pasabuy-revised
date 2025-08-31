@@ -38,7 +38,7 @@
             @csrf
             
             <!-- Hidden field to track payment method for dynamic form submission -->
-            <input type="hidden" id="selected-payment-method" name="selected_payment_method" value="cash_on_delivery">
+            <input type="hidden" id="selected-payment-method" name="selected_payment_method" value="cod">
             
             <!-- Desktop Layout: Two Columns -->
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
@@ -211,7 +211,7 @@
                                     <label for="payment_{{ $value }}" 
                                            class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
                                         <div class="flex items-center">
-                                            @if($value === 'cash_on_delivery')
+                                            @if($value === 'cod')
                                                 <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4">
                                                     <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
@@ -229,7 +229,7 @@
                                             <div>
                                                 <h4 class="font-medium text-gray-900">{{ $label }}</h4>
                                                 <p class="text-sm text-gray-600">
-                                                    @if($value === 'cash_on_delivery')
+                                                    @if($value === 'cod')
                                                         Pay when your order is delivered
                                                     @else
                                                         Pay securely online before delivery
