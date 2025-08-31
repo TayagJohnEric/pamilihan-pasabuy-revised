@@ -290,9 +290,15 @@ class CustomerPaymentController extends Controller
                 ->with('error', 'Invalid order session. Please try again.');
         }
         
-        DB::beginTransaction();
-        
-        try {
+                    DB::beginTransaction();
+            
+            try {
+                Log::info('Creating COD order', [
+                    'user_id' => $user->id,
+                    'order_summary' => $orderSummary,
+                    'transaction_started' => true
+                ]);
+            
             // Create order record with processing status for COD
             $order = Order::create([
                 'customer_user_id' => $user->id,
@@ -309,17 +315,65 @@ class CustomerPaymentController extends Controller
                 'special_instructions' => $request->input('special_instructions', null),
             ]);
             
-            // Create order items from cart
+            Log::info('COD order created successfully', [
+                'order_id' => $order->id,
+                'status' => $order->status
+            ]);
+            
+            // Create order items from cart and handle stock decrementing
             foreach ($orderSummary['cart_items'] as $cartItem) {
+                $product = $cartItem->product;
+                
+                // Check stock availability for non-budget purchases
+                if (is_null($cartItem->customer_budget) && $product->quantity_in_stock < $cartItem->quantity) {
+                    throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->quantity_in_stock}, Requested: {$cartItem->quantity}");
+                }
+                
                 $order->orderItems()->create([
                     'product_id' => $cartItem->product_id,
                     'status' => 'pending',
-                    'product_name_snapshot' => $cartItem->product->product_name,
+                    'product_name_snapshot' => $product->product_name,
                     'quantity_requested' => $cartItem->quantity ?? 1,
-                    'unit_price_snapshot' => $cartItem->product->price,
+                    'unit_price_snapshot' => $product->price,
                     'customer_budget_requested' => $cartItem->customer_budget,
                     'customerNotes_snapshot' => $cartItem->customer_notes,
                 ]);
+                
+                // Decrement stock for non-budget purchases
+                if (is_null($cartItem->customer_budget)) {
+                    Log::info("Before stock decrement for product {$product->id}", [
+                        'product_name' => $product->product_name,
+                        'current_stock' => $product->quantity_in_stock,
+                        'quantity_to_decrement' => $cartItem->quantity
+                    ]);
+                    
+                    // Use raw SQL to ensure stock is decremented
+                    $oldStock = $product->quantity_in_stock;
+                    $newStock = $oldStock - $cartItem->quantity;
+                    
+                    // Force refresh from database to get latest stock value
+                    $product->refresh();
+                    
+                    // Update stock
+                    $updated = $product->update(['quantity_in_stock' => $newStock]);
+                    
+                    if (!$updated) {
+                        Log::error("Failed to update stock for product {$product->id}");
+                        throw new \Exception("Failed to update stock for product: {$product->product_name}");
+                    }
+                    
+                    // Verify the update
+                    $product->refresh();
+                    
+                    Log::info("Stock decremented for product {$product->id}", [
+                        'product_name' => $product->product_name,
+                        'quantity_decremented' => $cartItem->quantity,
+                        'old_stock' => $oldStock,
+                        'new_stock' => $newStock,
+                        'verified_stock' => $product->quantity_in_stock,
+                        'update_successful' => $updated
+                    ]);
+                }
             }
             
             // Create payment record for COD (will be completed on delivery)
@@ -335,6 +389,38 @@ class CustomerPaymentController extends Controller
             
             DB::commit();
             
+            Log::info('COD order transaction committed successfully', [
+                'order_id' => $order->id,
+                'transaction_committed' => true
+            ]);
+            
+            // For COD orders, we don't need to call finalizeOrder since order is already properly set up
+            // Just send notifications to vendors
+            $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+            
+            // Log the initial order status in history
+            $orderFulfillmentController->logOrderStatusChange(
+                $order->id, 
+                'processing', 
+                'Order placed successfully via COD', 
+                null
+            );
+            
+            $orderFulfillmentController->notifyVendorsOfNewOrder($order);
+            
+            // Notify customer that order is being prepared
+            $orderFulfillmentController->createNotification(
+                $order->customer_user_id,
+                'order_processing',
+                'Order is Being Prepared',
+                [
+                    'order_id' => $order->id,
+                    'message' => 'Your order is now being prepared by our vendors. You will be notified when it\'s ready for pickup.'
+                ],
+                \App\Models\Order::class,
+                $order->id
+            );
+            
             // Clear order summary from session
             session()->forget('order_summary');
             
@@ -343,7 +429,12 @@ class CustomerPaymentController extends Controller
             
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('COD order creation failed: ' . $e->getMessage());
+            Log::error('COD order creation failed: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'order_summary' => $orderSummary,
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return redirect()->back()
                 ->with('error', 'Order placement failed. Please try again.');
@@ -404,6 +495,10 @@ class CustomerPaymentController extends Controller
                     ShoppingCartItem::where('user_id', $order->customer_user_id)->delete();
                     
                     DB::commit();
+                    
+                    // Trigger order fulfillment after transaction is committed
+                    $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+                    $orderFulfillmentController->finalizeOrder($order);
                     
                     return redirect()->route('customer.orders.show', $order->id)
                         ->with('success', 'Payment successful! Your order is now being processed.');
@@ -570,54 +665,6 @@ class CustomerPaymentController extends Controller
         } catch (Exception $e) {
             Log::error('PayMongo verification exception: ' . $e->getMessage());
             return 'failed';
-        }
-    }
-    
-    /**
-     * Handle PayMongo webhook notifications
-     * 
-     * This method processes webhook notifications from PayMongo
-     * to update payment statuses in real-time.
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function handleWebhook(Request $request)
-    {
-        try {
-            $payload = $request->all();
-            Log::info('PayMongo webhook received', ['payload' => $payload]);
-            
-            // Verify webhook signature if webhook secret is configured
-            $webhookSecret = config('services.paymongo.webhook_secret');
-            if ($webhookSecret) {
-                // Add webhook signature verification logic here
-                // This is important for production security
-            }
-            
-            // Process the webhook based on event type
-            $eventType = $payload['type'] ?? '';
-            
-            switch ($eventType) {
-                case 'payment_intent.succeeded':
-                    // Handle successful payment
-                    $this->handlePaymentSuccess($payload);
-                    break;
-                    
-                case 'payment_intent.payment_failed':
-                    // Handle failed payment
-                    $this->handlePaymentFailure($payload);
-                    break;
-                    
-                default:
-                    Log::info('Unhandled webhook event type: ' . $eventType);
-            }
-            
-            return response()->json(['status' => 'success'], 200);
-            
-        } catch (Exception $e) {
-            Log::error('Webhook processing failed: ' . $e->getMessage());
-            return response()->json(['status' => 'error'], 500);
         }
     }
     

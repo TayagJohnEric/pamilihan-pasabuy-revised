@@ -104,8 +104,9 @@
     <nav class="flex mb-6 text-sm">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Home</a>
+                <a href="{{ route('products.index') }}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-200">Shop</a>
             </li>
+            
             <li>
                 <div class="flex items-center">
                     <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
@@ -117,35 +118,37 @@
         </ol>
     </nav>
 
-    <!-- Search Header -->
-    <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg mb-8 p-6 sm:p-8 text-white overflow-hidden relative">
-        <div class="absolute inset-0 bg-black bg-opacity-10"></div>
-        <div class="relative max-w-3xl">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 leading-tight">
-              Search Results
-            </h1>
-            <p class="text-md sm:text-lg mb-5 text-emerald-100 max-w-2xl">
-                Results for: <span class="font-semibold text-white">"{{ $searchTerm }}"</span>
-            </p>
-            
-            <!-- Enhanced Search Bar with Icon Inside -->
-            <form method="GET" action="{{ route('products.search') }}" class="max-w-2xl">
-                <div class="search-input-wrapper">
-                    <input 
-                        id="product-search"
-                        type="text" 
-                        name="q" 
-                        value="{{ $searchTerm }}"
-                        placeholder="Search for products, vendors, categories..." 
-                        class="w-full px-5 py-4 rounded-xl text-gray-900 border-0 focus:ring-4 focus:ring-white focus:ring-opacity-30 shadow-lg placeholder-gray-500 text-base focus-ring"
-                    >
-                    <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-            </form>
-        </div>
+   <!-- Search Header with Background Image -->
+<div class="relative rounded-xl shadow-lg mb-8 p-6 sm:p-8 text-white overflow-hidden bg-cover bg-center" 
+     style="background-image: url('{{ asset('images/bg-banner.png') }}');">
+ <div class="absolute inset-0 bg-emerald-700/60 rounded-xl"></div> <!-- Optional overlay for better text readability -->
+ 
+    <div class="relative max-w-3xl">
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 leading-tight">
+            Search Results
+        </h1>
+        <p class="text-md sm:text-lg mb-5 text-emerald-100 max-w-2xl">
+            Results for: <span class="font-semibold text-white">"{{ $searchTerm }}"</span>
+        </p>
+        
+        <!-- Enhanced Search Bar with Icon Inside -->
+        <form method="GET" action="{{ route('products.search') }}" class="max-w-2xl">
+            <div class="search-input-wrapper">
+                <input 
+                    id="product-search"
+                    type="text" 
+                    name="q" 
+                    value="{{ $searchTerm }}"
+                    placeholder="Search for products, vendors, categories..." 
+                    class="w-full px-5 py-4 rounded-xl text-gray-900 border-0 focus:ring-4 focus:ring-white focus:ring-opacity-30 shadow-lg placeholder-gray-500 text-base focus-ring"
+                >
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </form>
     </div>
+</div>
 
      <!-- Categories -->
     @if($categories->count() > 0)

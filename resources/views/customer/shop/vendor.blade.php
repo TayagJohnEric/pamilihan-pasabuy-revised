@@ -60,11 +60,7 @@
             <li class="inline-flex items-center">
                 <a href="{{ route('products.index') }}" 
                    class="text-gray-600 hover:text-emerald-600 transition-colors duration-200 font-medium flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L10 4.414l6.293 6.293a1 1 0 001.414-1.414l-7-7z"/>
-                        <path d="M13 17v-6h-2v6h2z"/>
-                    </svg>
-                    Home
+                    Shop
                 </a>
             </li>
             <li>
@@ -80,24 +76,28 @@
 
     <!-- Enhanced Vendor Header -->
     <div class="glass-effect rounded-2xl shadow-luxury mb-10 overflow-hidden border border-white/20 animate-fade-scale">
-        <!-- Enhanced Banner with Gradient Overlay -->
-        @if($vendor->shop_banner_url)
-            <div class="h-52 sm:h-72 relative overflow-hidden">
-                <img 
-                    src="{{ $vendor->shop_banner_url }}" 
-                    alt="{{ $vendor->vendor_name }} banner"
-                    class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                >
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-600/30 via-emerald-600/20 to-teal-600/30"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-            </div>
-        @else
-            <div class="h-52 sm:h-72 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 relative overflow-hidden">
-                <div class="absolute inset-0 opacity-20">
-                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>')] bg-repeat"></div>
+       <!-- Enhanced Banner with Gradient Overlay and Default Fallback -->
+            @if($vendor->shop_banner_url)
+                <div class="h-52 sm:h-72 relative overflow-hidden">
+                    <img 
+                        src="{{ $vendor->shop_banner_url }}" 
+                        alt="{{ $vendor->vendor_name }} banner"
+                        class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600/30 via-emerald-600/20 to-teal-600/30"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                 </div>
-            </div>
-        @endif
+            @else
+                <div class="h-52 sm:h-72 relative overflow-hidden">
+                    <img 
+                        src="{{ asset('images/bg-banner.png') }}" 
+                        alt="Default banner"
+                        class="w-full h-full object-cover"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600/30 via-emerald-600/20 to-teal-600/30"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                </div>
+            @endif
 
         <!-- Enhanced Vendor Info -->
         <div class="relative px-6 pb-8">
@@ -132,7 +132,7 @@
                 <div class="flex-1 pt-6">
                     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
                         <div class="flex-1">
-                            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">{{ $vendor->vendor_name }}</h1>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">{{ $vendor->vendor_name }}</h1>
                             
                             <!-- Enhanced Info Tags -->
                             <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-4">
@@ -246,24 +246,29 @@
     <!-- Enhanced Products Section -->
     <div class="animate-slide-in">
         <div class="sm:max-w-[90rem] sm:mx-auto">
-            <!-- Enhanced Section Header -->
-            <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-2xl p-6 mb-8 shadow-lg">
-                <h2 class="text-2xl font-bold text-white flex items-center">
-                    <div class="bg-white/20 rounded-xl p-2 mr-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white">
-                            <circle cx="8" cy="21" r="1"/>
-                            <circle cx="19" cy="21" r="1"/>
-                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-                        </svg>
-                    </div>
-                    @if(request()->hasAny(['search', 'category', 'min_price', 'max_price']))
-                        Filtered Products
-                    @else
-                        All Products
-                    @endif
-                </h2>
-                <p class="text-emerald-100 mt-2">Discover quality products from {{ $vendor->vendor_name }}</p>
+           <!-- Enhanced Section Header with Background Image -->
+<div class="relative rounded-2xl p-6 mb-8 shadow-lg bg-cover bg-center" 
+     style="background-image: url('{{ asset('images/bg-banner.png') }}');">
+    <div class="absolute inset-0 bg-emerald-800/50 rounded-2xl"></div> <!-- Overlay for readability -->
+
+    <div class="relative">
+        <h2 class="text-2xl font-bold text-white flex items-center">
+            <div class="bg-white/20 rounded-xl p-2 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white">
+                    <circle cx="8" cy="21" r="1"/>
+                    <circle cx="19" cy="21" r="1"/>
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                </svg>
             </div>
+            @if(request()->hasAny(['search', 'category', 'min_price', 'max_price']))
+                Filtered Products
+            @else
+                All Products
+            @endif
+        </h2>
+        <p class="text-emerald-100 mt-2">Discover quality products from {{ $vendor->vendor_name }}</p>
+    </div>
+</div>
 
             @if($products->count() > 0)
                 <!-- Enhanced Product Grid -->

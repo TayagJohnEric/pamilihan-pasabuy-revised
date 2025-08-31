@@ -78,30 +78,34 @@
 </style>
 
 <div class="max-w-[90rem] mx-auto px-3 sm:px-6 lg:px-8">
-    <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-md mb-8 p-6 sm:p-8 text-white animate-slide-in">
-        <div class="max-w-4xl">
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 leading-tight">
-                Fresh from <span class="text-emerald-200">Local Vendors</span>
-            </h1>
-            <p class="text-md sm:text-lg mb-5 text-emerald-100 max-w-2xl">
-                Discover premium quality products from trusted vendors in your community
-            </p>
+    <!-- Hero Section with Background Image -->
+<div class="relative rounded-xl shadow-md mb-8 p-6 sm:p-8 text-white animate-slide-in bg-cover bg-center" 
+     style="background-image: url('{{ asset('images/bg-banner.png') }}');">
+    <div class="absolute inset-0 bg-emerald-700/60 rounded-xl"></div> <!-- Optional overlay for better text readability -->
 
-            <!-- Search Bar -->
-            <form method="GET" action="{{ route('products.search') }}" class="max-w-3xl">
-                <div class="search-input-wrapper">
-                    <label for="product-search" class="sr-only">Search products</label>
-                    <input id="product-search" type="text" name="q" value="{{ request('search') }}" placeholder="Search products, vendors, or categories..." class="w-full px-5 py-4 rounded-xl text-gray-900 border-0 focus:ring-4 focus:ring-emerald-300/50 shadow-lg placeholder-gray-500 text-lg" aria-label="Search products, vendors, or categories">
-                    <button type="submit" class="search-icon" aria-label="Search products">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </form>
-        </div>
+    <div class="relative max-w-4xl">
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 leading-tight">
+            Fresh from <span class="text-emerald-200">Local Vendors</span>
+        </h1>
+        <p class="text-md sm:text-lg mb-5 text-emerald-100 max-w-2xl">
+            Discover premium quality products from trusted vendors in your community
+        </p>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{{ route('products.search') }}" class="max-w-3xl">
+            <div class="search-input-wrapper">
+                <label for="product-search" class="sr-only">Search products</label>
+                <input id="product-search" type="text" name="q" value="{{ request('search') }}" placeholder="Search products, vendors, or categories..." class="w-full px-5 py-4 rounded-xl text-gray-900 border-0 focus:ring-4 focus:ring-emerald-300/50 shadow-lg placeholder-gray-500 text-lg" aria-label="Search products, vendors, or categories">
+                <button type="submit" class="search-icon" aria-label="Search products">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- Categories -->
     @if($categories->count() > 0)
@@ -161,39 +165,46 @@
                                  role="listitem"
                                  tabindex="0">
                             
-                            <!-- Banner Section -->
-                            <div class="relative h-20 sm:h-24 overflow-hidden">
-                                @if($vendor->shop_banner_url)
-                                    <img src="{{ asset('storage/' . $vendor->shop_banner_url) }}" 
-                                         alt="Banner for {{ $vendor->vendor_name }}" 
-                                         class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                         loading="lazy">
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"></div>
-                                @endif
-                                
-                                <!-- Status Badge Overlay -->
-                                <div class="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
-                                     @if($vendor->verification_status === 'verified')
-                                                <span class="inline-flex items-center text-green-800 bg-green-100 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm flex-shrink-0"
-                                                      title="Verified vendor">
-                                                    <svg class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                    Verified
-                                                </span>
-                                    @endif
+                            <!-- Banner Section with Default Fallback and Vendor Name -->
+<div class="relative h-20 sm:h-24 overflow-hidden">
+    @if($vendor->shop_banner_url)
+        <img src="{{ asset('storage/' . $vendor->shop_banner_url) }}" 
+             alt="Banner for {{ $vendor->vendor_name }}" 
+             class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+             loading="lazy">
+    @else
+        <img src="{{ asset('images/bg-banner.png') }}" 
+             alt="Default banner" 
+             class="w-full h-full object-cover">
+    @endif
 
-                                    <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm
-                                                {{ $vendor->is_accepting_orders 
-                                                   ? 'bg-green-100 text-green-800 border border-green-200' 
-                                                   : 'bg-red-100 text-red-800 border border-red-200' }}">
-                                        <span class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5 
-                                                    {{ $vendor->is_accepting_orders ? 'bg-green-400' : 'bg-red-400' }}"></span>
-                                        {{ $vendor->is_accepting_orders ? 'Open' : 'Closed' }}
-                                    </span>
-                                </div>
-                            </div>
+    <!-- Vendor Name Overlay -->
+    <div class="absolute bottom-2 left-3 text-white text-sm sm:text-base font-semibold drop-shadow-md">
+        {{ $vendor->vendor_name }}
+    </div>
+    
+    <!-- Status Badge Overlay -->
+    <div class="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1 sm:gap-2">
+        @if($vendor->verification_status === 'verified')
+            <span class="inline-flex items-center text-green-800 bg-green-100 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm flex-shrink-0"
+                  title="Verified vendor">
+                <svg class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                Verified
+            </span>
+        @endif
+
+        <span class="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs font-medium shadow-sm
+                    {{ $vendor->is_accepting_orders 
+                       ? 'bg-green-100 text-green-800 border border-green-200' 
+                       : 'bg-red-100 text-red-800 border border-red-200' }}">
+            <span class="w-1.5 h-1.5 rounded-full mr-1 sm:mr-1.5 
+                        {{ $vendor->is_accepting_orders ? 'bg-green-400' : 'bg-red-400' }}"></span>
+            {{ $vendor->is_accepting_orders ? 'Open' : 'Closed' }}
+        </span>
+    </div>
+</div>
 
                             <!-- Content Section -->
                             <div class="p-4 sm:p-5">

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;  //Built In Notification
 
 
 
@@ -22,6 +23,11 @@ use App\Http\Controllers\Customer\CustomerProductController;
 use App\Http\Controllers\Customer\CustomerShoppingCartController;
 use App\Http\Controllers\Customer\CustomerCheckoutController;
 use App\Http\Controllers\Customer\CustomerPaymentController;
+use App\Http\Controllers\Customer\CustomerOrderFulfillmentController;
+use App\Http\Controllers\Customer\CustomerOrderController;
+
+
+
 
 
 
@@ -128,9 +134,56 @@ Route::prefix('payment')->name('payment.')->group(function () {
         ->name('callback.failed');
 });
 
-// Optional: Webhook endpoint for PayMongo notifications (for production)
-Route::post('/webhooks/paymongo', [CustomerPaymentController::class, 'handleWebhook'])
-    ->name('webhooks.paymongo');
+Route::middleware(['auth'])->group(function () {
+    // Customer Orders Routes
+    Route::prefix('customer')->name('customer.')->group(function () {
+        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+    });
+});
+
+// Order Fulfillment Routes
+Route::middleware(['auth'])->group(function () {
+    
+    // Customer Order Status Routes
+    Route::get('/orders/{order}/status', [CustomerOrderFulfillmentController::class, 'showOrderStatus'])
+        ->name('orders.status')
+        ->middleware('can:view,order'); // Ensure customers can only view their own orders
+
+    // AJAX endpoint for real-time order status updates
+    Route::get('/orders/{order}/status-update', [CustomerOrderFulfillmentController::class, 'getOrderStatusUpdate'])
+        ->name('orders.status.update')
+        ->middleware('can:view,order');
+
+    // COD Order Processing (called after order creation)
+    Route::post('/orders/{order}/process-cod', [CustomerOrderFulfillmentController::class, 'processCodOrder'])
+        ->name('orders.process.cod')
+        ->middleware('can:update,order');
+
+    // Vendor Routes - Mark items as ready for pickup
+    Route::patch('/orders/items/ready', [CustomerOrderFulfillmentController::class, 'handleVendorItemReady'])
+        ->name('orders.items.ready')
+        ->middleware('role:vendor'); // Assuming you have role middleware
+});
+
+// Webhook Routes (No authentication - external services)
+Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentController::class, 'handlePaymentWebhook'])
+    ->name('webhooks.paymongo.payment');
+
+// Notification Routes (following your reference implementation)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+    
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.mark-as-read');
+    
+    Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.mark-all-as-read');
+    
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])
+        ->name('notifications.unread-count');
+});
 
 // Debug route for testing PayMongo configuration (remove in production)
 Route::get('/test/paymongo-config', function() {
