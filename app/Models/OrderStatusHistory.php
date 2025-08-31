@@ -8,15 +8,20 @@ class OrderStatusHistory extends Model
 {
     protected $table = 'order_status_history';
 
+    // Disable updated_at since we only have created_at
+    public $timestamps = false;
+    
     protected $fillable = [
         'order_id',
         'status',
         'notes',
         'updated_by_user_id',
+        'created_at',
     ];
 
     protected $casts = [
         'status' => 'string',
+        'created_at' => 'datetime',
     ];
 
     // Relationships

@@ -571,6 +571,7 @@ class CustomerOrderFulfillmentController extends Controller
                 'status' => $status,
                 'notes' => $notes,
                 'updated_by_user_id' => $updatedByUserId,
+                'created_at' => now(),
             ]);
             
             Log::info("Order status change logged successfully", [

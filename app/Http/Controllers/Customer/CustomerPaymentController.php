@@ -199,6 +199,15 @@ class CustomerPaymentController extends Controller
                 'special_instructions' => $request->input('special_instructions', null),
             ]);
             
+            // Log initial order creation for online payment
+            $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+            $orderFulfillmentController->logOrderStatusChange(
+                $order->id, 
+                'pending_payment', 
+                'Order created, awaiting payment', 
+                null
+            );
+            
             // Create order items from cart
             foreach ($orderSummary['cart_items'] as $cartItem) {
                 $order->orderItems()->create([
@@ -387,6 +396,30 @@ class CustomerPaymentController extends Controller
             // Clear shopping cart
             ShoppingCartItem::where('user_id', $user->id)->delete();
             
+            // Log the initial order status in history BEFORE committing the transaction
+            $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+            
+            try {
+                $orderFulfillmentController->logOrderStatusChange(
+                    $order->id, 
+                    'processing', 
+                    'Order placed successfully via COD', 
+                    null
+                );
+                
+                Log::info('Status history logged successfully for COD order', [
+                    'order_id' => $order->id,
+                    'status' => 'processing'
+                ]);
+                
+            } catch (\Exception $e) {
+                Log::error('Failed to log status history for COD order', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+                // Don't throw here, continue with the transaction
+            }
+            
             DB::commit();
             
             Log::info('COD order transaction committed successfully', [
@@ -396,16 +429,6 @@ class CustomerPaymentController extends Controller
             
             // For COD orders, we don't need to call finalizeOrder since order is already properly set up
             // Just send notifications to vendors
-            $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
-            
-            // Log the initial order status in history
-            $orderFulfillmentController->logOrderStatusChange(
-                $order->id, 
-                'processing', 
-                'Order placed successfully via COD', 
-                null
-            );
-            
             $orderFulfillmentController->notifyVendorsOfNewOrder($order);
             
             // Notify customer that order is being prepared
@@ -481,6 +504,15 @@ class CustomerPaymentController extends Controller
                         'payment_status' => 'paid'
                     ]);
                     
+                    // Log status change for online payment
+                    $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+                    $orderFulfillmentController->logOrderStatusChange(
+                        $order->id, 
+                        'processing', 
+                        'Payment verified and order confirmed', 
+                        null
+                    );
+                    
                     // Update payment record
                     $payment = $order->payment;
                     if ($payment) {
@@ -497,7 +529,6 @@ class CustomerPaymentController extends Controller
                     DB::commit();
                     
                     // Trigger order fulfillment after transaction is committed
-                    $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
                     $orderFulfillmentController->finalizeOrder($order);
                     
                     return redirect()->route('customer.orders.show', $order->id)
@@ -543,6 +574,15 @@ class CustomerPaymentController extends Controller
                     'status' => 'failed',
                     'payment_status' => 'failed'
                 ]);
+                
+                // Log status change for failed payment
+                $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+                $orderFulfillmentController->logOrderStatusChange(
+                    $order->id, 
+                    'failed', 
+                    'Payment failed via callback', 
+                    null
+                );
                 
                 // Update payment record
                 $payment = $order->payment;
@@ -688,6 +728,15 @@ class CustomerPaymentController extends Controller
                         'payment_status' => 'paid'
                     ]);
                     
+                    // Log status change for webhook payment success
+                    $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+                    $orderFulfillmentController->logOrderStatusChange(
+                        $order->id, 
+                        'processing', 
+                        'Payment verified via webhook', 
+                        null
+                    );
+                    
                     // Update payment record
                     $payment = $order->payment;
                     if ($payment) {
@@ -728,6 +777,15 @@ class CustomerPaymentController extends Controller
                         'status' => 'failed',
                         'payment_status' => 'failed'
                     ]);
+                    
+                    // Log status change for webhook payment failure
+                    $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
+                    $orderFulfillmentController->logOrderStatusChange(
+                        $order->id, 
+                        'failed', 
+                        'Payment failed via webhook', 
+                        null
+                    );
                     
                     // Update payment record
                     $payment = $order->payment;
