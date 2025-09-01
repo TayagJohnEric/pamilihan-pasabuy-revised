@@ -188,54 +188,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('notifications.unread-count');
 });
 
-// Debug route for testing PayMongo configuration (remove in production)
-Route::get('/test/paymongo-config', function() {
-    $config = [
-        'secret_key' => config('services.paymongo.secret_key') ? 'Configured' : 'Not configured',
-        'public_key' => config('services.paymongo.public_key') ? 'Configured' : 'Not configured',
-        'webhook_secret' => config('services.paymongo.webhook_secret') ? 'Configured' : 'Not configured',
-    ];
-    
-    return response()->json([
-        'message' => 'PayMongo Configuration Status',
-        'config' => $config,
-        'timestamp' => now()
-    ]);
-})->name('test.paymongo.config');
-
-// Debug route for testing session and order summary (remove in production)
-Route::get('/test/session-debug', function() {
-    return response()->json([
-        'message' => 'Session Debug Information',
-        'session_id' => session()->getId(),
-        'has_order_summary' => session()->has('order_summary'),
-        'order_summary_keys' => session()->has('order_summary') ? array_keys(session('order_summary')) : [],
-        'all_session_keys' => array_keys(session()->all()),
-        'timestamp' => now()
-    ]);
-})->middleware('auth')->name('test.session.debug');
-
-// Debug route for testing session setting (remove in production)
-Route::get('/test/session-set', function() {
-    session(['test_key' => 'test_value_' . time()]);
-    return response()->json([
-        'message' => 'Test session key set',
-        'session_id' => session()->getId(),
-        'test_key_value' => session('test_key'),
-        'timestamp' => now()
-    ]);
-})->middleware('auth')->name('test.session.set');
-
-// Debug route for testing session getting (remove in production)
-Route::get('/test/session-get', function() {
-    return response()->json([
-        'message' => 'Test session key retrieved',
-        'session_id' => session()->getId(),
-        'test_key_value' => session('test_key'),
-        'has_test_key' => session()->has('test_key'),
-        'timestamp' => now()
-    ]);
-})->middleware('auth')->name('test.session.get');
 
 
 
