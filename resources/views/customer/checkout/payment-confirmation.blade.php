@@ -407,17 +407,15 @@ $(document).ready(function() {
         createToast("{{ session('info') }}", 'info');
     @endif
 
-    // Form submission handling
+    // FIXED: Simplified form submission handling
     $('#payment-form').on('submit', function(e) {
-        e.preventDefault();
-        
         const submitBtn = $('#payment-submit-btn');
         const btnText = $('#payment-btn-text');
         
-        // Debug: Log form data
         console.log('Form submission started');
         console.log('Form action:', $(this).attr('action'));
         console.log('Form method:', $(this).attr('method'));
+        console.log('Form data:', $(this).serialize());
         
         // Disable submit button to prevent duplicate submissions
         submitBtn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed');
@@ -426,12 +424,23 @@ $(document).ready(function() {
         // Show processing message
         createToast('Preparing your secure payment...', 'info', 2000);
         
-        // Submit the form after a brief delay for UX
-        setTimeout(() => {
-            console.log('Submitting form...');
-            e.currentTarget.submit();
-        }, 1000);
+        // Let the form submit naturally - don't prevent default
+        // The browser will handle the redirect properly
+        return true;
     });
+    
+    // Add a backup timeout to re-enable the button if something goes wrong
+    setTimeout(() => {
+        const submitBtn = $('#payment-submit-btn');
+        const btnText = $('#payment-btn-text');
+        
+        if (submitBtn.prop('disabled')) {
+            submitBtn.prop('disabled', false).removeClass('opacity-75 cursor-not-allowed');
+            btnText.text('Proceed to Secure Payment');
+            console.log('Form submission timeout - button re-enabled');
+            createToast('If you\'re still on this page, there may be an issue. Please try again.', 'error');
+        }
+    }, 10000); // 10 second timeout
 });
 </script>
 @endsection

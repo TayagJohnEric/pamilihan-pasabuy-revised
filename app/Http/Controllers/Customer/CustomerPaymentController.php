@@ -160,22 +160,47 @@ class CustomerPaymentController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
+    /**
+     * Process online payment by creating PayMongo checkout session
+     * ENHANCED WITH DEBUGGING
+     */
     public function processOnlinePayment(Request $request)
     {
         $user = Auth::user();
         $orderSummary = session('order_summary');
         
-        Log::info('Payment processing started', [
+        // ENHANCED DEBUGGING
+        Log::info('=== PAYMENT PROCESSING DEBUG START ===', [
             'user_id' => $user->id,
+            'request_method' => $request->method(),
+            'request_url' => $request->fullUrl(),
             'has_order_summary' => !empty($orderSummary),
-            'payment_method' => $orderSummary['payment_method'] ?? 'none'
+            'order_summary_keys' => $orderSummary ? array_keys($orderSummary) : [],
+            'payment_method' => $orderSummary['payment_method'] ?? 'none',
+            'session_id' => session()->getId(),
+            'request_data' => $request->all()
         ]);
         
-        if (!$orderSummary || $orderSummary['payment_method'] !== 'online_payment') {
-            Log::warning('Invalid payment session', [
+        // Check if order summary exists
+        if (!$orderSummary) {
+            Log::error('Order summary not found in session', [
                 'user_id' => $user->id,
-                'order_summary' => $orderSummary
+                'session_data' => session()->all(),
+                'cart_items_count' => ShoppingCartItem::where('user_id', $user->id)->count()
             ]);
+            
+            return redirect()->route('checkout.index')
+                ->with('error', 'Order session expired. Please complete checkout again.');
+        }
+        
+        // Validate payment method
+        if ($orderSummary['payment_method'] !== 'online_payment') {
+            Log::warning('Invalid payment method for online processing', [
+                'user_id' => $user->id,
+                'expected' => 'online_payment',
+                'actual' => $orderSummary['payment_method']
+            ]);
+            
             return redirect()->route('checkout.index')
                 ->with('error', 'Invalid payment session. Please try again.');
         }
@@ -183,6 +208,13 @@ class CustomerPaymentController extends Controller
         DB::beginTransaction();
         
         try {
+            Log::info('Creating order for online payment', [
+                'user_id' => $user->id,
+                'delivery_address_id' => $orderSummary['delivery_address']->id ?? 'missing',
+                'total_amount' => $orderSummary['total_amount'] ?? 'missing',
+                'cart_items_count' => count($orderSummary['cart_items'] ?? [])
+            ]);
+            
             // Create preliminary order record with pending_payment status
             $order = Order::create([
                 'customer_user_id' => $user->id,
@@ -199,6 +231,11 @@ class CustomerPaymentController extends Controller
                 'special_instructions' => $request->input('special_instructions', null),
             ]);
             
+            Log::info('Order created successfully', [
+                'order_id' => $order->id,
+                'user_id' => $user->id
+            ]);
+            
             // Log initial order creation for online payment
             $orderFulfillmentController = new \App\Http\Controllers\Customer\CustomerOrderFulfillmentController();
             $orderFulfillmentController->logOrderStatusChange(
@@ -210,7 +247,7 @@ class CustomerPaymentController extends Controller
             
             // Create order items from cart
             foreach ($orderSummary['cart_items'] as $cartItem) {
-                $order->orderItems()->create([
+                $orderItem = $order->orderItems()->create([
                     'product_id' => $cartItem->product_id,
                     'status' => 'pending',
                     'product_name_snapshot' => $cartItem->product->product_name,
@@ -218,6 +255,12 @@ class CustomerPaymentController extends Controller
                     'unit_price_snapshot' => $cartItem->product->price,
                     'customer_budget_requested' => $cartItem->customer_budget,
                     'customerNotes_snapshot' => $cartItem->customer_notes,
+                ]);
+                
+                Log::info('Order item created', [
+                    'order_item_id' => $orderItem->id,
+                    'product_id' => $cartItem->product_id,
+                    'quantity' => $cartItem->quantity ?? 1
                 ]);
             }
             
@@ -229,12 +272,33 @@ class CustomerPaymentController extends Controller
                 'status' => 'pending',
             ]);
             
+            Log::info('Payment record created', [
+                'payment_id' => $payment->id,
+                'order_id' => $order->id,
+                'amount' => $orderSummary['total_amount']
+            ]);
+            
             // Create PayMongo checkout session
+            Log::info('Attempting to create PayMongo checkout session', [
+                'order_id' => $order->id,
+                'amount' => $orderSummary['total_amount']
+            ]);
+            
             $checkoutSession = $this->createPayMongoCheckout($order, $orderSummary);
             
             if (!$checkoutSession) {
+                Log::error('PayMongo checkout session creation failed', [
+                    'order_id' => $order->id,
+                    'user_id' => $user->id
+                ]);
                 throw new Exception('Failed to create PayMongo checkout session');
             }
+            
+            Log::info('PayMongo checkout session created successfully', [
+                'order_id' => $order->id,
+                'checkout_session_id' => $checkoutSession['id'],
+                'checkout_url' => $checkoutSession['checkout_url']
+            ]);
             
             // Update order with checkout session ID
             $order->update([
@@ -249,18 +313,33 @@ class CustomerPaymentController extends Controller
             
             DB::commit();
             
+            Log::info('Database transaction committed, preparing redirect', [
+                'order_id' => $order->id,
+                'checkout_url' => $checkoutSession['checkout_url']
+            ]);
+            
             // Clear order summary from session
             session()->forget('order_summary');
             
-            // Redirect to PayMongo checkout URL
-            return redirect($checkoutSession['checkout_url']);
+            // IMPORTANT: Use proper redirect with full URL
+            Log::info('Redirecting to PayMongo', [
+                'checkout_url' => $checkoutSession['checkout_url'],
+                'redirect_method' => 'away'
+            ]);
+            
+            // Use redirect()->away() for external URLs
+            return redirect()->away($checkoutSession['checkout_url']);
             
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('PayMongo checkout creation failed: ' . $e->getMessage(), [
+            
+            Log::error('=== PAYMENT PROCESSING ERROR ===', [
                 'user_id' => $user->id,
-                'order_summary' => $orderSummary,
-                'exception' => $e
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'stack_trace' => $e->getTraceAsString(),
+                'order_summary' => $orderSummary
             ]);
             
             // Provide more specific error messages
@@ -670,44 +749,75 @@ class CustomerPaymentController extends Controller
      * @param array $orderSummary
      * @return array|null
      */
-    private function createPayMongoCheckout(Order $order, array $orderSummary): ?array
+     private function createPayMongoCheckout(Order $order, array $orderSummary): ?array
     {
         try {
             // Check if PayMongo credentials are configured
             $secretKey = config('services.paymongo.secret_key');
+            
+            Log::info('PayMongo configuration check', [
+                'has_secret_key' => !empty($secretKey),
+                'secret_key_length' => $secretKey ? strlen($secretKey) : 0,
+                'config_exists' => config('services.paymongo') !== null
+            ]);
+            
             if (empty($secretKey)) {
-                Log::error('PayMongo secret key not configured');
+                Log::error('PayMongo secret key not configured', [
+                    'config_path' => 'services.paymongo.secret_key',
+                    'config_services' => config('services')
+                ]);
                 throw new Exception('Payment gateway not configured. Please contact support.');
             }
+            
+            $payloadData = [
+                'data' => [
+                    'attributes' => [
+                        'cancel_url' => route('payment.failed'),
+                        'success_url' => route('payment.success'),
+                        'line_items' => [
+                            [
+                                'name' => 'Order #' . $order->id . ' - ' . $orderSummary['item_count'] . ' items',
+                                'quantity' => 1,
+                                'amount' => (int)($orderSummary['total_amount'] * 100), // Convert to centavos
+                                'currency' => 'PHP',
+                                'description' => 'Food delivery order with ' . $orderSummary['item_count'] . ' items (including delivery fee)',
+                            ]
+                        ],
+                        'payment_method_types' => ['card', 'gcash', 'grab_pay', 'paymaya'],
+                        'description' => 'Food Delivery Order Payment',
+                        'reference_number' => (string)$order->id,
+                    ]
+                ]
+            ];
+            
+            Log::info('PayMongo API request payload', [
+                'order_id' => $order->id,
+                'payload' => $payloadData,
+                'cancel_url' => route('payment.failed'),
+                'success_url' => route('payment.success')
+            ]);
 
             $response = Http::withBasicAuth($secretKey, '')
-                ->post('https://api.paymongo.com/v1/checkout_sessions', [
-                    'data' => [
-                        'attributes' => [
-                            'cancel_url' => route('payment.failed'),
-                            'success_url' => route('payment.success'),
-                            'line_items' => [
-                                [
-                                    'name' => 'Order #' . $order->id . ' - ' . $orderSummary['item_count'] . ' items',
-                                    'quantity' => 1,
-                                    'amount' => (int)($orderSummary['total_amount'] * 100), // Convert to centavos
-                                    'currency' => 'PHP',
-                                    'description' => 'Food delivery order with ' . $orderSummary['item_count'] . ' items (including delivery fee)',
-                                ]
-                            ],
-                            'payment_method_types' => ['card', 'gcash', 'grab_pay', 'paymaya'],
-                            'description' => 'Food Delivery Order Payment',
-                            'reference_number' => (string)$order->id,
-                        ]
-                    ]
-                ]);
+                ->timeout(30) // Add timeout
+                ->post('https://api.paymongo.com/v1/checkout_sessions', $payloadData);
+            
+            Log::info('PayMongo API response', [
+                'order_id' => $order->id,
+                'status_code' => $response->status(),
+                'successful' => $response->successful(),
+                'response_headers' => $response->headers(),
+                'response_body' => $response->body()
+            ]);
             
             if ($response->successful()) {
                 $data = $response->json();
+                
                 Log::info('PayMongo checkout session created successfully', [
                     'order_id' => $order->id,
-                    'checkout_session_id' => $data['data']['id']
+                    'checkout_session_id' => $data['data']['id'],
+                    'checkout_url' => $data['data']['attributes']['checkout_url']
                 ]);
+                
                 return [
                     'id' => $data['data']['id'],
                     'checkout_url' => $data['data']['attributes']['checkout_url'],
@@ -715,17 +825,22 @@ class CustomerPaymentController extends Controller
                 ];
             }
             
-            Log::error('PayMongo API Error: ' . $response->body(), [
+            Log::error('PayMongo API Error Response', [
                 'order_id' => $order->id,
                 'status_code' => $response->status(),
-                'response_body' => $response->body()
+                'response_body' => $response->body(),
+                'response_json' => $response->json()
             ]);
+            
             return null;
             
         } catch (Exception $e) {
-            Log::error('PayMongo checkout creation exception: ' . $e->getMessage(), [
+            Log::error('PayMongo checkout creation exception', [
                 'order_id' => $order->id,
-                'exception' => $e
+                'exception_message' => $e->getMessage(),
+                'exception_file' => $e->getFile(),
+                'exception_line' => $e->getLine(),
+                'stack_trace' => $e->getTraceAsString()
             ]);
             return null;
         }
