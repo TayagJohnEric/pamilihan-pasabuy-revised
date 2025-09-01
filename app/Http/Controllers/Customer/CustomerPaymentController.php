@@ -29,6 +29,16 @@ class CustomerPaymentController extends Controller
     {
         $user = Auth::user();
         
+        // DEBUG: Log the request details
+        Log::info('Payment confirmation accessed', [
+            'user_id' => $user->id,
+            'request_method' => $request->method(),
+            'has_order_summary' => session()->has('order_summary'),
+            'session_keys' => array_keys(session()->all()),
+            'session_id' => session()->getId(),
+            'request_data' => $request->all()
+        ]);
+        
         // Check if this is a direct form submission from checkout
         if ($request->isMethod('post')) {
             // Validate the checkout form data
@@ -120,9 +130,25 @@ class CustomerPaymentController extends Controller
             // Store order summary in session for payment processing
             session(['order_summary' => $orderSummary]);
             
+            Log::info('Order summary stored in session', [
+                'user_id' => $user->id,
+                'session_id' => session()->getId(),
+                'order_summary_keys' => array_keys($orderSummary),
+                'session_has_order_summary' => session()->has('order_summary'),
+                'session_all_keys' => array_keys(session()->all())
+            ]);
+            
         } else {
             // Get order summary from session (set by checkout process)
             $orderSummary = session('order_summary');
+            
+            Log::info('Retrieved order summary from session', [
+                'user_id' => $user->id,
+                'session_id' => session()->getId(),
+                'has_order_summary' => !empty($orderSummary),
+                'order_summary_keys' => $orderSummary ? array_keys($orderSummary) : [],
+                'session_all_keys' => array_keys(session()->all())
+            ]);
             
             if (!$orderSummary) {
                 return redirect()->route('checkout.index')
@@ -178,7 +204,8 @@ class CustomerPaymentController extends Controller
             'order_summary_keys' => $orderSummary ? array_keys($orderSummary) : [],
             'payment_method' => $orderSummary['payment_method'] ?? 'none',
             'session_id' => session()->getId(),
-            'request_data' => $request->all()
+            'request_data' => $request->all(),
+            'session_all' => array_keys(session()->all())
         ]);
         
         // Check if order summary exists
@@ -186,7 +213,9 @@ class CustomerPaymentController extends Controller
             Log::error('Order summary not found in session', [
                 'user_id' => $user->id,
                 'session_data' => session()->all(),
-                'cart_items_count' => ShoppingCartItem::where('user_id', $user->id)->count()
+                'session_id' => session()->getId(),
+                'cart_items_count' => ShoppingCartItem::where('user_id', $user->id)->count(),
+                'all_session_keys' => array_keys(session()->all())
             ]);
             
             return redirect()->route('checkout.index')

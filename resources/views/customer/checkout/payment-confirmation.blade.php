@@ -416,6 +416,7 @@ $(document).ready(function() {
         console.log('Form action:', $(this).attr('action'));
         console.log('Form method:', $(this).attr('method'));
         console.log('Form data:', $(this).serialize());
+        console.log('CSRF token:', $('input[name="_token"]').val());
         
         // Disable submit button to prevent duplicate submissions
         submitBtn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed');
@@ -424,8 +425,8 @@ $(document).ready(function() {
         // Show processing message
         createToast('Preparing your secure payment...', 'info', 2000);
         
-        // Let the form submit naturally - don't prevent default
-        // The browser will handle the redirect properly
+        // IMPORTANT: Don't prevent default - let the form submit naturally
+        // The Laravel controller will handle the redirect to PayMongo
         return true;
     });
     
