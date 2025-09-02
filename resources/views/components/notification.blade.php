@@ -106,8 +106,8 @@
                     
                     <!-- Order link for order-related notifications -->
                     @if(in_array($notification->type, ['order_processing', 'rider_assigned', 'payment_failed', 'order_failed', 'rider_assignment_delayed']) && isset($notification->message['order_id']))
-                        <a href="{{ route('orders.status', $notification->message['order_id']) }}" 
-                           class="text-green-600 hover:text-green-700 text-sm font-medium ml-2 flex-shrink-0">
+                        <a href="{{ route('customer.orders.show', ['order' => $notification->message['order_id']]) }}"
+                            class="text-green-600 hover:text-green-700 text-sm font-medium ml-2 flex-shrink-0">
                             View
                         </a>
                     @endif

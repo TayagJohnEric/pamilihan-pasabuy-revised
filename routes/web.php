@@ -29,8 +29,6 @@ use App\Http\Controllers\Customer\CustomerOrderController;
 
 
 
-
-
 //Customer Authentication Routes (Login & Register)
 Route::middleware('guest')->group(function () {
     Route::get('/customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
@@ -108,82 +106,60 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/checkout/payment-confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])->name('checkout.payment-confirmation');
 });
 
-//Payment Route
+// Payment Routes - Authenticated users only
 Route::middleware(['auth'])->group(function () {
-        Route::match(['GET', 'POST'], '/payment/confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])->name('payment.confirmation');
+    // Payment confirmation page (handles both GET and POST)
+    Route::match(['GET', 'POST'], '/payment/confirmation', [CustomerPaymentController::class, 'paymentConfirmation'])
+        ->name('payment.confirmation');
 
-    Route::post('/payment/process-online', [CustomerPaymentController::class, 'processOnlinePayment'])->name('payment.process-online');
-    Route::post('/payment/process-cod', [CustomerPaymentController::class, 'processCOD'])->name('payment.process-cod');
+    // Payment processing routes
+    Route::post('/payment/process-online', [CustomerPaymentController::class, 'processOnlinePayment'])
+        ->name('payment.process-online');
+    Route::post('/payment/process-cod', [CustomerPaymentController::class, 'processCOD'])
+        ->name('payment.process-cod');
 });
 
-// PayMongo Callback Routes (no auth middleware needed for callbacks)
+// PayMongo Callback Routes (no auth middleware - external callbacks)
 Route::prefix('payment')->name('payment.')->group(function () {
-    
-    // PayMongo success callback
     Route::get('/success', [CustomerPaymentController::class, 'paymentSuccess'])
         ->name('success');
-    
-    // PayMongo failure/cancel callback  
     Route::get('/failed', [CustomerPaymentController::class, 'paymentFailed'])
         ->name('failed');
-    
-    // Alternative naming for callbacks
-    Route::get('/callback/success', [CustomerPaymentController::class, 'paymentSuccess'])
-        ->name('callback.success');
-    
-    Route::get('/callback/failed', [CustomerPaymentController::class, 'paymentFailed'])
-        ->name('callback.failed');
 });
 
-Route::middleware(['auth'])->group(function () {
-    // Customer Orders Routes
-    Route::prefix('customer')->name('customer.')->group(function () {
-        Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
-    });
-});
+// Customer Order Routes
+        Route::get('/orders', [CustomerOrderController::class, 'index'])
+        ->name('customer.orders.index')
+        ->middleware('auth');
+
+        Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])
+        ->name('customer.orders.show')
+        ->middleware('auth');
 
 // Order Fulfillment Routes
 Route::middleware(['auth'])->group(function () {
-    
-    // Customer Order Status Routes
-    Route::get('/orders/{order}/status', [CustomerOrderFulfillmentController::class, 'showOrderStatus'])
-        ->name('orders.status')
-        ->middleware('can:view,order'); // Ensure customers can only view their own orders
-
-    // AJAX endpoint for real-time order status updates
+    // Real-time order status updates (AJAX)
     Route::get('/orders/{order}/status-update', [CustomerOrderFulfillmentController::class, 'getOrderStatusUpdate'])
         ->name('orders.status.update')
         ->middleware('can:view,order');
 
-    // COD Order Processing (called after order creation)
-    Route::post('/orders/{order}/process-cod', [CustomerOrderFulfillmentController::class, 'processCodOrder'])
-        ->name('orders.process.cod')
-        ->middleware('can:update,order');
-
     // Vendor Routes - Mark items as ready for pickup
     Route::patch('/orders/items/ready', [CustomerOrderFulfillmentController::class, 'handleVendorItemReady'])
         ->name('orders.items.ready')
-        ->middleware('role:vendor'); // Assuming you have role middleware
+        ->middleware('role:vendor');
 });
 
 // Webhook Routes (No authentication - external services)
 Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentController::class, 'handlePaymentWebhook']);
 
-// Test route for debugging stock updates (remove in production)
-Route::post('/test/stock-update', [CustomerOrderFulfillmentController::class, 'testStockUpdate'])->name('test.stock-update');
-
-// Notification Routes (following your reference implementation)
+// Notification Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
-    
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
         ->name('notifications.mark-as-read');
-    
     Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.mark-all-as-read');
-    
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])
         ->name('notifications.unread-count');
 });

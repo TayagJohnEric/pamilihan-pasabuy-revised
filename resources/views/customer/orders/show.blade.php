@@ -319,36 +319,23 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Delivery Information</h2>
                     
+                     @if($order->deliveryAddress->district)
+                                <div>
+                                    <span class="font-medium text-gray-700">District:</span>
+                                    <span class="text-gray-900"> {{ $order->deliveryAddress->district->name }}, San Fernando, Pampanga</span>
+                                </div>
+                            @endif
+
                     @if($order->deliveryAddress)
                         <div class="space-y-3 text-sm">
                             <div>
                                 <span class="font-medium text-gray-700 block">Delivery Address:</span>
                                 <div class="text-gray-900 mt-1">
-                                    <p>{{ $order->deliveryAddress->address_line_1 }}</p>
-                                    @if($order->deliveryAddress->address_line_2)
-                                        <p>{{ $order->deliveryAddress->address_line_2 }}</p>
-                                    @endif
-                                    <p>{{ $order->deliveryAddress->city }}, {{ $order->deliveryAddress->state_province }}</p>
-                                    <p>{{ $order->deliveryAddress->postal_code }}</p>
-                                    @if($order->deliveryAddress->country)
-                                        <p>{{ $order->deliveryAddress->country }}</p>
-                                    @endif
+                                    <p>{{ $order->deliveryAddress->address_line1 }}</p>
+                                    <p>{{ $order->deliveryAddress->address_label }}</p>
+                                    <p>{{ $order->deliveryAddress->delivery_notes }}</p> 
                                 </div>
                             </div>
-                            
-                            @if($order->deliveryAddress->recipient_name)
-                                <div>
-                                    <span class="font-medium text-gray-700">Recipient:</span>
-                                    <span class="text-gray-900">{{ $order->deliveryAddress->recipient_name }}</span>
-                                </div>
-                            @endif
-                            
-                            @if($order->deliveryAddress->recipient_phone)
-                                <div>
-                                    <span class="font-medium text-gray-700">Phone:</span>
-                                    <span class="text-gray-900">{{ $order->deliveryAddress->recipient_phone }}</span>
-                                </div>
-                            @endif
                         </div>
                     @endif
                     
