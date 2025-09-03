@@ -85,150 +85,131 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar elements
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-            const sidebarClose = document.getElementById('sidebar-close');
+          document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar elements
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const sidebarClose = document.getElementById('sidebar-close');
 
-            // Header dropdown elements
-            const profileMenuButton = document.getElementById('profile-menu-button');
-            const profileDropdown = document.getElementById('profile-dropdown');
-            const notificationButton = document.getElementById('notification-button');
-            const notificationDropdown = document.getElementById('notification-dropdown');
-                        const closeNotificationDropdown = document.getElementById('close-notification-dropdown');
+    // Header dropdown elements
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const cartButton = document.getElementById('cart-button');
 
-            const cartButton = document.getElementById('cart-button');
+    // Sidebar functionality
+    function openSidebar() {
+        sidebar.classList.remove('sidebar-mobile-closed');
+        sidebar.classList.add('sidebar-mobile-open');
+        sidebarBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        sidebarBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+        document.body.style.overflow = 'hidden'; // Prevent body scrolling
+    }
 
-            // Sidebar functionality
-            function openSidebar() {
-                sidebar.classList.remove('sidebar-mobile-closed');
-                sidebar.classList.add('sidebar-mobile-open');
-                sidebarBackdrop.classList.remove('opacity-0', 'pointer-events-none');
-                sidebarBackdrop.classList.add('opacity-100', 'pointer-events-auto');
-                document.body.style.overflow = 'hidden'; // Prevent body scrolling
-            }
+    function closeSidebar() {
+        sidebar.classList.remove('sidebar-mobile-open');
+        sidebar.classList.add('sidebar-mobile-closed');
+        sidebarBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        document.body.style.overflow = ''; // Restore body scrolling
+    }
 
-            function closeSidebar() {
-                sidebar.classList.remove('sidebar-mobile-open');
+    // Event listeners for sidebar
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', openSidebar);
+    }
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeSidebar);
+    }
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !sidebarToggle.contains(event.target) &&
+            !sidebar.classList.contains('sidebar-mobile-closed')) {
+            closeSidebar();
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            // Desktop view - reset mobile states
+            sidebar.classList.remove('sidebar-mobile-closed', 'sidebar-mobile-open');
+            sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
+        } else {
+            // Mobile view - ensure sidebar is closed by default
+            if (!sidebar.classList.contains('sidebar-mobile-closed')) {
                 sidebar.classList.add('sidebar-mobile-closed');
-                sidebarBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
-                sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
-                document.body.style.overflow = ''; // Restore body scrolling
             }
+        }
+    });
 
-            // Event listeners for sidebar
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', openSidebar);
+    // Header dropdown functionality - ONLY for profile menu
+    if (profileMenuButton && profileDropdown) {
+        profileMenuButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            
+            // Close notification dropdown if open (let the notification component handle its own state)
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                notificationDropdown.classList.add('hidden', 'scale-95', 'opacity-0');
+                notificationDropdown.classList.remove('scale-100', 'opacity-100');
             }
-
-            if (sidebarClose) {
-                sidebarClose.addEventListener('click', closeSidebar);
-            }
-
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener('click', closeSidebar);
-            }
-
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(event) {
-                if (window.innerWidth < 768 && 
-                    !sidebar.contains(event.target) && 
-                    !sidebarToggle.contains(event.target) &&
-                    !sidebar.classList.contains('sidebar-mobile-closed')) {
-                    closeSidebar();
-                }
-            });
-
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 768) {
-                    // Desktop view - reset mobile states
-                    sidebar.classList.remove('sidebar-mobile-closed', 'sidebar-mobile-open');
-                    sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
-                    document.body.style.overflow = '';
-                } else {
-                    // Mobile view - ensure sidebar is closed by default
-                    if (!sidebar.classList.contains('sidebar-mobile-closed')) {
-                        sidebar.classList.add('sidebar-mobile-closed');
-                    }
-                }
-            });
-
-            // Header dropdown functionality
-            if (profileMenuButton && profileDropdown) {
-                profileMenuButton.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    profileDropdown.classList.toggle('hidden');
-                    // Close notification dropdown if open
-                    if (notificationDropdown) notificationDropdown.classList.add('hidden');
-                });
-            }
-
-            if (notificationButton && notificationDropdown) {
-                notificationButton.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    notificationDropdown.classList.toggle('hidden');
-                    // Close profile dropdown if open
-                    if (profileDropdown) profileDropdown.classList.add('hidden');
-                });
-            }
-
-            if (cartButton) {
-                cartButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    // Add cart functionality here
-                    alert('Cart clicked! Add your cart logic here.');
-                });
-            }
-
-            // Close dropdowns when clicking outside
-            document.addEventListener('click', function(event) {
-                if (profileMenuButton && profileDropdown && 
-                    !profileMenuButton.contains(event.target) && 
-                    !profileDropdown.contains(event.target)) {
-                    profileDropdown.classList.add('hidden');
-                }
-                
-                if (notificationButton && notificationDropdown && 
-                    !notificationButton.contains(event.target) && 
-                    !notificationDropdown.contains(event.target)) {
-                    notificationDropdown.classList.add('hidden');
-                }
-            });
-
-            //Notification Close Button in mobile size
-            closeNotificationDropdown?.addEventListener('click', function () {
-            notificationDropdown?.classList.add('hidden');
-        }); 
-
-            // Dropdown toggle functionality for navigation items
-            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    const dropdownContent = this.nextElementSibling;
-                    const arrow = this.querySelector('.dropdown-arrow');
-
-                    // Close other dropdowns
-                    dropdownToggles.forEach(otherToggle => {
-                        if (otherToggle !== this) {
-                            const otherContent = otherToggle.nextElementSibling;
-                            const otherArrow = otherToggle.querySelector('.dropdown-arrow');
-                            if (otherContent) otherContent.classList.remove('active');
-                            if (otherArrow) otherArrow.classList.remove('rotated');
-                        }
-                    });
-
-                    // Toggle current dropdown
-                    if (dropdownContent) dropdownContent.classList.toggle('active');
-                    if (arrow) arrow.classList.toggle('rotated');
-                });
-            });
         });
+    }
+
+    if (cartButton) {
+        cartButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            // Add cart functionality here
+            alert('Cart clicked! Add your cart logic here.');
+        });
+    }
+
+    // Close profile dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (profileMenuButton && profileDropdown && 
+            !profileMenuButton.contains(event.target) && 
+            !profileDropdown.contains(event.target)) {
+            profileDropdown.classList.add('hidden');
+        }
+    });
+           
+    // Dropdown toggle functionality for navigation items
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const dropdownContent = this.nextElementSibling;
+            const arrow = this.querySelector('.dropdown-arrow');
+
+            // Close other dropdowns
+            dropdownToggles.forEach(otherToggle => {
+                if (otherToggle !== this) {
+                    const otherContent = otherToggle.nextElementSibling;
+                    const otherArrow = otherToggle.querySelector('.dropdown-arrow');
+                    if (otherContent) otherContent.classList.remove('active');
+                    if (otherArrow) otherArrow.classList.remove('rotated');
+                }
+            });
+
+            // Toggle current dropdown
+            if (dropdownContent) dropdownContent.classList.toggle('active');
+            if (arrow) arrow.classList.toggle('rotated');
+        });
+    });
+});
     </script>
 </body>
 </html>
