@@ -12,6 +12,20 @@ Route::get('/', function () {
 
 
 
+// Notification Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.mark-as-read');
+    Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.mark-all-as-read');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])
+        ->name('notifications.unread-count');
+});
+
+
+
 //-------------------------------------------------Customer Route-------------------------------------------------// 
 
 use App\Http\Controllers\Auth\CustomerAuthController;
@@ -152,17 +166,7 @@ Route::middleware(['auth'])->group(function () {
 // Webhook Routes (No authentication - external services)
 Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentController::class, 'handlePaymentWebhook']);
 
-// Notification Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index'])
-        ->name('notifications.index');
-    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
-        ->name('notifications.mark-as-read');
-    Route::patch('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
-        ->name('notifications.mark-all-as-read');
-    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])
-        ->name('notifications.unread-count');
-});
+
 
 
 
@@ -178,6 +182,8 @@ use App\Http\Controllers\Vendor\VendorProfileController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorEarningController;
 use App\Http\Controllers\Vendor\VendorRatingController;
+use App\Http\Controllers\Vendor\VendorOrderController;
+
 
 //Vendor Registration & Login Routes
 Route::middleware('guest')->group(function () {
@@ -233,7 +239,52 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
     Route::get('ratings', [VendorRatingController::class, 'index'])->name('ratings.index');
 });
 
-
+        //Vendor Order Management Routes
+Route::middleware(['auth'])->group(function () {
+    
+    // Vendor Orders Routes - Protected by auth middleware
+    Route::prefix('vendor')->name('vendor.')->group(function () {
+        
+        // Main new orders listing page
+        Route::get('/orders/new', [VendorOrderController::class, 'viewNewOrders'])
+            ->name('orders.new')
+            ->middleware('role:vendor'); // Assuming you have a role middleware
+        
+        // Individual order details page
+        Route::get('/orders/{orderId}/details', [VendorOrderController::class, 'showOrderDetails'])
+            ->name('orders.details')
+            ->where('orderId', '[0-9]+') // Ensure orderId is numeric
+            ->middleware('role:vendor');
+        
+        // AJAX endpoint for real-time new orders count
+        Route::get('/orders/count', [VendorOrderController::class, 'getNewOrdersCount'])
+            ->name('orders.count')
+            ->middleware('role:vendor');
+        
+        // AJAX endpoint to acknowledge/update order item status
+        Route::post('/orders/items/{orderItemId}/acknowledge', [VendorOrderController::class, 'acknowledgeOrderItem'])
+            ->name('orders.items.acknowledge')
+            ->where('orderItemId', '[0-9]+') // Ensure orderItemId is numeric
+            ->middleware('role:vendor');
+        
+        // AJAX endpoint to add fulfillment notes to order items
+        Route::post('/orders/items/{orderItemId}/notes', [VendorOrderController::class, 'addOrderItemNotes'])
+            ->name('orders.items.notes')
+            ->where('orderItemId', '[0-9]+')
+            ->middleware('role:vendor');
+        
+        // AJAX endpoint to update pricing for budget-based items
+        Route::post('/orders/items/{orderItemId}/pricing', [VendorOrderController::class, 'updateOrderItemPricing'])
+            ->name('orders.items.pricing')
+            ->where('orderItemId', '[0-9]+')
+            ->middleware('role:vendor');
+        
+        // AJAX endpoint for order items summary (for dashboard widgets)
+        Route::get('/orders/summary', [VendorOrderController::class, 'getOrderItemsSummary'])
+            ->name('orders.summary')
+            ->middleware('role:vendor');
+    });
+});
 
 
 

@@ -332,7 +332,7 @@ class CustomerOrderFulfillmentController extends Controller
             $rider->user_id,
             'delivery_assigned',
             'New Delivery Assignment',
-            [
+            [   
                 'order_id' => $order->id,
                 'customer_name' => $order->customer->first_name . ' ' . $order->customer->last_name,
                 'delivery_fee' => $order->delivery_fee,
@@ -422,6 +422,9 @@ class CustomerOrderFulfillmentController extends Controller
             $order->id
         );
     }
+
+
+    
 
     /**
      * Notify customer of order failure
