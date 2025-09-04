@@ -1,316 +1,267 @@
 @extends('layout.vendor')
 
-@section('title', 'Order Details - Order #' . $orderInfo->order_id)
+@section('title', 'Order Details #' . $order->id)
 
 @section('content')
     <div class="max-w-[90rem] mx-auto">
-        <!-- Header Section with Back Button -->
+        <!-- Header Section -->
         <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('vendor.orders.new') }}" 
-                       class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                        Back to Orders
-                    </a>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Order #{{ $orderInfo->order_id }}</h2>
-                        <p class="text-gray-600">
-                            Ordered on {{ \Carbon\Carbon::parse($orderInfo->order_date)->format('F j, Y \a\t g:i A') }}
-                        </p>
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <div class="flex items-center space-x-4 mb-2">
+                        <a href="{{ route('vendor.orders.index') }}" 
+                           class="text-blue-600 hover:text-blue-800 font-medium">
+                            ← Back to Orders
+                        </a>
                     </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Order #{{ $order->id }}</h2>
+                    <p class="text-gray-600">Manage your items in this order</p>
                 </div>
-                
-                <!-- Order Status Badges -->
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                        @if($orderInfo->order_status === 'processing')
-                            bg-blue-100 text-blue-800
-                        @elseif($orderInfo->order_status === 'pending_payment')
-                            bg-yellow-100 text-yellow-800
-                        @elseif($orderInfo->order_status === 'delivered')
-                            bg-green-100 text-green-800
-                        @else
-                            bg-gray-100 text-gray-800
+                <div class="mt-4 lg:mt-0">
+                    <span class="px-4 py-2 text-sm font-medium rounded-lg
+                        @if($order->status === 'processing') bg-yellow-100 text-yellow-800
+                        @elseif($order->status === 'awaiting_rider_assignment') bg-blue-100 text-blue-800
+                        @elseif($order->status === 'out_for_delivery') bg-purple-100 text-purple-800
+                        @elseif($order->status === 'delivered') bg-green-100 text-green-800
+                        @else bg-gray-100 text-gray-800
                         @endif">
-                        {{ ucfirst(str_replace('_', ' ', $orderInfo->order_status)) }}
-                    </span>
-                    
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                        @if($orderInfo->payment_status === 'paid')
-                            bg-green-100 text-green-800
-                        @elseif($orderInfo->payment_status === 'pending')
-                            bg-yellow-100 text-yellow-800
-                        @else
-                            bg-red-100 text-red-800
-                        @endif">
-                        Payment: {{ ucfirst($orderInfo->payment_status) }}
+                        {{ ucwords(str_replace('_', ' ', $order->status)) }}
                     </span>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Main Content - Order Items -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Order Items Section -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Your Items in This Order</h3>
-                        <p class="text-sm text-gray-600 mt-1">{{ count($orderDetails) }} item(s) to fulfill</p>
+            <!-- Order Items Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Your Items to Fulfill</h3>
+                        <div class="flex items-center space-x-4">
+                            <button type="button" id="bulk-ready-btn" 
+                                    class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                    disabled>
+                                <span class="btn-loading hidden">
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
+                                <span class="btn-text">Mark Selected as Ready</span>
+                            </button>
+                            <div class="text-sm text-gray-600">
+                                <span id="selected-count">0</span> selected
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="p-6 space-y-6">
-                        @foreach($orderDetails as $item)
-                            <div class="border border-gray-200 rounded-lg p-4 
-                                @if($item->status === 'preparing') border-blue-300 bg-blue-50
-                                @elseif($item->status === 'ready_for_pickup') border-green-300 bg-green-50
-                                @endif">
-                                
-                                <div class="flex flex-col md:flex-row gap-4">
-                                    <!-- Product Image -->
-                                    <div class="flex-shrink-0">
-                                        @if($item->product_image)
-                                            <img src="{{ $item->product_image }}" 
-                                                 alt="{{ $item->product_name_snapshot }}"
-                                                 class="w-20 h-20 object-cover rounded-lg border">
-                                        @else
-                                            <div class="w-20 h-20 bg-gray-200 rounded-lg border flex items-center justify-center">
-                                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                </svg>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    
-                                    <!-- Product Information -->
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h4 class="text-lg font-semibold text-gray-800 mb-2">
-                                                    {{ $item->product_name_snapshot }}
-                                                </h4>
-                                                
-                                                <!-- Status Badge -->
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-2
-                                                    @if($item->status === 'pending')
-                                                        bg-yellow-100 text-yellow-800
-                                                    @elseif($item->status === 'preparing')
-                                                        bg-blue-100 text-blue-800
-                                                    @elseif($item->status === 'ready_for_pickup')
-                                                        bg-green-100 text-green-800
-                                                    @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $item->status)) }}
-                                                </span>
-                                                
-                                                @if($item->is_budget_based)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 ml-2">
-                                                        Budget-Based Item
-                                                    </span>
+
+                    <!-- Items List -->
+                    <div class="space-y-4">
+                        @foreach($order->orderItems as $item)
+                            <div class="border border-gray-200 rounded-lg p-4" data-item-id="{{ $item->id }}">
+                                <!-- Item Header -->
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-start space-x-3">
+                                        <input type="checkbox" 
+                                               class="item-checkbox mt-1"
+                                               data-item-id="{{ $item->id }}"
+                                               @if($item->status === 'ready_for_pickup') disabled @endif>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">{{ $item->product_name_snapshot }}</h4>
+                                            <div class="text-sm text-gray-600 mt-1">
+                                                <p>Requested Quantity: {{ $item->quantity_requested }} {{ $item->product->unit }}</p>
+                                                @if($item->customer_budget_requested)
+                                                    <p>Customer Budget: ₱{{ number_format($item->customer_budget_requested, 2) }}</p>
+                                                @else
+                                                    <p>Unit Price: ₱{{ number_format($item->unit_price_snapshot, 2) }}</p>
+                                                @endif
+                                                @if($item->customerNotes_snapshot)
+                                                    <p class="text-blue-600"><strong>Customer Notes:</strong> {{ $item->customerNotes_snapshot }}</p>
                                                 @endif
                                             </div>
-                                        </div>
-                                        
-                                        <!-- Item Details Grid -->
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between">
-                                                    <span class="text-gray-600">Requested Quantity:</span>
-                                                    <span class="font-medium">{{ $item->quantity_requested }} {{ $item->unit }}</span>
-                                                </div>
-                                                
-                                                <div class="flex justify-between">
-                                                    <span class="text-gray-600">Unit Price (Snapshot):</span>
-                                                    <span class="font-medium">₱{{ number_format($item->unit_price_snapshot, 2) }}</span>
-                                                </div>
-                                                
-                                                <div class="flex justify-between">
-                                                    <span class="text-gray-600">Current Product Price:</span>
-                                                    <span class="font-medium">₱{{ number_format($item->current_product_price, 2) }}</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="space-y-2">
-                                                @if($item->customer_budget_requested > 0)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-yellow-600 font-medium">Customer Budget:</span>
-                                                        <span class="font-semibold text-yellow-700">₱{{ number_format($item->customer_budget_requested, 2) }}</span>
-                                                    </div>
-                                                @endif
-                                                
-                                                @if($item->actual_item_price)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-green-600">Your Price:</span>
-                                                        <span class="font-semibold text-green-700">₱{{ number_format($item->actual_item_price, 2) }}</span>
-                                                    </div>
-                                                @endif
-                                                
-                                                @if($item->vendor_assigned_quantity_description)
-                                                    <div class="flex justify-between">
-                                                        <span class="text-blue-600">Your Quantity:</span>
-                                                        <span class="font-medium text-blue-700">{{ $item->vendor_assigned_quantity_description }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Customer Notes -->
-                                        @if($item->customerNotes_snapshot)
-                                            <div class="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
-                                                <div class="text-sm font-medium text-blue-800 mb-1">Customer Notes:</div>
-                                                <div class="text-sm text-blue-700">{{ $item->customerNotes_snapshot }}</div>
-                                            </div>
-                                        @endif
-                                        
-                                        <!-- Vendor Notes -->
-                                        @if($item->vendor_fulfillment_notes)
-                                            <div class="mt-4 p-3 bg-green-50 rounded-md border border-green-200">
-                                                <div class="text-sm font-medium text-green-800 mb-1">Your Notes:</div>
-                                                <div class="text-sm text-green-700">{{ $item->vendor_fulfillment_notes }}</div>
-                                            </div>
-                                        @endif
-                                        
-                                        <!-- Substitution Info -->
-                                        @if($item->is_substituted)
-                                            <div class="mt-4 p-3 bg-orange-50 rounded-md border border-orange-200">
-                                                <div class="text-sm font-medium text-orange-800 mb-1">Item Substituted</div>
-                                                <div class="text-sm text-orange-700">This item has been substituted with an alternative product.</div>
-                                            </div>
-                                        @endif
-                                        
-                                        <!-- Action Buttons -->
-                                        <div class="mt-4 flex flex-wrap gap-2">
-                                            @if($item->status === 'pending')
-                                                <button onclick="acknowledgeItem({{ $item->id }})"
-                                                        class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                                                    Mark as Preparing
-                                                </button>
-                                            @elseif($item->status === 'preparing')
-                                                <button onclick="markAsReady({{ $item->id }})"
-                                                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200">
-                                                    Mark as Ready
-                                                </button>
-                                            @endif
-                                            
-                                            <button onclick="addNotes({{ $item->id }})" 
-                                                    class="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200">
-                                                Add Notes
-                                            </button>
                                         </div>
                                     </div>
+                                    <div class="flex items-center space-x-3">
+                                        <select class="status-select px-3 py-1 border border-gray-300 rounded-md text-sm"
+                                                data-item-id="{{ $item->id }}" 
+                                                data-original-value="{{ $item->status }}">
+                                            <option value="pending" @if($item->status === 'pending') selected @endif>Pending</option>
+                                            <option value="preparing" @if($item->status === 'preparing') selected @endif>Preparing</option>
+                                            <option value="ready_for_pickup" @if($item->status === 'ready_for_pickup') selected @endif>Ready for Pickup</option>
+                                        </select>
+                                        <span class="status-indicator w-3 h-3 rounded-full
+                                            @if($item->status === 'ready_for_pickup') bg-green-500
+                                            @elseif($item->status === 'preparing') bg-blue-500
+                                            @else bg-yellow-400
+                                            @endif">
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Item Details Form -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    @if($item->product->is_budget_based)
+                                        <!-- Budget-based item fields -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity Description</label>
+                                            <input type="text" 
+                                                   class="vendor-quantity-desc w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                   data-item-id="{{ $item->id }}"
+                                                   data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                   value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                   placeholder="e.g., 1.25 kg, 3 pieces">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Actual Price</label>
+                                            <input type="number" 
+                                                   class="actual-price w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                   data-item-id="{{ $item->id }}"
+                                                   data-original-value="{{ $item->actual_item_price ?? '' }}"
+                                                   value="{{ $item->actual_item_price ?? '' }}"
+                                                   step="0.01"
+                                                   min="0"
+                                                   placeholder="₱0.00">
+                                        </div>
+                                    @else
+                                        <!-- Regular item fields -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity Description (Optional)</label>
+                                            <input type="text" 
+                                                   class="vendor-quantity-desc w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                   data-item-id="{{ $item->id }}"
+                                                   data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                   value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                   placeholder="Additional quantity details">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Final Price</label>
+                                            <input type="number" 
+                                                   class="actual-price w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                                   data-item-id="{{ $item->id }}"
+                                                   data-original-value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
+                                                   value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
+                                                   step="0.01"
+                                                   min="0"
+                                                   placeholder="₱0.00">
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Fulfillment Notes -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fulfillment Notes</label>
+                                    <textarea class="fulfillment-notes w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                              data-item-id="{{ $item->id }}"
+                                              data-original-value="{{ $item->vendor_fulfillment_notes ?? '' }}"
+                                              rows="2"
+                                              placeholder="Any notes about this item...">{{ $item->vendor_fulfillment_notes ?? '' }}</textarea>
+                                </div>
+
+                                <!-- Update Button -->
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm">
+                                        <span class="changes-indicator text-amber-600 hidden">
+                                            Unsaved changes
+                                        </span>
+                                    </div>
+                                    <button type="button" 
+                                            class="update-item-btn px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                                            data-item-id="{{ $item->id }}"
+                                            disabled>
+                                        <span class="btn-loading hidden">
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </span>
+                                        <span class="btn-text">Update Item</span>
+                                    </button>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
             </div>
-            
-            <!-- Sidebar - Order Information -->
-            <div class="space-y-6">
+
+            <!-- Order Information Sidebar -->
+            <div class="lg:col-span-1">
                 <!-- Customer Information -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Customer Information</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-3">
-                            <div>
-                                <div class="text-sm font-medium text-gray-600">Name</div>
-                                <div class="text-gray-800">{{ $orderInfo->customer_first_name }} {{ $orderInfo->customer_last_name }}</div>
-                            </div>
-                            
-                            @if($orderInfo->customer_email)
-                                <div>
-                                    <div class="text-sm font-medium text-gray-600">Email</div>
-                                    <div class="text-gray-800">{{ $orderInfo->customer_email }}</div>
-                                </div>
-                            @endif
-                            
-                            @if($orderInfo->customer_phone)
-                                <div>
-                                    <div class="text-sm font-medium text-gray-600">Phone</div>
-                                    <div class="text-gray-800">{{ $orderInfo->customer_phone }}</div>
-                                </div>
-                            @endif
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Customer Information</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Name</p>
+                            <p class="text-sm text-gray-900">{{ $order->customer->first_name }} {{ $order->customer->last_name }}</p>
                         </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Email</p>
+                            <p class="text-sm text-gray-900">{{ $order->customer->email }}</p>
+                        </div>
+                        @if($order->customer->phone_number)
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Phone</p>
+                                <p class="text-sm text-gray-900">{{ $order->customer->phone_number }}</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
-                
+
                 <!-- Delivery Information -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Delivery Information</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-3">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Delivery Information</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Address</p>
+                            <p class="text-sm text-gray-900">{{ $order->deliveryAddress->address_line1 }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">District</p>
+                            <p class="text-sm text-gray-900">{{ $order->deliveryAddress->district->name }}</p>
+                        </div>
+                        @if($order->deliveryAddress->delivery_notes)
                             <div>
-                                <div class="text-sm font-medium text-gray-600">Address</div>
-                                <div class="text-gray-800">
-                                    {{ $orderInfo->address_line1 }}<br>
-                                    {{ $orderInfo->district_name }}
-                                </div>
-                                @if($orderInfo->address_label)
-                                    <div class="mt-1">
-                                        <span class="inline-block bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">
-                                            {{ $orderInfo->address_label }}
-                                        </span>
-                                    </div>
-                                @endif
+                                <p class="text-sm font-medium text-gray-700">Delivery Notes</p>
+                                <p class="text-sm text-gray-900">{{ $order->deliveryAddress->delivery_notes }}</p>
                             </div>
-                            
-                            @if($orderInfo->delivery_notes)
-                                <div>
-                                    <div class="text-sm font-medium text-gray-600">Delivery Notes</div>
-                                    <div class="text-gray-800">{{ $orderInfo->delivery_notes }}</div>
-                                </div>
-                            @endif
-                            
-                            @if($orderInfo->special_instructions)
-                                <div>
-                                    <div class="text-sm font-medium text-gray-600">Special Instructions</div>
-                                    <div class="text-gray-800">{{ $orderInfo->special_instructions }}</div>
-                                </div>
-                            @endif
+                        @endif
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Delivery Fee</p>
+                            <p class="text-sm text-gray-900">₱{{ number_format($order->delivery_fee, 2) }}</p>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Payment Information -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800">Payment Information</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Payment Method</span>
-                                <span class="font-medium">
-                                    {{ $orderInfo->payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' }}
-                                </span>
+
+                <!-- Order Summary -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Order Summary</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Order Date</p>
+                            <p class="text-sm text-gray-900">{{ $order->created_at->format('M d, Y h:i A') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Payment Method</p>
+                            <p class="text-sm text-gray-900">{{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Payment Status</p>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                @if($order->payment_status === 'paid') bg-green-100 text-green-800
+                                @elseif($order->payment_status === 'pending') bg-yellow-100 text-yellow-800
+                                @else bg-red-100 text-red-800
+                                @endif">
+                                {{ ucfirst($order->payment_status) }}
+                            </span>
+                        </div>
+                        @if($order->special_instructions)
+                            <div>
+                                <p class="text-sm font-medium text-gray-700">Special Instructions</p>
+                                <p class="text-sm text-gray-900">{{ $order->special_instructions }}</p>
                             </div>
-                            
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Payment Status</span>
-                                <span class="font-medium
-                                    @if($orderInfo->payment_status === 'paid') text-green-600
-                                    @elseif($orderInfo->payment_status === 'pending') text-yellow-600
-                                    @else text-red-600
-                                    @endif">
-                                    {{ ucfirst($orderInfo->payment_status) }}
-                                </span>
-                            </div>
-                            
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Delivery Fee</span>
-                                <span class="font-medium">₱{{ number_format($orderInfo->delivery_fee, 2) }}</span>
-                            </div>
-                            
-                            <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-3 mt-3">
-                                <span>Total Order Amount</span>
-                                <span>₱{{ number_format($orderInfo->final_total_amount, 2) }}</span>
-                            </div>
+                        @endif
+                        <div class="border-t pt-3">
+                            <p class="text-sm font-medium text-gray-700">Total Amount</p>
+                            <p class="text-lg font-bold text-gray-900">₱{{ number_format($order->final_total_amount, 2) }}</p>
                         </div>
                     </div>
                 </div>
@@ -318,184 +269,266 @@
         </div>
     </div>
 
-    <!-- Success/Error Messages -->
-    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg">
-            <span id="notification-message"></span>
-        </div>
-    </div>
-    
-    <!-- Notes Modal -->
-    <div id="notesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Add Fulfillment Notes</h3>
-                <textarea id="notesTextarea" 
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          rows="4" 
-                          placeholder="Enter any notes about how you'll fulfill this item..."></textarea>
-                <div class="mt-4 flex justify-end space-x-3">
-                    <button onclick="closeNotesModal()" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Cancel
-                    </button>
-                    <button onclick="saveNotes()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Save Notes
-                    </button>
-                </div>
-            </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 hidden transition-all duration-300">
+        <div id="toast-content" class="flex items-center space-x-3">
+            <div id="toast-icon"></div>
+            <span id="toast-message"></span>
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        let currentOrderItemId = null;
-        
-        /**
-         * Acknowledge an order item and mark it as preparing
-         */
-        function acknowledgeItem(orderItemId) {
-            updateItemStatus(orderItemId, 'preparing', 'Mark as Preparing');
-        }
-        
-        /**
-         * Mark an order item as ready for pickup
-         */
-        function markAsReady(orderItemId) {
-            updateItemStatus(orderItemId, 'ready_for_pickup', 'Mark as Ready');
-        }
-        
-        /**
-         * Update order item status
-         */
-        function updateItemStatus(orderItemId, status, buttonText) {
-            const button = event.target;
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.textContent = 'Processing...';
-            
-            $.ajax({
-                url: '{{ route("vendor.orders.items.acknowledge", ":orderItemId") }}'.replace(':orderItemId', orderItemId),
-                type: 'POST',
+        $(document).ready(function() {
+            let selectedItems = new Set();
+
+            // CSRF token for AJAX requests
+            $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: { status: status },
-                success: function(response) {
-                    showNotification(response.message, 'success');
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1500);
-                },
-                error: function(xhr) {
-                    let errorMessage = 'An error occurred';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    showNotification(errorMessage, 'error');
-                    button.disabled = false;
-                    button.textContent = originalText;
                 }
             });
-        }
-        
-        /**
-         * Open notes modal for adding fulfillment notes
-         */
-        function addNotes(orderItemId) {
-            currentOrderItemId = orderItemId;
-            document.getElementById('notesModal').classList.remove('hidden');
-            document.getElementById('notesTextarea').focus();
-        }
-        
-        /**
-         * Close notes modal
-         */
-        function closeNotesModal() {
-            document.getElementById('notesModal').classList.add('hidden');
-            document.getElementById('notesTextarea').value = '';
-            currentOrderItemId = null;
-        }
-        
-        /**
-         * Save fulfillment notes
-         */
-        function saveNotes() {
-            const notes = document.getElementById('notesTextarea').value.trim();
-            
-            if (!notes) {
-                showNotification('Please enter some notes', 'error');
-                return;
-            }
-            
-            if (!currentOrderItemId) {
-                showNotification('Invalid order item', 'error');
-                return;
-            }
-            
-            $.ajax({
-                url: `/vendor/orders/items/${currentOrderItemId}/notes`, // You'll need to add this route
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: { 
-                    notes: notes
-                },
-                success: function(response) {
-                    showNotification('Notes saved successfully', 'success');
-                    closeNotesModal();
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1500);
-                },
-                error: function(xhr) {
-                    let errorMessage = 'Failed to save notes';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    showNotification(errorMessage, 'error');
+
+            // Handle checkbox selection
+            $('.item-checkbox').on('change', function() {
+                const itemId = $(this).data('item-id');
+                
+                if ($(this).is(':checked')) {
+                    selectedItems.add(itemId);
+                } else {
+                    selectedItems.delete(itemId);
                 }
+                
+                updateBulkButton();
             });
-        }
-        
-        /**
-         * Show notification message
-         */
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            const notificationMessage = document.getElementById('notification-message');
-            const notificationDiv = notification.querySelector('div');
-            
-            notificationMessage.textContent = message;
-            
-            if (type === 'success') {
-                notificationDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg';
-            } else {
-                notificationDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-lg';
+
+            // Update bulk button state
+            function updateBulkButton() {
+                const count = selectedItems.size;
+                $('#selected-count').text(count);
+                $('#bulk-ready-btn').prop('disabled', count === 0);
             }
-            
-            notification.classList.remove('hidden');
-            
-            setTimeout(function() {
-                notification.classList.add('hidden');
-            }, 4000);
-        }
-        
-        // Close modal when clicking outside
-        document.getElementById('notesModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeNotesModal();
+
+            // Handle bulk ready action
+            $('#bulk-ready-btn').on('click', function() {
+                if (selectedItems.size === 0) return;
+
+                const $btn = $(this);
+                const $btnText = $btn.find('.btn-text');
+                const $btnLoading = $btn.find('.btn-loading');
+
+                // Disable button and show loading
+                $btn.prop('disabled', true);
+                $btnText.hide();
+                $btnLoading.removeClass('hidden');
+
+                // Prepare data
+                const itemIds = Array.from(selectedItems);
+
+                $.ajax({
+                    url: '{{ route("vendor.orders.items.bulk_ready") }}',
+                    method: 'POST',
+                    data: {
+                        order_item_ids: itemIds
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', response.message);
+                            
+                            // Update UI for each item
+                            itemIds.forEach(function(itemId) {
+                                const $container = $(`[data-item-id="${itemId}"]`);
+                                const $select = $container.find('.status-select');
+                                const $indicator = $container.find('.status-indicator');
+                                const $checkbox = $container.find('.item-checkbox');
+                                
+                                // Update status
+                                $select.val('ready_for_pickup').attr('data-original-value', 'ready_for_pickup');
+                                
+                                // Update indicator
+                                $indicator.removeClass('bg-yellow-400 bg-blue-500').addClass('bg-green-500');
+                                
+                                // Disable checkbox
+                                $checkbox.prop('disabled', true).prop('checked', false);
+                                
+                                // Clear from selected items
+                                selectedItems.delete(itemId);
+                            });
+                            
+                            updateBulkButton();
+                        } else {
+                            showToast('error', response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        const message = xhr.responseJSON?.message || 'Failed to update items. Please try again.';
+                        showToast('error', message);
+                    },
+                    complete: function() {
+                        // Re-enable button and hide loading
+                        $btn.prop('disabled', false);
+                        $btnText.show();
+                        $btnLoading.addClass('hidden');
+                    }
+                });
+            });
+
+            // Handle status dropdown changes
+            $('.status-select').on('change', function() {
+                const itemId = $(this).data('item-id');
+                const newStatus = $(this).val();
+                const originalStatus = $(this).attr('data-original-value');
+                const itemContainer = $(`[data-item-id="${itemId}"]`);
+                
+                // Update status indicator immediately for better UX
+                updateStatusIndicator(itemContainer, newStatus);
+                
+                // Check if there are changes and enable/disable update button
+                checkForChanges(itemId);
+            });
+
+            // Handle input field changes
+            $('.vendor-quantity-desc, .actual-price, .fulfillment-notes').on('input', function() {
+                const itemId = $(this).data('item-id');
+                checkForChanges(itemId);
+            });
+
+            // Check for changes in item data
+            function checkForChanges(itemId) {
+                const $container = $(`[data-item-id="${itemId}"]`);
+                const $updateBtn = $container.find('.update-item-btn');
+                const $changesIndicator = $container.find('.changes-indicator');
+                
+                const $status = $container.find('.status-select');
+                const $quantityDesc = $container.find('.vendor-quantity-desc');
+                const $price = $container.find('.actual-price');
+                const $notes = $container.find('.fulfillment-notes');
+                
+                const hasChanges = 
+                    $status.val() !== $status.attr('data-original-value') ||
+                    $quantityDesc.val() !== $quantityDesc.attr('data-original-value') ||
+                    $price.val() !== $price.attr('data-original-value') ||
+                    $notes.val() !== $notes.attr('data-original-value');
+                
+                $updateBtn.prop('disabled', !hasChanges);
+                
+                if (hasChanges) {
+                    $changesIndicator.removeClass('hidden');
+                } else {
+                    $changesIndicator.addClass('hidden');
+                }
             }
-        });
-        
-        // Handle escape key for modal
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeNotesModal();
+
+            // Update status indicator visual
+            function updateStatusIndicator($container, status) {
+                const $indicator = $container.find('.status-indicator');
+                $indicator.removeClass('bg-yellow-400 bg-blue-500 bg-green-500');
+                
+                if (status === 'ready_for_pickup') {
+                    $indicator.addClass('bg-green-500');
+                } else if (status === 'preparing') {
+                    $indicator.addClass('bg-blue-500');
+                } else {
+                    $indicator.addClass('bg-yellow-400');
+                }
             }
+
+            // Handle individual item updates
+            $('.update-item-btn').on('click', function() {
+                const itemId = $(this).data('item-id');
+                const $container = $(`[data-item-id="${itemId}"]`);
+                const $btn = $(this);
+                const $btnText = $btn.find('.btn-text');
+                const $btnLoading = $btn.find('.btn-loading');
+
+                // Collect form data
+                const data = {
+                    status: $container.find('.status-select').val(),
+                    vendor_assigned_quantity_description: $container.find('.vendor-quantity-desc').val(),
+                    actual_item_price: $container.find('.actual-price').val(),
+                    vendor_fulfillment_notes: $container.find('.fulfillment-notes').val()
+                };
+
+                // Disable button and show loading
+                $btn.prop('disabled', true);
+                $btnText.hide();
+                $btnLoading.removeClass('hidden');
+
+                $.ajax({
+                    url: `/vendor/orders/items/${itemId}`,
+                    method: 'PATCH',
+                    data: data,
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', response.message);
+                            
+                            // Update original values to current values
+                            $container.find('.status-select').attr('data-original-value', data.status);
+                            $container.find('.vendor-quantity-desc').attr('data-original-value', data.vendor_assigned_quantity_description);
+                            $container.find('.actual-price').attr('data-original-value', data.actual_item_price);
+                            $container.find('.fulfillment-notes').attr('data-original-value', data.vendor_fulfillment_notes);
+                            
+                            // Hide changes indicator
+                            $container.find('.changes-indicator').addClass('hidden');
+                            
+                            // If status is ready_for_pickup, disable checkbox
+                            if (data.status === 'ready_for_pickup') {
+                                $container.find('.item-checkbox').prop('disabled', true).prop('checked', false);
+                                selectedItems.delete(itemId);
+                                updateBulkButton();
+                            }
+                        } else {
+                            showToast('error', response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        const message = xhr.responseJSON?.message || 'Failed to update item. Please try again.';
+                        showToast('error', message);
+                    },
+                    complete: function() {
+                        // Re-enable button and hide loading
+                        $btn.prop('disabled', false);
+                        $btnText.show();
+                        $btnLoading.addClass('hidden');
+                    }
+                });
+            });
+
+            // Toast notification function
+            function showToast(type, message) {
+                const $toast = $('#toast');
+                const $toastIcon = $('#toast-icon');
+                const $toastMessage = $('#toast-message');
+
+                // Reset classes
+                $toast.removeClass('bg-green-100 bg-red-100 border-green-400 border-red-400 text-green-700 text-red-700');
+                $toastIcon.empty();
+
+                if (type === 'success') {
+                    $toast.addClass('bg-green-100 border border-green-400 text-green-700');
+                    $toastIcon.html('<svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>');
+                } else {
+                    $toast.addClass('bg-red-100 border border-red-400 text-red-700');
+                    $toastIcon.html('<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>');
+                }
+
+                $toastMessage.text(message);
+                $toast.removeClass('hidden');
+
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    $toast.addClass('hidden');
+                }, 5000);
+            }
+
+            // Display any server-side flash messages
+            @if(session('success'))
+                showToast('success', '{{ session("success") }}');
+            @endif
+
+            @if(session('error'))
+                showToast('error', '{{ session("error") }}');
+            @endif
         });
     </script>
 @endsection

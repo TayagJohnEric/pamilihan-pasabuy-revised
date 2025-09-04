@@ -239,51 +239,26 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
     Route::get('ratings', [VendorRatingController::class, 'index'])->name('ratings.index');
 });
 
-        //Vendor Order Management Routes
-Route::middleware(['auth'])->group(function () {
-    
-    // Vendor Orders Routes - Protected by auth middleware
-    Route::prefix('vendor')->name('vendor.')->group(function () {
+//Vendor Order Management Routes
+Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
+    // Order Management Routes
+    Route::prefix('orders')->name('orders.')->group(function () {
+        // Display all orders containing vendor's items
+        Route::get('/', [VendorOrderController::class, 'index'])
+            ->name('index');
         
-        // Main new orders listing page
-        Route::get('/orders/new', [VendorOrderController::class, 'viewNewOrders'])
-            ->name('orders.new')
-            ->middleware('role:vendor'); // Assuming you have a role middleware
+        // Show detailed view of specific order
+        Route::get('/{order}', [VendorOrderController::class, 'show'])
+            ->name('show');
         
-        // Individual order details page
-        Route::get('/orders/{orderId}/details', [VendorOrderController::class, 'showOrderDetails'])
-            ->name('orders.details')
-            ->where('orderId', '[0-9]+') // Ensure orderId is numeric
-            ->middleware('role:vendor');
+        // Update individual order item (AJAX endpoint) - Fixed route structure
+        Route::patch('/items/{orderItem}', [VendorOrderController::class, 'updateOrderItem'])
+            ->name('items.update');
         
-        // AJAX endpoint for real-time new orders count
-        Route::get('/orders/count', [VendorOrderController::class, 'getNewOrdersCount'])
-            ->name('orders.count')
-            ->middleware('role:vendor');
-        
-        // AJAX endpoint to acknowledge/update order item status
-        Route::post('/orders/items/{orderItemId}/acknowledge', [VendorOrderController::class, 'acknowledgeOrderItem'])
-            ->name('orders.items.acknowledge')
-            ->where('orderItemId', '[0-9]+') // Ensure orderItemId is numeric
-            ->middleware('role:vendor');
-        
-        // AJAX endpoint to add fulfillment notes to order items
-        Route::post('/orders/items/{orderItemId}/notes', [VendorOrderController::class, 'addOrderItemNotes'])
-            ->name('orders.items.notes')
-            ->where('orderItemId', '[0-9]+')
-            ->middleware('role:vendor');
-        
-        // AJAX endpoint to update pricing for budget-based items
-        Route::post('/orders/items/{orderItemId}/pricing', [VendorOrderController::class, 'updateOrderItemPricing'])
-            ->name('orders.items.pricing')
-            ->where('orderItemId', '[0-9]+')
-            ->middleware('role:vendor');
-        
-        // AJAX endpoint for order items summary (for dashboard widgets)
-        Route::get('/orders/summary', [VendorOrderController::class, 'getOrderItemsSummary'])
-            ->name('orders.summary')
-            ->middleware('role:vendor');
-    });
+        // Bulk mark items as ready (AJAX endpoint) - Fixed route name
+        Route::post('/items/bulk-ready', [VendorOrderController::class, 'bulkMarkReady'])
+            ->name('items.bulk_ready');
+    }); 
 });
 
 
