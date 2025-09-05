@@ -136,150 +136,140 @@ class CustomerCheckoutController extends Controller
         ]);
     }
     
+
     /**
      * Process the checkout form and prepare order placement
      * 
      * This method handles all the customer's final decisions:
      * - Validates the form data
-     * - Processes rider selection logic
      * - Prepares order data for final confirmation
-     * 
+     *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
-    public function process(Request $request)
-    {
-        $user = Auth::user();
-        
-        // Validate the checkout form
-        $validated = $request->validate([
-            'delivery_address_id' => [
-                'required',
-                'exists:saved_addresses,id',
-                function ($attribute, $value, $fail) use ($user) {
-                    $address = SavedAddress::where('id', $value)
-                        ->where('user_id', $user->id)
+public function process(Request $request)
+{
+    $user = Auth::user();
+
+    // Validate the checkout form
+    $validated = $request->validate([
+        'delivery_address_id' => [
+            'required',
+            'exists:saved_addresses,id',
+            function ($attribute, $value, $fail) use ($user) {
+                $address = SavedAddress::where('id', $value)
+                    ->where('user_id', $user->id)
+                    ->first();
+                if (!$address) {
+                    $fail('Invalid delivery address selected.');
+                }
+            }
+        ],
+        'payment_method' => [
+            'required',
+            Rule::in(['cod', 'online_payment'])
+        ],
+        'rider_selection_type' => [
+            'required',
+            Rule::in(['choose_rider', 'system_assign'])
+        ],
+        'selected_rider_id' => [
+            'required_if:rider_selection_type,choose_rider',
+            'nullable',
+            'exists:users,id',
+            function ($attribute, $value, $fail) use ($request) {
+                if ($request->rider_selection_type === 'choose_rider' && $value) {
+                    $rider = User::with('rider')
+                        ->where('id', $value)
+                        ->where('role', 'rider')
+                        ->where('is_active', true)
+                        ->whereHas('rider', function ($query) {
+                            $query->where('is_available', true)
+                                ->where('verification_status', 'verified');
+                        })
                         ->first();
-                    if (!$address) {
-                        $fail('Invalid delivery address selected.');
+
+                    if (!$rider) {
+                        $fail('Selected rider is not available.');
                     }
                 }
-            ],
-            'payment_method' => [
-                'required',
-                Rule::in(['cod', 'online_payment'])
-            ],
-            'rider_selection_type' => [
-                'required',
-                Rule::in(['choose_rider', 'system_assign'])
-            ],
-            'selected_rider_id' => [
-                'required_if:rider_selection_type,choose_rider',
-                'nullable',
-                'exists:users,id',
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->rider_selection_type === 'choose_rider' && $value) {
-                        $rider = User::with('rider')
-                            ->where('id', $value)
-                            ->where('role', 'rider')
-                            ->where('is_active', true)
-                            ->whereHas('rider', function ($query) {
-                                $query->where('is_available', true)
-                                    ->where('verification_status', 'verified');
-                            })
-                            ->first();
-                        
-                        if (!$rider) {
-                            $fail('Selected rider is not available.');
-                        }
-                    }
-                }
-            ]
-        ]);
-        
-        // Re-validate cart items
-        $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
-            ->where('user_id', $user->id)
-            ->get();
-        
-        if ($cartItems->isEmpty()) {
+            }
+        ]
+    ]);
+
+    // Re-validate cart items
+    $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
+        ->where('user_id', $user->id)
+        ->get();
+
+    if ($cartItems->isEmpty()) {
+        return redirect()->route('cart.index')
+            ->with('error', 'Your cart is empty.');
+    }
+
+    // Final validation of cart items
+    foreach ($cartItems as $item) {
+        if (!$item->is_valid) {
             return redirect()->route('cart.index')
-                ->with('error', 'Your cart is empty.');
-        }
-        
-        // Final validation of cart items
-        foreach ($cartItems as $item) {
-            if (!$item->is_valid) {
-                return redirect()->route('cart.index')
-                    ->with('error', 'Some items in your cart are no longer available. Please review your cart.');
-            }
-        }
-        
-        // Get delivery address with district
-        $deliveryAddress = SavedAddress::with('district')
-            ->where('id', $validated['delivery_address_id'])
-            ->where('user_id', $user->id)
-            ->first();
-        
-        // Process rider selection
-        $selectedRider = null;
-        if ($validated['rider_selection_type'] === 'choose_rider') {
-            $selectedRider = User::with('rider')
-                ->where('id', $validated['selected_rider_id'])
-                ->first();
-        } else {
-            // System assign: randomly select an available rider
-            $availableRiders = User::with('rider')
-                ->whereHas('rider', function ($query) {
-                    $query->where('is_available', true)
-                        ->where('verification_status', 'verified');
-                })
-                ->where('role', 'rider')
-                ->where('is_active', true)
-                ->get();
-            
-            if ($availableRiders->isNotEmpty()) {
-                $selectedRider = $availableRiders->random();
-            } else {
-                return redirect()->back()
-                    ->with('error', 'No riders are currently available. Please try again later.')
-                    ->withInput();
-            }
-        }
-        
-        // Calculate totals
-        $subtotal = $cartItems->sum('subtotal');
-        $deliveryFee = $deliveryAddress->district->delivery_fee;
-        $totalAmount = $subtotal + $deliveryFee;
-        
-        // Prepare order summary data
-        $orderSummary = [
-            'cart_items' => $cartItems,
-            'delivery_address' => $deliveryAddress,
-            'selected_rider' => $selectedRider,
-            'payment_method' => $validated['payment_method'],
-            'rider_selection_type' => $validated['rider_selection_type'],
-            'subtotal' => $subtotal,
-            'delivery_fee' => $deliveryFee,
-            'total_amount' => $totalAmount,
-            'item_count' => $cartItems->count(),
-            'has_budget_items' => $cartItems->where('customer_budget', '!=', null)->count() > 0
-        ];
-        
-        // Store order summary in session for final confirmation
-        session(['order_summary' => $orderSummary]);
-        
-        // Redirect based on payment method
-        if ($validated['payment_method'] === 'online_payment') {
-            // For online payment, redirect to payment confirmation
-            return redirect()->route('checkout.payment-confirmation')
-                ->with('success', 'Please review your order and proceed to payment.');
-        } else {
-            // For COD, redirect to final confirmation
-            return redirect()->route('checkout.confirmation')
-                ->with('success', 'Please review your order before final confirmation.');
+                ->with('error', 'Some items in your cart are no longer available. Please review your cart.');
         }
     }
+
+    // Get delivery address with district
+    $deliveryAddress = SavedAddress::with('district')
+        ->where('id', $validated['delivery_address_id'])
+        ->where('user_id', $user->id)
+        ->first();
+
+    // Rider selection logic
+    $selectedRider = null;
+    if ($validated['rider_selection_type'] === 'choose_rider') {
+        $selectedRider = User::with('rider')
+            ->where('id', $validated['selected_rider_id'])
+            ->first();
+    } elseif ($validated['rider_selection_type'] === 'system_assign') {
+        $selectedRider = null;
+    } else {
+        return redirect()->back()
+            ->with('error', 'No riders are currently available. Please try again later.')
+            ->withInput();
+    }
+
+    // Calculate totals
+    $subtotal = $cartItems->sum('subtotal');
+    $deliveryFee = $deliveryAddress->district->delivery_fee;
+    $totalAmount = $subtotal + $deliveryFee;
+
+    // Prepare order summary data
+    $orderSummary = [
+        'cart_items' => $cartItems,
+        'delivery_address' => $deliveryAddress,
+        'selected_rider' => $selectedRider,
+        'payment_method' => $validated['payment_method'],
+        'rider_selection_type' => $validated['rider_selection_type'],
+        'subtotal' => $subtotal,
+        'delivery_fee' => $deliveryFee,
+        'total_amount' => $totalAmount,
+        'item_count' => $cartItems->count(),
+        'has_budget_items' => $cartItems->where('customer_budget', '!=', null)->count() > 0
+    ];
+
+    // Store order summary in session for final confirmation
+    session(['order_summary' => $orderSummary]);
+
+    // Redirect based on payment method
+    if ($validated['payment_method'] === 'online_payment') {
+        return redirect()->route('checkout.payment-confirmation')
+            ->with('success', 'Please review your order and proceed to payment.');
+    } else {
+        return redirect()->route('checkout.confirmation')
+            ->with('success', 'Please review your order before final confirmation.');
+    }
+}
+
+
+
+
 
     /**
  * Display final confirmation page for COD orders

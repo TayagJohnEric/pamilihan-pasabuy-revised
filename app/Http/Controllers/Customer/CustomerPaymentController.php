@@ -265,59 +265,59 @@ class CustomerPaymentController extends Controller
     
     // ==================== PRIVATE HELPER METHODS ====================
     
-    /**
-     * Process checkout form data into order summary
-     */
-    private function processCheckoutForm(Request $request): array
-    {
-        $user = Auth::user();
-        
-        $validated = $request->validate([
-            'delivery_address_id' => 'required|exists:saved_addresses,id',
-            'payment_method' => 'required|in:online_payment',
-            'rider_selection_type' => 'required|in:choose_rider,system_assign',
-            'selected_rider_id' => 'required_if:rider_selection_type,choose_rider|nullable|exists:users,id'
-        ]);
-        
-        // Get cart items and delivery address
-        $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
-            ->where('user_id', $user->id)
-            ->get();
-        
-        if ($cartItems->isEmpty()) {
-            throw new Exception('Cart is empty');
-        }
-        
-        $deliveryAddress = SavedAddress::with('district')
-            ->where('id', $validated['delivery_address_id'])
-            ->where('user_id', $user->id)
-            ->first();
-        
-        // Process rider selection
+   /**
+ * Process checkout form data into order summary
+ */
+private function processCheckoutForm(Request $request): array
+{
+    $user = Auth::user();
+    
+    $validated = $request->validate([
+        'delivery_address_id' => 'required|exists:saved_addresses,id',
+        'payment_method' => 'required|in:online_payment',
+         'rider_selection_type' => 'required|in:choose_rider,system_assign',
+        'selected_rider_id' => 'required_if:rider_selection_type,choose_rider|nullable|exists:users,id'
+    ]);
+    
+    // Get cart items and delivery address
+    $cartItems = ShoppingCartItem::with(['product.vendor', 'product'])
+        ->where('user_id', $user->id)
+        ->get();
+    
+    if ($cartItems->isEmpty()) {
+        throw new Exception('Cart is empty');
+    }
+    
+    $deliveryAddress = SavedAddress::with('district')
+        ->where('id', $validated['delivery_address_id'])
+        ->where('user_id', $user->id)
+        ->first();
+    
+      // Process rider selection
         $selectedRider = null;
         if ($validated['rider_selection_type'] === 'choose_rider') {
             $selectedRider = User::find($validated['selected_rider_id']);
         }
-        
-        // Calculate totals
-        $subtotal = $cartItems->sum('subtotal');
-        $deliveryFee = $deliveryAddress->district->delivery_fee;
-        $totalAmount = $subtotal + $deliveryFee;
-        
-        return [
-            'cart_items' => $cartItems,
-            'delivery_address' => $deliveryAddress,
-            'selected_rider' => $selectedRider,
-            'payment_method' => 'online_payment',
-            'rider_selection_type' => $validated['rider_selection_type'],
-            'subtotal' => $subtotal,
-            'delivery_fee' => $deliveryFee,
-            'total_amount' => $totalAmount,
-            'item_count' => $cartItems->count(),
-            'has_budget_items' => $cartItems->where('customer_budget', '!=', null)->count() > 0
-        ];
-    }
     
+    // Calculate totals
+    $subtotal = $cartItems->sum('subtotal');
+    $deliveryFee = $deliveryAddress->district->delivery_fee;
+    $totalAmount = $subtotal + $deliveryFee;
+    
+    return [
+        'cart_items' => $cartItems,
+        'delivery_address' => $deliveryAddress,
+        'selected_rider' => $selectedRider,
+        'payment_method' => 'online_payment',
+        'rider_selection_type' => $validated['rider_selection_type'],
+        'subtotal' => $subtotal,
+        'delivery_fee' => $deliveryFee,
+        'total_amount' => $totalAmount,
+        'item_count' => $cartItems->count(),
+        'has_budget_items' => $cartItems->where('customer_budget', '!=', null)->count() > 0
+    ];
+}
+
     /**
      * Create order record from session data
      */

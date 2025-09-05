@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('order_id')->unique()->constrained()->onDelete('cascade');
             $table->decimal('amount_paid', 8, 2);
             $table->enum('payment_method_used', ['online_payment', 'cod']);
-            $table->string('status', 20)->default('pending');
+            $table->string('status', 20)->default('pending'); // e.g., 'pending', 'completed', 'failed', 'refunded'
             $table->string('gateway_transaction_id')->nullable();
             $table->json('payment_gateway_response')->nullable();
             $table->timestamp('payment_processed_at')->nullable();

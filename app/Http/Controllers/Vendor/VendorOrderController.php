@@ -246,111 +246,159 @@ class VendorOrderController extends Controller
      */
     private function checkAndProcessOrderReadiness(Order $order)
     {
-        // Count total items vs ready items in the order
-        $totalItems = $order->orderItems()->count();
-        $readyItems = $order->orderItems()->where('status', 'ready_for_pickup')->count();
+            $totalItems = $order->orderItems()->count();
+            $readyItems = $order->orderItems()->where('status', 'ready_for_pickup')->count();
 
-        // If all items are ready, process for delivery
-        if ($totalItems === $readyItems && $totalItems > 0) {
-            // Update order status to awaiting rider assignment
+
+            if ($totalItems === $readyItems && $totalItems > 0) {
             $order->update(['status' => 'awaiting_rider_assignment']);
-            
             $this->logOrderStatusChange(
-                $order->id,
-                'awaiting_rider_assignment',
-                'All items ready for pickup - awaiting rider assignment',
-                null
-            );
-
-            // Try to assign a rider automatically
-            $this->assignBestAvailableRider($order);
-        }
-    }
-
-    /**
-     * Find and assign the best available rider automatically
-     * Uses rating and delivery count as criteria
-     */
-    private function assignBestAvailableRider(Order $order)
-    {
-        $availableRiders = Rider::with('user')
-            ->where('is_available', true)
-            ->where('verification_status', 'verified')
-            ->whereHas('user', function($query) {
-                $query->where('is_active', true);
-            })
-            ->orderBy('average_rating', 'desc')
-            ->orderBy('total_deliveries', 'asc')
-            ->get();
-
-        if ($availableRiders->isEmpty()) {
-            Log::warning("No available riders for order {$order->id}");
-            
-            // Notify customer about rider assignment delay
-            $this->createNotification(
-                $order->customer_user_id,
-                'rider_assignment_delayed',
-                'Rider Assignment Delayed',
-                [
-                    'order_id' => $order->id,
-                    'message' => 'We are currently looking for an available rider for your order.'
-                ],
-                Order::class,
-                $order->id
-            );
-            return;
-        }
-
-        $bestRider = $availableRiders->first();
-        $order->update(['rider_user_id' => $bestRider->user_id]);
-        $this->completeRiderAssignment($order, $bestRider);
-    }
-
-    /**
-     * Complete the rider assignment process
-     * Updates order status and sends notifications
-     */
-    private function completeRiderAssignment(Order $order, Rider $rider)
-    {
-        $order->update(['status' => 'out_for_delivery']);
-        
-        $this->logOrderStatusChange(
-            $order->id, 
-            'out_for_delivery', 
-            "Rider assigned: {$rider->user->first_name} {$rider->user->last_name}", 
+            $order->id,
+            'awaiting_rider_assignment',
+            'All items ready for pickup - awaiting rider assignment',
             null
-        );
+            );
 
-        // Notify customer about rider assignment
-        $this->createNotification(
-            $order->customer_user_id,
-            'rider_assigned',
-            'Rider Assigned to Your Order',
-            [
-                'order_id' => $order->id,
-                'rider_name' => $rider->user->first_name . ' ' . $rider->user->last_name,
-                'rider_phone' => $rider->user->phone_number,
-                'message' => 'Your order is now out for delivery!'
-            ],
-            Order::class,
-            $order->id
-        );
 
-        // Notify rider about new delivery assignment
-        $this->createNotification(
-            $rider->user_id,
-            'delivery_assigned',
-            'New Delivery Assignment',
-            [   
-                'order_id' => $order->id,
-                'customer_name' => $order->customer->first_name . ' ' . $order->customer->last_name,
-                'delivery_fee' => $order->delivery_fee,
-                'message' => 'You have been assigned a new delivery.'
-            ],
-            Order::class,
-            $order->id
-        );
+            // Use specific rider if preferred, otherwise fall back to auto assignment
+            if ($order->preferred_rider_id) {
+            $this->assignSpecificRider($order);
+            } else {
+            $this->assignBestAvailableRider($order);
+            }
+        }
     }
+
+/**
+* Assign specific rider chosen by customer
+*/
+private function assignSpecificRider(Order $order)
+{
+        $preferredRider = Rider::with('user')
+        ->where('user_id', $order->preferred_rider_id)
+        ->where('is_available', true)
+        ->where('verification_status', 'verified')
+        ->first();
+
+
+        if ($preferredRider && $preferredRider->user->is_active) {
+        $order->update(['rider_user_id' => $order->preferred_rider_id]);
+        $this->completeRiderAssignment($order, $preferredRider);
+        } else {
+        Log::info("Preferred rider not available, falling back to auto-assignment");
+        $this->assignBestAvailableRider($order);
+        }
+}
+
+    /**
+* Find and assign a random available rider
+* Simplifies logic by picking a rider at random from available pool
+*/
+private function assignBestAvailableRider(Order $order)
+{
+    // Initialize rider search
+    Log::info("[Rider Assignment] Starting random rider search for order {$order->id}");
+    $availableRiders = $this->getAvailableRiders();
+
+    // Log rider search results
+    Log::info("[Rider Assignment] Found {$availableRiders->count()} available riders for order {$order->id}");
+
+    // Handle case when no riders are available
+    if ($availableRiders->isEmpty()) {
+        return $this->handleNoAvailableRiders($order);
+    }
+
+    // Attempt to assign a random rider
+    return $this->attemptRiderAssignment($order, $availableRiders->first());
+}
+
+private function getAvailableRiders()
+{
+    return Rider::with('user')
+        ->where('is_available', true)
+        ->where('verification_status', 'verified')
+        ->whereHas('user', function($query) {
+            $query->where('is_active', true);
+        })
+        ->inRandomOrder()
+        ->get();
+}
+
+private function handleNoAvailableRiders(Order $order)
+{
+    Log::warning("[Rider Assignment] No available riders for order {$order->id}");
+    
+    $this->createNotification(
+        $order->customer_user_id,
+        'rider_assignment_delayed',
+        'Rider Assignment Delayed',
+        [
+            'order_id' => $order->id,
+            'message' => 'We are currently looking for an available rider for your order.'
+        ],
+        Order::class,
+        $order->id
+    );
+}
+
+private function attemptRiderAssignment(Order $order, Rider $rider)
+{
+    Log::info("[Rider Assignment] Assigning rider {$rider->id} ({$rider->user->first_name} {$rider->user->last_name}) to order {$order->id}");
+
+    try {
+        $order->update(['rider_user_id' => $rider->user_id]);
+        $this->completeRiderAssignment($order, $rider);
+        
+        Log::info("[Rider Assignment] Successfully assigned rider {$rider->id} to order {$order->id}");
+    } catch (\Exception $e) {
+        Log::error("[Rider Assignment] Failed to assign rider: " . $e->getMessage());
+    }
+}
+
+    /**
+ * Complete the rider assignment process
+ * Sends notifications but does not mark as out_for_delivery until rider accepts
+ */
+private function completeRiderAssignment(Order $order, Rider $rider)
+{
+    // Assign rider but keep status as awaiting_rider_assignment
+    $order->update(['rider_user_id' => $rider->user_id]);
+
+    $this->logOrderStatusChange(
+        $order->id, 
+        'awaiting_rider_assignment', 
+        "Rider assigned (awaiting acceptance): {$rider->user->first_name} {$rider->user->last_name}", 
+        null
+    );
+
+    // Notify customer that a rider is being assigned
+    $this->createNotification(
+        $order->customer_user_id,
+        'rider_assignment_pending',
+        'Rider Assignment in Progress',
+        [
+            'order_id' => $order->id,
+            'message' => 'A rider is being assigned to your order. Please wait for confirmation.'
+        ],
+        Order::class,
+        $order->id
+    );
+
+    // Notify rider about new delivery assignment (awaiting acceptance)
+    $this->createNotification(
+        $rider->user_id,
+        'delivery_assigned_pending',
+        'New Delivery Assignment (Action Required)',
+        [
+            'order_id' => $order->id,
+            'customer_name' => $order->customer->first_name . ' ' . $order->customer->last_name,
+            'delivery_fee' => $order->delivery_fee,
+            'message' => 'You have been assigned a new delivery. Please accept or decline.'
+        ],
+        Order::class,
+        $order->id
+    );
+}
 
     /**
      * Log order status changes for audit trail
