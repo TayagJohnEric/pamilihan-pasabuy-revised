@@ -39,6 +39,7 @@ use App\Http\Controllers\Customer\CustomerCheckoutController;
 use App\Http\Controllers\Customer\CustomerPaymentController;
 use App\Http\Controllers\Customer\CustomerOrderFulfillmentController;
 use App\Http\Controllers\Customer\CustomerOrderController;
+use App\Http\Controllers\Customer\CustomerRatingController;
 
 
 
@@ -150,6 +151,7 @@ Route::prefix('payment')->name('payment.')->group(function () {
         ->name('customer.orders.show')
         ->middleware('auth');
 
+
 // Order Fulfillment Routes
 Route::middleware(['auth'])->group(function () {
     // Real-time order status updates (AJAX)
@@ -168,7 +170,14 @@ Route::post('/webhooks/paymongo/payment-verified', [CustomerOrderFulfillmentCont
 
 
 
-
+Route::prefix('customer')->middleware(['auth'])->name('customer.')->group(function () {
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [CustomerOrderController::class, 'index'])->name('index');
+        Route::get('{order}', [CustomerOrderController::class, 'show'])->name('show');
+        Route::get('{order}/rate', [CustomerRatingController::class, 'showRatingForm'])->name('rate');
+        Route::post('{order}/rate', [CustomerRatingController::class, 'submitRating'])->name('rate.submit');
+    });
+});
 
 
     

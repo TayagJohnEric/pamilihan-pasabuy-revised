@@ -86,13 +86,22 @@
                     </button>
                 @endif
                 @if($order->status === 'delivered')
-                    <button class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                        Rate Order
-                    </button>
+                    @php
+                        $hasRated = isset($order->ratings)
+                            ? $order->ratings->where('user_id', auth()->id())->isNotEmpty()
+                            : false;
+                    @endphp
+                    @if(!$hasRated)
+                        <a href="{{ route('customer.orders.rating.create', $order) }}"
+                           class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Rate Order
+                        </a>
+                    @else
+                        <span class="px-6 py-2 bg-gray-100 text-gray-600 rounded-md cursor-not-allowed">
+                            Rated
+                        </span>
+                    @endif
                 @endif
-                <button class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
-                    Download Invoice
-                </button>
             </div>
         </div>
 

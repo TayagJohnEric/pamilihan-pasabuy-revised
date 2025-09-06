@@ -77,7 +77,8 @@ class CustomerOrderController extends Controller
             'deliveryAddress',
             'rider',
             'payment',
-            'statusHistory.updatedBy'
+            'statusHistory.updatedBy',
+            'ratings'
         ]);
 
         return view('customer.orders.show', compact('order'));
