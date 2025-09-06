@@ -272,6 +272,7 @@ use App\Http\Controllers\Rider\RiderDashboardController;
 use App\Http\Controllers\Rider\RiderProfileController;
 use App\Http\Controllers\Rider\RiderEarningsController;
 use App\Http\Controllers\Rider\RiderRatingController;
+use App\Http\Controllers\Rider\RiderOrderController;
 
 // Rider Registration & Login Routes
 Route::middleware('guest')->group(function () {
@@ -307,7 +308,40 @@ Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->grou
 });
 
 
-
+// Rider Order Management Routes
+Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
+    
+    // Order management routes
+    Route::prefix('orders')->name('orders.')->group(function () {
+        // Display rider dashboard with pending assignments and active deliveries
+        Route::get('/', [App\Http\Controllers\Rider\RiderOrderController::class, 'index'])
+            ->name('index');
+        
+        // Show detailed view of specific order
+        Route::get('/{order}', [App\Http\Controllers\Rider\RiderOrderController::class, 'show'])
+            ->name('show');
+        
+        // Accept an assigned order (AJAX + regular)
+        Route::patch('/{order}/accept', [App\Http\Controllers\Rider\RiderOrderController::class, 'acceptOrder'])
+            ->name('accept');
+        
+        // Decline an assigned order (AJAX + regular)
+        Route::patch('/{order}/decline', [App\Http\Controllers\Rider\RiderOrderController::class, 'declineOrder'])
+            ->name('decline');
+        
+        // Confirm pickup from vendor (AJAX + regular)
+        Route::patch('/{order}/pickup', [App\Http\Controllers\Rider\RiderOrderController::class, 'confirmPickup'])
+            ->name('pickup');
+        
+        // Mark order as delivered (AJAX + regular)
+        Route::patch('/{order}/delivered', [App\Http\Controllers\Rider\RiderOrderController::class, 'markDelivered'])
+            ->name('delivered');
+    });
+    
+    // Rider availability toggle (AJAX + regular)
+    Route::patch('/availability/toggle', [App\Http\Controllers\Rider\RiderOrderController::class, 'toggleAvailability'])
+        ->name('availability.toggle');
+});
 
 
 
