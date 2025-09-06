@@ -26,6 +26,8 @@
                 <div class="flex items-center space-x-3">
                     <span class="px-3 py-2 rounded-lg font-medium text-sm
                         {{ $order->status === 'awaiting_rider_assignment' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                        {{ $order->status === 'assigned' ? 'bg-indigo-100 text-indigo-800' : '' }}
+                        {{ $order->status === 'pickup_confirmed' ? 'bg-purple-100 text-purple-800' : '' }}
                         {{ $order->status === 'out_for_delivery' ? 'bg-blue-100 text-blue-800' : '' }}
                         {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}">
                         {{ strtoupper(str_replace('_', ' ', $order->status)) }}
@@ -46,12 +48,19 @@
                             data-order-id="{{ $order->id }}">
                         Decline Order
                     </button>
-                @elseif($order->status === 'out_for_delivery')
+                @elseif($order->status === 'assigned')
                     <button id="confirm-pickup-btn" 
                             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
                             data-order-id="{{ $order->id }}">
                         Confirm Pickup
                     </button>
+                @elseif($order->status === 'pickup_confirmed')
+                    <button id="start-delivery-btn" 
+                            class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
+                            data-order-id="{{ $order->id }}">
+                        Start Delivery
+                    </button>
+                @elseif($order->status === 'out_for_delivery')
                     <button id="mark-delivered-btn" 
                             class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
                             data-order-id="{{ $order->id }}">
@@ -296,7 +305,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())
@@ -332,7 +342,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())
@@ -359,7 +370,7 @@
                 });
             }
 
-            // Handle pickup confirmation
+            // Handle pickup confirmation (assigned -> pickup_confirmed)
             const pickupBtn = document.getElementById('confirm-pickup-btn');
             if (pickupBtn) {
                 pickupBtn.addEventListener('click', function() {
@@ -372,7 +383,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())
@@ -384,6 +396,43 @@
                                 location.reload();
                             } else {
                                 alert(data.message || 'Failed to confirm pickup.');
+                            }
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                    }
+                });
+            }
+
+            // Handle start delivery (pickup_confirmed -> out_for_delivery)
+            const startDeliveryBtn = document.getElementById('start-delivery-btn');
+            if (startDeliveryBtn) {
+                startDeliveryBtn.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    
+                    if (confirm('Start delivery and mark order as out for delivery?')) {
+                        showLoading();
+                        
+                        fetch(`/rider/orders/${orderId}/start-delivery`, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoading();
+                            
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
+                            } else {
+                                alert(data.message || 'Failed to start delivery.');
                             }
                         })
                         .catch(error => {
@@ -414,7 +463,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())

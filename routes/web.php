@@ -333,6 +333,10 @@ Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->grou
         Route::patch('/{order}/pickup', [App\Http\Controllers\Rider\RiderOrderController::class, 'confirmPickup'])
             ->name('pickup');
         
+        // Start delivery (AJAX + regular)
+        Route::patch('/{order}/start-delivery', [App\Http\Controllers\Rider\RiderOrderController::class, 'startDelivery'])
+            ->name('start-delivery');
+        
         // Mark order as delivered (AJAX + regular)
         Route::patch('/{order}/delivered', [App\Http\Controllers\Rider\RiderOrderController::class, 'markDelivered'])
             ->name('delivered');

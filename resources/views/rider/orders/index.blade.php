@@ -279,7 +279,8 @@
                     method: 'PATCH',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                 .then(response => response.json())
@@ -340,7 +341,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())
@@ -379,7 +381,8 @@
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(response => response.json())

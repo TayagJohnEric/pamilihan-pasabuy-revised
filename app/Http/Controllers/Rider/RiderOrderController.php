@@ -39,9 +39,9 @@ class RiderOrderController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get current active deliveries
+        // Get current active deliveries (accepted, picked up, or already on the way)
         $activeDeliveries = Order::where('rider_user_id', Auth::id())
-            ->whereIn('status', ['out_for_delivery'])
+            ->whereIn('status', ['assigned', 'pickup_confirmed', 'out_for_delivery'])
             ->with([
                 'customer',
                 'deliveryAddress.district',
@@ -97,7 +97,7 @@ class RiderOrderController extends Controller
 
     /**
      * Accept an assigned order
-     * Changes status from awaiting_rider_assignment to out_for_delivery
+     * Changes status from awaiting_rider_assignment to assigned
      */
     public function acceptOrder(Request $request, Order $order)
     {
@@ -129,18 +129,18 @@ class RiderOrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update order status to out_for_delivery
-            $order->update(['status' => 'out_for_delivery']);
+            // Update order status to assigned
+            $order->update(['status' => 'assigned']);
 
             // Log status change
             $this->logOrderStatusChange(
                 $order->id,
-                'out_for_delivery',
+                'assigned',
                 'Rider accepted delivery assignment',
                 Auth::id()
             );
 
-            // Notify customer that rider accepted and order is out for delivery
+            // Notify customer that rider accepted the assignment
             $this->createNotification(
                 $order->customer_user_id,
                 'rider_assigned',
@@ -149,11 +149,14 @@ class RiderOrderController extends Controller
                     'order_id' => $order->id,
                     'rider_name' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
                     'rider_phone' => Auth::user()->phone_number,
-                    'message' => 'Your order is now out for delivery!'
+                    'message' => 'Your order has been assigned to a rider and will be picked up soon.'
                 ],
                 Order::class,
                 $order->id
             );
+
+            // Set rider availability to false upon accepting an order
+            $rider->update(['is_available' => false]);
 
             DB::commit();
 
@@ -176,6 +179,80 @@ class RiderOrderController extends Controller
             }
             
             return redirect()->back()->with('error', 'Failed to accept order. Please try again.');
+        }
+    }
+
+    /**
+     * Start delivery (rider en route)
+     * Transitions order from pickup_confirmed to out_for_delivery and notifies customer
+     */
+    public function startDelivery(Request $request, Order $order)
+    {
+        $rider = Auth::user()->rider;
+        
+        if (!$rider) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Rider profile not found.'], 403);
+            }
+            return redirect()->route('rider.dashboard')->with('error', 'Rider profile not found.');
+        }
+
+        // Verify rider and current status
+        if ($order->rider_user_id !== Auth::id() || $order->status !== 'pickup_confirmed') {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Unable to start delivery for this order.'], 403);
+            }
+            return redirect()->back()->with('error', 'Unable to start delivery for this order.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Update status to out_for_delivery
+            $order->update(['status' => 'out_for_delivery']);
+
+            // Log status change
+            $this->logOrderStatusChange(
+                $order->id,
+                'out_for_delivery',
+                'Rider started delivery - en route to customer',
+                Auth::id()
+            );
+
+            // Notify customer that order is on the way
+            $this->createNotification(
+                $order->customer_user_id,
+                'order_out_for_delivery',
+                'Your Order is On the Way!',
+                [
+                    'order_id' => $order->id,
+                    'rider_name' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
+                    'message' => 'Your order is now out for delivery.'
+                ],
+                Order::class,
+                $order->id
+            );
+
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Delivery started successfully!'
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Delivery started successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error starting delivery: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to start delivery. Please try again.'], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Failed to start delivery. Please try again.');
         }
     }
 
@@ -254,7 +331,7 @@ class RiderOrderController extends Controller
 
     /**
      * Confirm pickup from vendor
-     * Updates order status and notifies customer that order is on the way
+     * Updates order status to pickup_confirmed and notifies customer
      */
     public function confirmPickup(Request $request, Order $order)
     {
@@ -267,8 +344,8 @@ class RiderOrderController extends Controller
             return redirect()->route('rider.dashboard')->with('error', 'Rider profile not found.');
         }
 
-        // Verify this rider is assigned to this order
-        if ($order->rider_user_id !== Auth::id() || $order->status !== 'out_for_delivery') {
+        // Verify this rider is assigned to this order and order is in assigned state
+        if ($order->rider_user_id !== Auth::id() || $order->status !== 'assigned') {
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Unable to confirm pickup for this order.'], 403);
             }
@@ -278,23 +355,31 @@ class RiderOrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Log pickup confirmation (keep status as out_for_delivery)
+            // Update order status to pickup_confirmed and log
+            $order->update(['status' => 'pickup_confirmed']);
+
             $this->logOrderStatusChange(
                 $order->id,
-                'out_for_delivery',
-                'Items picked up from vendor - on the way to customer',
+                'pickup_confirmed',
+                'Items picked up from vendor - ready to start delivery',
                 Auth::id()
             );
 
-            // Notify customer that order is on the way
+            // Also mark all order items that were ready_for_pickup as picked_up
+            // This ensures vendors see the correct per-item pickup status
+            $order->orderItems()
+                ->where('status', 'ready_for_pickup')
+                ->update(['status' => 'picked_up']);
+
+            // Notify customer that items have been picked up
             $this->createNotification(
                 $order->customer_user_id,
                 'order_picked_up',
-                'Your Order is On the Way!',
+                'Order Items Picked Up',
                 [
                     'order_id' => $order->id,
                     'rider_name' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
-                    'message' => 'Your order has been picked up and is on the way to you!'
+                    'message' => 'Your items have been picked up. The rider will start delivery shortly.'
                 ],
                 Order::class,
                 $order->id
@@ -360,6 +445,14 @@ class RiderOrderController extends Controller
             // Update rider performance stats
             $rider->increment('total_deliveries');
             $rider->increment('daily_deliveries');
+
+            // If no other active orders, set rider as available again
+            $activeCount = Order::where('rider_user_id', Auth::id())
+                ->whereIn('status', ['assigned', 'pickup_confirmed', 'out_for_delivery'])
+                ->count();
+            if ($activeCount === 0) {
+                $rider->update(['is_available' => true]);
+            }
 
             // Log delivery completion
             $this->logOrderStatusChange(

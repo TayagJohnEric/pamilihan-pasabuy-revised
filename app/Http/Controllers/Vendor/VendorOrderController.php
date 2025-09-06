@@ -111,7 +111,7 @@ class VendorOrderController extends Controller
 
         // Validate request data
         $request->validate([
-            'status' => 'required|in:pending,preparing,ready_for_pickup',
+            'status' => 'required|in:pending,preparing,ready_for_pickup,picked_up',
             'vendor_assigned_quantity_description' => 'nullable|string|max:255',
             'actual_item_price' => 'nullable|numeric|min:0',
             'vendor_fulfillment_notes' => 'nullable|string|max:500'
