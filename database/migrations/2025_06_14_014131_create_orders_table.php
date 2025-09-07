@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('preferred_rider_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('delivery_address_id')->constrained('saved_addresses')->onDelete('restrict');
             $table->timestamp('order_date')->useCurrent();
-            $table->string('status')->default('pending_payment'); // e.g., 'pending_payment', 'processing', 'awaiting_rider_assignment', 'out_for_delivery', 'delivered', 'cancelled', 'failed'
+            $table->string('status')->default('pending_payment'); // e.g., 'pending_payment', 'processing', 'awaiting_rider_assignment', 'assigned', 'pickup_confirmed', 'out_for_delivery', 'delivered', 'cancelled', 'failed'
             $table->decimal('delivery_fee', 8, 2);
             $table->decimal('final_total_amount', 8, 2);
             $table->enum('payment_method', ['online_payment', 'cod']);

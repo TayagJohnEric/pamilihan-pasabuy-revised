@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('order_status_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->string('status', 50); // e.g., 'pending', 'pending_payment', 'processing', 'awaiting_rider_assignment', 'out_for_delivery', 'delivered', 'cancelled', 'failed'
+            $table->string('status', 50); // e.g., 'pending', 'pending_payment', 'processing', 'awaiting_rider_assignment', 'assigned', 'pickup_confirmed', 'out_for_delivery', 'delivered', 'cancelled', 'failed'
             $table->text('notes')->nullable();
             $table->foreignId('updated_by_user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('created_at')->useCurrent();
@@ -30,6 +30,8 @@ return new class extends Migration
                 'pending_payment',
                 'processing',
                 'awaiting_rider_assignment',
+                'assigned',
+                'pickup_confirmed',
                 'out_for_delivery',
                 'delivered',
                 'cancelled',
