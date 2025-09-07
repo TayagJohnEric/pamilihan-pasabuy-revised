@@ -40,6 +40,9 @@ use App\Http\Controllers\Customer\CustomerPaymentController;
 use App\Http\Controllers\Customer\CustomerOrderFulfillmentController;
 use App\Http\Controllers\Customer\CustomerOrderController;
 use App\Http\Controllers\Customer\CustomerRatingController;
+use App\Http\Controllers\Customer\CustomerMeritSystemController;
+
+
 
 
 
@@ -176,6 +179,23 @@ Route::prefix('customer')->middleware(['auth'])->name('customer.')->group(functi
         Route::get('{order}', [CustomerOrderController::class, 'show'])->name('show');
         Route::get('{order}/rate', [CustomerRatingController::class, 'showRatingForm'])->name('rate');
         Route::post('{order}/rate', [CustomerRatingController::class, 'submitRating'])->name('rate.submit');
+    });
+});
+
+// Merit System Routes - Add these to your existing routes/web.php file
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::prefix('merit-system')->name('merit-system.')->group(function () {
+        // Display all riders ranked by merit score
+        Route::get('/', [CustomerMeritSystemController::class, 'index'])->name('index');
+        
+        // Display specific rider profile with detailed information
+        Route::get('/rider/{riderId}', [CustomerMeritSystemController::class, 'showRiderProfile'])
+             ->name('rider.profile')
+             ->where('riderId', '[0-9]+'); // Ensure riderId is numeric
+        
+        // AJAX route for refreshing rider rankings without page reload
+        Route::post('/refresh-rankings', [CustomerMeritSystemController::class, 'refreshRankings'])
+             ->name('refresh.rankings');
     });
 });
 
