@@ -183,6 +183,125 @@ class RiderOrderController extends Controller
     }
 
     /**
+     * Attempt rider reassignment after a decline
+     * - Use specific rider chosen by customer when available and not the declining rider
+     * - Otherwise assign a random available rider (excluding the declining rider)
+     * Keeps order status as 'awaiting_rider_assignment' until accepted by the new rider
+     */
+    private function reassignRiderAfterDecline(Order $order, $declinedUserId)
+    {
+        try {
+            // Try preferred rider first if set and not the one who declined
+            if ($order->preferred_rider_id && $order->preferred_rider_id !== $declinedUserId) {
+                $preferredRider = Rider::with('user')
+                    ->where('user_id', $order->preferred_rider_id)
+                    ->where('is_available', true)
+                    ->where('verification_status', 'verified')
+                    ->whereHas('user', function ($q) {
+                        $q->where('is_active', true);
+                    })
+                    ->first();
+
+                if ($preferredRider) {
+                    Log::info("[Rider Reassignment] Assigning preferred rider {$preferredRider->id} to order {$order->id}");
+                    $this->completeRiderAssignment($order, $preferredRider);
+                    return;
+                }
+                Log::info("[Rider Reassignment] Preferred rider not available for order {$order->id}, falling back to random available rider");
+            }
+
+            // Find a random available rider excluding the declining rider
+            $newRider = Rider::with('user')
+                ->where('is_available', true)
+                ->where('verification_status', 'verified')
+                ->where('user_id', '!=', $declinedUserId)
+                ->whereHas('user', function ($q) {
+                    $q->where('is_active', true);
+                })
+                ->inRandomOrder()
+                ->first();
+
+            if ($newRider) {
+                Log::info("[Rider Reassignment] Assigning new rider {$newRider->id} to order {$order->id}");
+                $this->completeRiderAssignment($order, $newRider);
+                return;
+            }
+
+            // No riders available - let customer know
+            $this->handleNoAvailableRiders($order);
+        } catch (\Exception $e) {
+            Log::error('[Rider Reassignment] Error during reassignment: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Complete the rider assignment process (awaiting acceptance)
+     * - Assigns rider to order (rider_user_id)
+     * - Logs status as awaiting_rider_assignment
+     * - Notifies customer and the rider
+     */
+    private function completeRiderAssignment(Order $order, Rider $rider)
+    {
+        // Assign rider but keep status as awaiting_rider_assignment
+        $order->update(['rider_user_id' => $rider->user_id]);
+
+        $this->logOrderStatusChange(
+            $order->id,
+            'awaiting_rider_assignment',
+            "Rider assigned (awaiting acceptance): {$rider->user->first_name} {$rider->user->last_name}",
+            null
+        );
+
+        // Notify customer that a rider is being assigned
+        $this->createNotification(
+            $order->customer_user_id,
+            'rider_assignment_pending',
+            'Rider Assignment in Progress',
+            [
+                'order_id' => $order->id,
+                'message' => 'A rider is being assigned to your order. Please wait for confirmation.'
+            ],
+            Order::class,
+            $order->id
+        );
+
+        // Notify rider about new delivery assignment (awaiting acceptance)
+        $this->createNotification(
+            $rider->user_id,
+            'delivery_assigned_pending',
+            'New Delivery Assignment (Action Required)',
+            [
+                'order_id' => $order->id,
+                'customer_name' => $order->customer->first_name . ' ' . $order->customer->last_name,
+                'delivery_fee' => $order->delivery_fee,
+                'message' => 'You have been assigned a new delivery. Please accept or decline.'
+            ],
+            Order::class,
+            $order->id
+        );
+    }
+
+    /**
+     * When no riders are available, inform the customer
+     */
+    private function handleNoAvailableRiders(Order $order)
+    {
+        Log::warning("[Rider Reassignment] No available riders for order {$order->id}");
+
+        $this->createNotification(
+            $order->customer_user_id,
+            'rider_assignment_delayed',
+            'Rider Assignment Delayed',
+            [
+                'order_id' => $order->id,
+                'message' => 'We are currently looking for an available rider for your order.'
+            ],
+            Order::class,
+            $order->id
+        );
+    }
+
+    /**
      * Start delivery (rider en route)
      * Transitions order from pickup_confirmed to out_for_delivery and notifies customer
      */
@@ -301,9 +420,9 @@ class RiderOrderController extends Controller
                 Auth::id()
             );
 
-            // Trigger reassignment process (this would typically be handled by a job or event)
-            // For now, we'll just log it - the VendorOrderController handles reassignment
+            // Trigger reassignment process (assign preferred rider if possible, otherwise random available rider)
             Log::info("Order {$order->id} declined by rider {$rider->id} - triggering reassignment");
+            $this->reassignRiderAfterDecline($order, Auth::id());
 
             DB::commit();
 

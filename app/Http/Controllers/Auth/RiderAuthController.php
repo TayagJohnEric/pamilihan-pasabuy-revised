@@ -104,11 +104,13 @@ public function login(Request $request)
 public function logout(Request $request)
 {
     // Set is_available to false before logging out
-    $user = Auth::user();
+    // uncomment this when in production for more authenticity
+    
+   /* $user = Auth::user();
     if ($user && $user->rider) {
         $user->rider->is_available = false;
         $user->rider->save();
-    }
+    } */
 
     Auth::logout();
     $request->session()->invalidate();
