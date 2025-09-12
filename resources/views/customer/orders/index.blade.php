@@ -219,7 +219,7 @@
                         @endif
                     </p>
                     @if(!request()->hasAny(['status', 'date_from', 'date_to']))
-                        <a href="{{ route('customer.products.index') ?? '#' }}" 
+                        <a href="{{ route('products.index') ?? '#' }}" 
                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                             Start Shopping
                         </a>
