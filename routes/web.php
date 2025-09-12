@@ -319,11 +319,22 @@ Route::post('/rider/logout', [RiderAuthController::class, 'logout'])
     ->middleware('auth')
     ->name('rider.logout');
 
+    // Rider Dashboard Routes
+Route::prefix('rider')->name('rider.')->middleware(['auth', 'verified'])->group(function () {
+    
+    // Dashboard route
+    Route::get('/dashboard', [App\Http\Controllers\Rider\RiderDashboardController::class, 'index'])
+        ->name('dashboard');
+    
+    // AJAX route for toggling availability
+    Route::post('/toggle-availability', [App\Http\Controllers\Rider\RiderDashboardController::class, 'toggleAvailability'])
+        ->name('toggle-availability');
+        
+});
+
 // Rider Protected Routes (requires auth & rider role)
 Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
 
-    // Dashboard
-    Route::get('dashboard', [RiderDashboardController::class, 'dashboard'])->name('dashboard');
 
     // Rider Profile
     Route::get('profile', [RiderProfileController::class, 'show'])->name('profile.show');

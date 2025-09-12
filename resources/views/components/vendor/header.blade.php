@@ -8,7 +8,8 @@
                         </svg>
                     </button>
                     
-                    @include('components.searchbar')
+                        <!-- Layout purposes -->
+                        <span></span>
 
                     <!-- Header Actions -->
                     <div class="flex items-center space-x-3">

@@ -23,7 +23,7 @@ class RiderRatingController extends Controller
         $allRatings = Rating::where('rateable_id', $rider->id)
             ->where('rateable_type', User::class);
 
-        $averageRating = $allRatings->avg('rating_value');
+        $averageRating = $allRatings->avg('rating_value');  
         $totalRatings = $allRatings->count();
 
         $ratingDistribution = [];
