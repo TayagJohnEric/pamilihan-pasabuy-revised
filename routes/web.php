@@ -225,12 +225,21 @@ Route::middleware('guest')->group(function () {
 Route::post('/vendor/login', [VendorAuthController::class, 'login'])->name('vendor.login');
 });
 
+// Vendor Dashboard Routes
+Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'verified'])->group(function () {
+    
+    // Dashboard route
+    Route::get('/dashboard', [VendorDashboardController::class, 'index'])
+        ->name('dashboard');
+    
+    // AJAX route for toggling order acceptance
+    Route::post('/toggle-order-acceptance', [VendorDashboardController::class, 'toggleOrderAcceptance'])
+        ->name('toggle-order-acceptance');      
+    
+});
+
 //Vendor Protected Routes (requires auth & vendor role)
 Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
-
-    // Dashboard
-    Route::get('dashboard', [VendorDashboardController::class, 'index'])->name('dashboard');
-    Route::post('/vendor/toggle-accepting', [VendorDashboardController::class, 'toggleAcceptingOrders'])->name('toggle.accepting');
 
 
     // Logout
