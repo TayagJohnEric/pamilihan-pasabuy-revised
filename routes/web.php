@@ -217,8 +217,8 @@ use App\Http\Controllers\Vendor\VendorOrderController;
 //Vendor Registration & Login Routes
 Route::middleware('guest')->group(function () {
     // Vendor Application (Registration)
-    Route::get('/vendor-application', [VendorAuthController::class, 'create'])->name('vendor-applications.create');
-    Route::post('/vendor-application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
+    Route::get('/vendor/application', [VendorAuthController::class, 'create'])->name('vendor-applications.create');
+    Route::post('/vendor/application', [VendorAuthController::class, 'store'])->name('vendor-applications.store');
 
     // Vendor Login
    Route::get('/vendor/login', [VendorAuthController::class, 'showLoginForm'])->name('vendor.login.form');
@@ -306,8 +306,8 @@ use App\Http\Controllers\Rider\RiderOrderController;
 // Rider Registration & Login Routes
 Route::middleware('guest')->group(function () {
     // Rider Application (Registration)
-    Route::get('/rider-application', [RiderAuthController::class, 'create'])->name('rider-applications.create');
-    Route::post('/rider-application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
+    Route::get('/rider/application', [RiderAuthController::class, 'create'])->name('rider-applications.create');
+    Route::post('/rider/application', [RiderAuthController::class, 'store'])->name('rider-applications.store');
 
     // Rider Login
     Route::get('/rider/login', [RiderAuthController::class, 'showLoginForm'])->name('rider.login');

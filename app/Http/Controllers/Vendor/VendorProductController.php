@@ -150,8 +150,8 @@ public function store(Request $request)
             'category_id' => 'required|exists:categories,id',
             'unit' => 'required|string|max:50',
             'pricing_model' => 'required|in:standard,budget_based',
-            'price' => 'required_if:pricing_model,standard|nullable|numeric|min:0',
-            'quantity_in_stock' => 'required_if:pricing_model,standard|nullable|integer|min:0',
+            'price' => 'required|numeric|min:0',
+            'quantity_in_stock' => 'required|integer|min:0',
             'indicative_price_per_unit' => 'required_if:pricing_model,budget_based|nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_available' => 'boolean'
@@ -174,18 +174,19 @@ public function store(Request $request)
             $productData['image_url'] = $request->file('image')->store('products', 'public');
         }
 
-        // Handle pricing model
+        // Handle pricing model aligning with create():
+        // Always keep price and quantity as provided; toggle is_budget_based and indicative price accordingly
         if ($request->pricing_model === 'budget_based') {
             $productData['is_budget_based'] = true;
             $productData['indicative_price_per_unit'] = $request->indicative_price_per_unit;
-            $productData['price'] = 0;
-            $productData['quantity_in_stock'] = 0;
         } else {
             $productData['is_budget_based'] = false;
-            $productData['price'] = $request->price;
-            $productData['quantity_in_stock'] = $request->quantity_in_stock;
             $productData['indicative_price_per_unit'] = null;
         }
+
+        // Always set price and quantity in both models
+        $productData['price'] = $request->price;
+        $productData['quantity_in_stock'] = $request->quantity_in_stock;
 
         $product->update($productData);
 
