@@ -27,7 +27,7 @@ class AdminPaymentController extends Controller
         $payments = $query->latest()->paginate(10);
 
 
-        return view('admin.platform.payment.index', [
+        return view('admin.financial.payment.index', [
         'payments' => $payments,
         'filters' => $request->only(['payment_method_used', 'status']),
         ]);

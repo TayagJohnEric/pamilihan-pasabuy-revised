@@ -414,6 +414,8 @@ use App\Http\Controllers\Admin\AdminDistrictController;
 use App\Http\Controllers\Admin\AdminRiderApplicationController;
 use App\Http\Controllers\Admin\AdminVendorApplicationController;
 use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\Admin\AdminRatingController;
+
 
 
 //Admin Authentication Routes
@@ -511,3 +513,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 
 Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::get('/admin/ratings', [AdminRatingController::class, 'index'])->name('admin.ratings.index');
+});

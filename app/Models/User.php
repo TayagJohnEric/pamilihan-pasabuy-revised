@@ -58,6 +58,12 @@ class User extends Authenticatable
         ];
     }
 
+    // Accessors
+    public function getNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
+
     // Relationships
     public function rider()
     {
