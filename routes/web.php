@@ -416,6 +416,8 @@ use App\Http\Controllers\Admin\AdminVendorApplicationController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminRatingController;
 use App\Http\Controllers\Admin\AdminNotificationController;
+use App\Http\Controllers\Admin\AdminPayoutController;
+
 
 
 
@@ -522,4 +524,23 @@ Route::get('/admin/ratings', [AdminRatingController::class, 'index'])->name('adm
 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications.index');
+});
+
+// Admin Payout Management Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Rider Payouts Routes
+    Route::get('/payouts/riders', [AdminPayoutController::class, 'riderPayouts'])->name('payouts.riders');
+    Route::get('/payouts/riders/{id}', [AdminPayoutController::class, 'showRiderPayout'])->name('payouts.riders.show');
+    Route::patch('/payouts/riders/{id}/update', [AdminPayoutController::class, 'updateRiderPayout'])->name('payouts.riders.update');
+    Route::patch('/payouts/riders/{id}/mark-paid', [AdminPayoutController::class, 'markRiderPayoutAsPaid'])->name('payouts.riders.mark-paid');
+    Route::patch('/payouts/riders/{id}/mark-failed', [AdminPayoutController::class, 'markRiderPayoutAsFailed'])->name('payouts.riders.mark-failed');
+    
+    // Vendor Payouts Routes
+    Route::get('/payouts/vendors', [AdminPayoutController::class, 'vendorPayouts'])->name('payouts.vendors');
+    Route::get('/payouts/vendors/{id}', [AdminPayoutController::class, 'showVendorPayout'])->name('payouts.vendors.show');
+    Route::patch('/payouts/vendors/{id}/update', [AdminPayoutController::class, 'updateVendorPayout'])->name('payouts.vendors.update');
+    Route::patch('/payouts/vendors/{id}/mark-paid', [AdminPayoutController::class, 'markVendorPayoutAsPaid'])->name('payouts.vendors.mark-paid');
+    Route::patch('/payouts/vendors/{id}/mark-failed', [AdminPayoutController::class, 'markVendorPayoutAsFailed'])->name('payouts.vendors.mark-failed');
+    
 });

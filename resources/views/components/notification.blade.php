@@ -1,4 +1,4 @@
-<!-- Notification Component for Order Fulfillment -->
+<!-- Updated Notification Component for Order Fulfillment & Payouts -->
 <div class="relative">
     <!-- Notification Button -->
     <button id="notification-button" type="button"
@@ -49,9 +49,9 @@
                                     <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-green-500' }} rounded-full"></div>
                                     @break
                                 @case('payment_failed')
-                                    <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-red-500' }} rounded-full"></div>
-                                    @break
                                 @case('order_failed')
+                                @case('rider_payout_failed')
+                                @case('vendor_payout_failed')
                                     <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-red-500' }} rounded-full"></div>
                                     @break
                                 @case('rider_assignment_delayed')
@@ -62,6 +62,10 @@
                                     @break
                                 @case('delivery_assigned')
                                     <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-indigo-500' }} rounded-full"></div>
+                                    @break
+                                @case('rider_payout_paid')
+                                @case('vendor_payout_paid')
+                                    <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-green-500' }} rounded-full"></div>
                                     @break
                                 @default
                                     <div class="w-2 h-2 {{ $notification->read_at ? 'bg-gray-400' : 'bg-blue-500' }} rounded-full"></div>
@@ -86,11 +90,41 @@
                                         @case('payment_failed')
                                             Payment failed for Order #{{ $notification->message['order_id'] ?? '' }}
                                             @break
+                                        @case('order_failed')
+                                            Order #{{ $notification->message['order_id'] ?? '' }} processing failed
+                                            @break
                                         @case('new_order')
                                             New order from {{ $notification->message['customer_name'] ?? 'customer' }}
                                             @break
                                         @case('delivery_assigned')
                                             New delivery assignment for Order #{{ $notification->message['order_id'] ?? '' }}
+                                            @break
+                                        @case('rider_assignment_delayed')
+                                            Rider assignment delayed for Order #{{ $notification->message['order_id'] ?? '' }}
+                                            @break
+                                        @case('rider_payout_paid')
+                                            Payout of ₱{{ number_format($notification->message['amount'] ?? 0, 2) }} has been processed
+                                            @if(isset($notification->message['period']))
+                                                <span class="text-xs text-gray-500 block">Period: {{ $notification->message['period'] }}</span>
+                                            @endif
+                                            @break
+                                        @case('rider_payout_failed')
+                                            Payout of ₱{{ number_format($notification->message['amount'] ?? 0, 2) }} processing failed
+                                            @if(isset($notification->message['period']))
+                                                <span class="text-xs text-gray-500 block">Period: {{ $notification->message['period'] }}</span>
+                                            @endif
+                                            @break
+                                        @case('vendor_payout_paid')
+                                            Payout of ₱{{ number_format($notification->message['amount'] ?? 0, 2) }} has been processed
+                                            @if(isset($notification->message['period']))
+                                                <span class="text-xs text-gray-500 block">Period: {{ $notification->message['period'] }}</span>
+                                            @endif
+                                            @break
+                                        @case('vendor_payout_failed')
+                                            Payout of ₱{{ number_format($notification->message['amount'] ?? 0, 2) }} processing failed
+                                            @if(isset($notification->message['period']))
+                                                <span class="text-xs text-gray-500 block">Period: {{ $notification->message['period'] }}</span>
+                                            @endif
                                             @break
                                         @default
                                             {{ $notification->message['message'] ?? 'You have a new notification' }}
@@ -104,12 +138,34 @@
                         </div>
                     </div>
                     
-                    <!-- Order link for order-related notifications -->
+                    <!-- Action links based on notification type -->
                     @if(in_array($notification->type, ['order_processing', 'rider_assigned', 'payment_failed', 'order_failed', 'rider_assignment_delayed']) && isset($notification->message['order_id']))
                         <a href="{{ route('customer.orders.show', ['order' => $notification->message['order_id']]) }}"
                             class="text-green-600 hover:text-green-700 text-sm font-medium ml-2 flex-shrink-0">
                             View
                         </a>
+                    @elseif(in_array($notification->type, ['rider_payout_paid', 'rider_payout_failed']) && isset($notification->message['payout_id']))
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.payouts.riders.show', ['id' => $notification->message['payout_id']]) }}"
+                                class="text-blue-600 hover:text-blue-700 text-sm font-medium ml-2 flex-shrink-0">
+                                View
+                            </a>
+                        @else
+                            <span class="text-green-600 text-sm font-medium ml-2 flex-shrink-0">
+                                Payout
+                            </span>
+                        @endif
+                    @elseif(in_array($notification->type, ['vendor_payout_paid', 'vendor_payout_failed']) && isset($notification->message['payout_id']))
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.payouts.vendors.show', ['id' => $notification->message['payout_id']]) }}"
+                                class="text-blue-600 hover:text-blue-700 text-sm font-medium ml-2 flex-shrink-0">
+                                View
+                            </a>
+                        @else
+                            <span class="text-green-600 text-sm font-medium ml-2 flex-shrink-0">
+                                Payout
+                            </span>
+                        @endif
                     @endif
                 </div>
             @empty
@@ -261,7 +317,7 @@
             });
         });
 
-        // Auto-refresh notification count every 30 seconds for order-related updates
+        // Auto-refresh notification count every 30 seconds
         setInterval(refreshNotificationCount, 30000);
     });
 </script>
