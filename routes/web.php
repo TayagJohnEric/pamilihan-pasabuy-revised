@@ -415,6 +415,8 @@ use App\Http\Controllers\Admin\AdminRiderApplicationController;
 use App\Http\Controllers\Admin\AdminVendorApplicationController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminRatingController;
+use App\Http\Controllers\Admin\AdminNotificationController;
+
 
 
 
@@ -516,4 +518,8 @@ Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('a
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/admin/ratings', [AdminRatingController::class, 'index'])->name('admin.ratings.index');
+});
+
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications.index');
 });
