@@ -342,10 +342,15 @@
 
         <!-- Action Buttons -->
         <div class="hidden lg:flex items-center space-x-3">
-            <button class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">Log In</button>
-            <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                Sign Up Free
-            </button>
+            <a href="{{ route('customer.login') }}" 
+                class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">
+                    Log In
+            </a>
+
+            <a href="{{ route('customer.register') }}" 
+                class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                    Sign Up Free
+            </a>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -431,10 +436,12 @@
                 local businesses. Fresh produce, authentic flavors, delivered with care.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8 hero-buttons opacity-0 transform translate-y-8">
-                <button class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
+              <a href="{{ route('customer.register') }}" 
+                class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
                     <i class="fas fa-shopping-cart mr-3"></i>
                     Start Shopping Now
-                </button>
+                </a>
+
                 <button class="border-2 border-white text-white hover:bg-white hover:text-green-700 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center">
                     <i class="fas fa-info-circle mr-3"></i>
                     Learn More
@@ -493,120 +500,86 @@
         </div>
     </section>
 
-    <!-- User Options Section -->
-    <section class="py-20 bg-gradient-to-br from-gray-50 to-green-50 animate-on-scroll">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-users mr-2"></i>
-                    Join Our Growing Community
+   <!-- Apply Section -->
+<section class="py-20 bg-gradient-to-br from-gray-50 to-green-50 animate-on-scroll">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
+                <i class="fas fa-users mr-2"></i>
+                Join Our Growing Community
+            </div>
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Choose Your Journey</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Whether you're shopping for fresh groceries, growing your business, or earning flexible income - we have the perfect path for you.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto justify-center">
+            <!-- Vendor Card -->
+            <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-green-200 relative overflow-hidden">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-store text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Sell as a Vendor</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Transform your market stall into a digital storefront. Reach thousands of customers and grow your business exponentially.</p>
+                    <ul class="text-left space-y-3 mb-8">
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Easy online store setup
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Reach 10,000+ customers
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Real-time order management
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Weekly payouts
+                        </li>
+                    </ul>
+                    <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Become a Vendor
+                    </button>
                 </div>
-                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Choose Your Journey</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Whether you're shopping for fresh groceries, growing your business, or earning flexible income - we have the perfect path for you.</p>
             </div>
 
-            <div class="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                <!-- Customer Card -->
-                <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
-                    <div class="text-center">
-                        <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-shopping-bag text-white text-3xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Shop as a Customer</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Browse thousands of fresh products from trusted local vendors. Get everything delivered fast and fresh to your doorstep.</p>
-                        <ul class="text-left space-y-3 mb-8">
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                500+ Fresh products daily
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Same-day delivery available
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                100% freshness guarantee
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Secure payment options
-                            </li>
-                        </ul>
-                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            Start Shopping
-                        </button>
+            <!-- Rider Card -->
+            <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+                <div class="text-center">
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-motorcycle text-white text-3xl"></i>
                     </div>
-                </div>
-
-                <!-- Vendor Card -->
-                <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-green-200 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-green-500 text-white px-4 py-2 text-sm font-semibold rounded-bl-2xl">
-                        POPULAR
-                    </div>
-                    <div class="text-center">
-                        <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-store text-white text-3xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Sell as a Vendor</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Transform your market stall into a digital storefront. Reach thousands of customers and grow your business exponentially.</p>
-                        <ul class="text-left space-y-3 mb-8">
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Easy online store setup
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Reach 10,000+ customers
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Real-time order management
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Weekly payouts
-                            </li>
-                        </ul>
-                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            Become a Vendor
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Rider Card -->
-                <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
-                    <div class="text-center">
-                        <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-motorcycle text-white text-3xl"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Deliver as a Rider</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Earn flexible income by connecting your community with fresh groceries. Be your own boss with competitive rates.</p>
-                        <ul class="text-left space-y-3 mb-8">
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Flexible working hours
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Competitive delivery rates
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Weekly earnings
-                            </li>
-                            <li class="flex items-center text-gray-600">
-                                <i class="fas fa-check text-green-500 mr-3"></i>
-                                Fuel bonus incentives
-                            </li>
-                        </ul>
-                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            Become a Rider
-                        </button>
-                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Deliver as a Rider</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Earn flexible income by connecting your community with fresh groceries. Be your own boss with competitive rates.</p>
+                    <ul class="text-left space-y-3 mb-8">
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Flexible working hours
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Competitive delivery rates
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Weekly earnings
+                        </li>
+                        <li class="flex items-center text-gray-600">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            Fuel bonus incentives
+                        </li>
+                    </ul>
+                    <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Become a Rider
+                    </button>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 
     <!-- How It Works Section -->
 <section id="how-it-works" class="py-16 md:py-20 bg-white animate-on-scroll">
