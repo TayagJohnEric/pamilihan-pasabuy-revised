@@ -63,8 +63,9 @@ class CustomerMeritSystemController extends Controller
         return DB::table('riders as r')
             ->join('users as u', 'r.user_id', '=', 'u.id')
             ->leftJoin('ratings as rat', function($join) {
-                $join->on('rat.rateable_id', '=', 'r.id')
-                     ->where('rat.rateable_type', '=', 'App\\Models\\Rider');
+                // Ratings for riders are stored against the rider's user_id with rateable_type = App\Models\User
+                $join->on('rat.rateable_id', '=', 'r.user_id')
+                     ->where('rat.rateable_type', '=', 'App\\Models\\User');
             })
             ->select([
                 'r.id',
@@ -105,8 +106,9 @@ class CustomerMeritSystemController extends Controller
         return DB::table('riders as r')
             ->join('users as u', 'r.user_id', '=', 'u.id')
             ->leftJoin('ratings as rat', function($join) {
-                $join->on('rat.rateable_id', '=', 'r.id')
-                     ->where('rat.rateable_type', '=', 'App\\Models\\Rider');
+                // Ratings for riders are stored against the rider's user_id with rateable_type = App\Models\User
+                $join->on('rat.rateable_id', '=', 'r.user_id')
+                     ->where('rat.rateable_type', '=', 'App\\Models\\User');
             })
             ->select([
                 'r.id',
@@ -158,8 +160,13 @@ class CustomerMeritSystemController extends Controller
                 'u.last_name as customer_last_name',
                 'o.id as order_id'
             ])
-            ->where('rat.rateable_id', $riderId)
-            ->where('rat.rateable_type', 'App\\Models\\Rider')
+            // Ratings are stored against the rider's user_id (not rider.id) with type User
+            ->where('rat.rateable_id', function($query) use ($riderId) {
+                $query->select('user_id')
+                      ->from('riders')
+                      ->where('id', $riderId);
+            })
+            ->where('rat.rateable_type', 'App\\Models\\User')
             ->whereNotNull('rat.comment')
             ->where('rat.comment', '!=', '')
             ->orderBy('rat.created_at', 'desc')
@@ -177,15 +184,23 @@ class CustomerMeritSystemController extends Controller
     {
         // Get total ratings count
         $totalRatings = DB::table('ratings')
-            ->where('rateable_id', $riderId)
-            ->where('rateable_type', 'App\\Models\\Rider')
+            ->where('rateable_id', function($query) use ($riderId) {
+                $query->select('user_id')
+                      ->from('riders')
+                      ->where('id', $riderId);
+            })
+            ->where('rateable_type', 'App\\Models\\User')
             ->count();
         
         // Get rating distribution (1-5 stars)
         $ratingDistribution = DB::table('ratings')
             ->select('rating_value', DB::raw('COUNT(*) as count'))
-            ->where('rateable_id', $riderId)
-            ->where('rateable_type', 'App\\Models\\Rider')
+            ->where('rateable_id', function($query) use ($riderId) {
+                $query->select('user_id')
+                      ->from('riders')
+                      ->where('id', $riderId);
+            })
+            ->where('rateable_type', 'App\\Models\\User')
             ->groupBy('rating_value')
             ->pluck('count', 'rating_value')
             ->toArray();

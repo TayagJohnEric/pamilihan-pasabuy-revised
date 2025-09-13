@@ -3,6 +3,29 @@
 @section('title', $rider->first_name . ' ' . $rider->last_name . ' - Rider Profile')
 
 @section('content')
+
+<style>
+     /* Custom animations */
+     @keyframes slideIn {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Set initial state to guarantee the animation starts from hidden/offset state */
+    .animate-slide-in {
+        opacity: 0;
+        transform: translateY(16px);
+        will-change: transform, opacity;
+        animation: slideIn 0.4s ease-out forwards;
+    }
+
+</style>
     <div class="max-w-[90rem] mx-auto">
         <!-- Back Button -->
         <div class="mb-4">
@@ -15,7 +38,7 @@
         </div>
 
         <!-- Main Profile Card -->
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 animate-slide-in">
             <!-- Header Section with Cover -->
             <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-12 relative">
                 <div class="flex items-center space-x-8">
@@ -73,7 +96,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-slide-in">
             <!-- Left Column - Statistics and Info -->
             <div class="lg:col-span-1 space-y-6">
                 <!-- Quick Stats -->
@@ -254,29 +277,6 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="mt-8 text-center">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Ready to order?</h3>
-                <p class="text-gray-600 mb-6">This rider is {{ $rider->is_available ? 'currently available' : 'currently busy' }} for deliveries.</p>
-                
-                <div class="flex justify-center space-x-4">
-                    @if($rider->is_available)
-                        <button class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition duration-200">
-                            Select This Rider
-                        </button>
-                    @else
-                        <button class="bg-gray-400 cursor-not-allowed text-white px-8 py-3 rounded-lg font-medium" disabled>
-                            Rider Currently Busy
-                        </button>
-                    @endif
-                    
-                    <a href="{{ route('merit-system.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium transition duration-200">
-                        Browse Other Riders
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- JavaScript for interactions -->
@@ -312,16 +312,6 @@
                 }, 2000);
             });
 
-            // Smooth scrolling animations on page load
-            $('.bg-white').each(function(index) {
-                $(this).css('opacity', '0')
-                       .css('transform', 'translateY(20px)')
-                       .delay(index * 100)
-                       .animate({
-                           opacity: 1
-                       }, 500)
-                       .css('transform', 'translateY(0)');
-            });
         });
     </script>
 @endsection
