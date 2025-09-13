@@ -110,14 +110,14 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
-                                    @if($product->stock_quantity <= 5)
-                                        <span class="text-red-600 font-medium">{{ $product->stock_quantity }}</span>
+                                    @if($product->quantity_in_stock <= 5)
+                                        <span class="text-red-600 font-medium">{{ $product->quantity_in_stock }}</span>
                                         <span class="text-xs text-red-500">(Low Stock)</span>
-                                    @elseif($product->stock_quantity <= 10)
-                                        <span class="text-yellow-600 font-medium">{{ $product->stock_quantity }}</span>
+                                    @elseif($product->quantity_in_stock <= 10)
+                                        <span class="text-yellow-600 font-medium">{{ $product->quantity_in_stock }}</span>
                                         <span class="text-xs text-yellow-500">(Medium Stock)</span>
                                     @else
-                                        <span class="text-green-600 font-medium">{{ $product->stock_quantity }}</span>
+                                        <span class="text-green-600 font-medium">{{ $product->quantity_in_stock }}</span>
                                     @endif
                                 </div>
                             </td>

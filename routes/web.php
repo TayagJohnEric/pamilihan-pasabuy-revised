@@ -413,6 +413,8 @@ use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminDistrictController;
 use App\Http\Controllers\Admin\AdminRiderApplicationController;
 use App\Http\Controllers\Admin\AdminVendorApplicationController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+
 
 //Admin Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -424,11 +426,22 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
     ->middleware('auth')
     ->name('admin.logout');
 
+    // Admin Dashboard Routes
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Main Dashboard
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // AJAX endpoints for dashboard data
+    Route::get('/dashboard/data', [AdminDashboardController::class, 'getDashboardData'])->name('dashboard.data');
+    
+    // Export functionality
+    Route::get('/dashboard/export', [AdminDashboardController::class, 'exportData'])->name('dashboard.export');
+    
+});
+
 //Admin Protected Routes (Requires auth & admin role)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    // Dashboard
-    Route::get('dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
 
     //User Management
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
@@ -466,7 +479,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
    // Products Management
     Route::get('products', [AdminProductController::class, 'index'])->name('products.index');
-    Route::post('products/{id}/toggle', [AdminProductController::class, 'toggleAvailability'])->name('products.toggle');
+    Route::patch('products/{id}/toggle-availability', [AdminProductController::class, 'toggleAvailability'])->name('products.toggle-availability');
     Route::delete('products/{id}', [AdminProductController::class, 'destroy'])->name('products.destroy');
 
     // Categories Management
@@ -495,3 +508,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('districts/{district}/toggle-status', [AdminDistrictController::class, 'toggleStatus'])->name('districts.toggle-status');
     Route::post('districts/bulk-update-fees', [AdminDistrictController::class, 'bulkUpdateFees'])->name('districts.bulk-update-fees');
 });
+
+
+Route::get('/admin/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
