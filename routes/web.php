@@ -543,4 +543,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/payouts/vendors/{id}/mark-paid', [AdminPayoutController::class, 'markVendorPayoutAsPaid'])->name('payouts.vendors.mark-paid');
     Route::patch('/payouts/vendors/{id}/mark-failed', [AdminPayoutController::class, 'markVendorPayoutAsFailed'])->name('payouts.vendors.mark-failed');
     
+    // Payout Generation Routes
+    Route::get('/payouts/dashboard', [AdminPayoutController::class, 'dashboard'])->name('payouts.dashboard');
+    Route::post('/payouts/generate', [AdminPayoutController::class, 'generatePayouts'])->name('payouts.generate');
+    Route::post('/payouts/generate-weekly', [AdminPayoutController::class, 'generateWeeklyPayouts'])->name('payouts.generate-weekly');
+    Route::post('/payouts/generate-monthly', [AdminPayoutController::class, 'generateMonthlyPayouts'])->name('payouts.generate-monthly');
+    Route::get('/payouts/summary', [AdminPayoutController::class, 'getPayoutSummary'])->name('payouts.summary');
+    
 });

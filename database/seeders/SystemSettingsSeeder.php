@@ -129,6 +129,36 @@ class SystemSettingsSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+            // == Payout Settings ==
+            [
+                'setting_key' => 'payout_schedule_type',
+                'setting_value' => 'weekly',
+                'description' => 'How often payouts are generated: weekly, monthly, or manual.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'setting_key' => 'payout_minimum_amount',
+                'setting_value' => '100.00',
+                'description' => 'Minimum amount required to generate a payout (in PHP).',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'setting_key' => 'payout_processing_fee',
+                'setting_value' => '0.00',
+                'description' => 'Fee deducted from payouts for processing (in PHP).',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'setting_key' => 'payout_auto_generation_enabled',
+                'setting_value' => 'true',
+                'description' => 'Whether to automatically generate payouts based on schedule.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

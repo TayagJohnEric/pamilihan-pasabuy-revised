@@ -83,6 +83,7 @@
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
                                     <li><a href="{{ route('admin.payments.index') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Payment Transaction</a></li>
+                                     <li><a href="{{ route('admin.payouts.dashboard') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Payout Dashboard</a></li>
                                     <li><a href="{{ route('admin.payouts.riders') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Rider Payouts</a></li>
                                     <li><a href="{{ route('admin.payouts.vendors') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Vendor Payouts</a></li>
                                 </ul>

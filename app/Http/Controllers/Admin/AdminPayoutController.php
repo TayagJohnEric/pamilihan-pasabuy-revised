@@ -7,10 +7,12 @@ use App\Models\RiderPayout;
 use App\Models\VendorPayout;
 use App\Models\User;
 use App\Models\Notification;
+use App\Services\PayoutCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AdminPayoutController extends Controller
 {
@@ -426,6 +428,158 @@ class AdminPayoutController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update payout status. Please try again.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate payouts for a custom period
+     */
+    public function generatePayouts(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'payout_type' => 'required|in:weekly,monthly,custom'
+        ]);
+
+        try {
+            $payoutService = new PayoutCalculationService();
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
+
+            $result = $payoutService->calculatePayoutsForPeriod($startDate, $endDate);
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payouts generated successfully',
+                    'data' => [
+                        'rider_payouts_created' => count($result['rider_payouts']),
+                        'vendor_payouts_created' => count($result['vendor_payouts']),
+                        'orders_processed' => $result['orders_processed'],
+                        'period' => $result['period']
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error generating payouts: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate payouts. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate weekly payouts (previous week)
+     */
+    public function generateWeeklyPayouts()
+    {
+        try {
+            $payoutService = new PayoutCalculationService();
+            $result = $payoutService->generateWeeklyPayouts();
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Weekly payouts generated successfully',
+                    'data' => [
+                        'rider_payouts_created' => count($result['rider_payouts']),
+                        'vendor_payouts_created' => count($result['vendor_payouts']),
+                        'orders_processed' => $result['orders_processed'],
+                        'period' => $result['period']
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error generating weekly payouts: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate weekly payouts. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate monthly payouts (previous month)
+     */
+    public function generateMonthlyPayouts()
+    {
+        try {
+            $payoutService = new PayoutCalculationService();
+            $result = $payoutService->generateMonthlyPayouts();
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Monthly payouts generated successfully',
+                    'data' => [
+                        'rider_payouts_created' => count($result['rider_payouts']),
+                        'vendor_payouts_created' => count($result['vendor_payouts']),
+                        'orders_processed' => $result['orders_processed'],
+                        'period' => $result['period']
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error generating monthly payouts: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate monthly payouts. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Show payout dashboard
+     */
+    public function dashboard()
+    {
+        return view('admin.financial.payout.dashboard');
+    }
+
+    /**
+     * Get payout dashboard summary
+     */
+    public function getPayoutSummary()
+    {
+        try {
+            $payoutService = new PayoutCalculationService();
+            $summary = $payoutService->getPayoutSummary();
+
+            return response()->json([
+                'success' => true,
+                'data' => $summary
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting payout summary: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get payout summary.'
             ], 500);
         }
     }
