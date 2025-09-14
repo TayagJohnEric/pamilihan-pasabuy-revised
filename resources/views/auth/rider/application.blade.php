@@ -41,7 +41,7 @@
 </head>
 <body>
 
-<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+<div class="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         <!-- Header Section -->
         <div class="text-center mb-10">
