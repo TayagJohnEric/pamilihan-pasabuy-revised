@@ -741,9 +741,9 @@ function submitCartForm(form, isRegular = true) {
             if (response.success) {
                 showToast(response.message, 'success');
                 
-                // Update cart count if element exists
-                if (response.cart_count !== undefined) {
-                    $('.cart-count').text(response.cart_count);
+                // Update cart badge
+                if (response.cart_count !== undefined && window.updateCartBadge) {
+                    window.updateCartBadge(response.cart_count);
                 }
                 
                 // Reset form based on type

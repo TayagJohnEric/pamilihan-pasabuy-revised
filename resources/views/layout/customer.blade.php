@@ -86,7 +86,39 @@
     </div>
 
     <script>
+        // Cart Badge Update Functions
+        function updateCartBadge(count) {
+            const cartBadge = document.getElementById('cart-badge');
+            if (cartBadge) {
+                cartBadge.textContent = count;
+                cartBadge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function fetchCartCount() {
+            fetch('{{ route("cart.count") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateCartBadge(data.count);
+            })
+            .catch(error => {
+                console.error('Error fetching cart count:', error);
+            });
+        }
+
+        // Global function to update cart badge from other scripts
+        window.updateCartBadge = updateCartBadge;
+        window.fetchCartCount = fetchCartCount;
+
        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart count on page load
+            fetchCartCount();
     // Sidebar elements
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
@@ -165,14 +197,6 @@
                 notificationDropdown.classList.add('hidden', 'scale-95', 'opacity-0');
                 notificationDropdown.classList.remove('scale-100', 'opacity-100');
             }
-        });
-    }
-
-    if (cartButton) {
-        cartButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            // Add cart functionality here
-            alert('Cart clicked! Add your cart logic here.');
         });
     }
 

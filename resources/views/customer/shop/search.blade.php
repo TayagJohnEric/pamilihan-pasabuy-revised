@@ -584,10 +584,9 @@
             if (data.success) {
                 showToast(data.message, 'success');
                 
-                // Update cart count in header if element exists
-                const cartCountElement = document.querySelector('.cart-count');
-                if (cartCountElement && data.cart_count !== undefined) {
-                    cartCountElement.textContent = data.cart_count;
+                // Update cart badge
+                if (data.cart_count !== undefined && window.updateCartBadge) {
+                    window.updateCartBadge(data.cart_count);
                 }
                 
                 // Reset budget form if it was used
