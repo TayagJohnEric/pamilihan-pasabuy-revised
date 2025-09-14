@@ -105,6 +105,7 @@
                             </button>
                             <div class="dropdown-content ml-8 mt-1">
                                 <ul class="space-y-1">
+                                    <li><a href="{{ route('system-settings.index') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">System Settings</a></li>
                                     <li><a href="{{ route('admin.ratings.index') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Ratings & Feedback</a></li>
                                     <li><a href="{{ route('admin.notifications.index') }}" class="block p-2 text-sm text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-md transition-colors">Noification Log</a></li>
                                 </ul>

@@ -417,6 +417,8 @@ use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminRatingController;
 use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminPayoutController;
+use App\Http\Controllers\Admin\AdminSystemSettingController;
+
 
 
 
@@ -551,3 +553,5 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/payouts/summary', [AdminPayoutController::class, 'getPayoutSummary'])->name('payouts.summary');
     
 });
+//System Settings CRUD
+Route::resource('system-settings', AdminSystemSettingController::class);
