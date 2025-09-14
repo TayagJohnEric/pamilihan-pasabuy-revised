@@ -539,9 +539,11 @@
                             Weekly payouts
                         </li>
                     </ul>
-                    <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Become a Vendor
-                    </button>
+                   <a href="{{ route('vendor-applications.create') }}" 
+   class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
+    Become a Vendor
+</a>
+
                 </div>
             </div>
 
@@ -571,9 +573,11 @@
                             Fuel bonus incentives
                         </li>
                     </ul>
-                    <button class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        Become a Rider
-                    </button>
+                    <a href="{{ route('rider-applications.create') }}" 
+   class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
+    Become a Rider
+</a>
+
                 </div>
             </div>
         </div>
