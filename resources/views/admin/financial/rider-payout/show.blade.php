@@ -51,21 +51,21 @@
                             <div class="flex-shrink-0 h-16 w-16">
                                 <div class="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
                                     <span class="text-lg font-medium text-gray-700">
-                                        {{ substr($payout->rider->user->first_name, 0, 1) }}{{ substr($payout->rider->user->last_name, 0, 1) }}
+                                        {{ $payout->rider ? substr($payout->rider->first_name, 0, 1) . substr($payout->rider->last_name, 0, 1) : 'N/A' }}
                                     </span>
                                 </div>
                             </div>
                             <div>
                                 <h4 class="text-xl font-medium text-gray-900">
-                                    {{ $payout->rider->user->first_name }} {{ $payout->rider->user->last_name }}
+                                    {{ $payout->rider ? $payout->rider->first_name . ' ' . $payout->rider->last_name : 'N/A' }}
                                 </h4>
-                                <p class="text-gray-600">{{ $payout->rider->user->email }}</p>
-                                <p class="text-gray-600">{{ $payout->rider->user->phone_number }}</p>
+                                <p class="text-gray-600">{{ $payout->rider ? $payout->rider->email : 'N/A' }}</p>
+                                <p class="text-gray-600">{{ $payout->rider ? $payout->rider->phone_number : 'N/A' }}</p>
                                 <div class="mt-2">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {{ $payout->rider->total_deliveries }} Total Deliveries
+                                        {{ $payout->rider ? $payout->rider->total_deliveries : 0 }} Total Deliveries
                                     </span>
-                                    @if($payout->rider->average_rating)
+                                    @if($payout->rider && $payout->rider->average_rating)
                                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             ⭐ {{ number_format($payout->rider->average_rating, 1) }} Rating
                                         </span>

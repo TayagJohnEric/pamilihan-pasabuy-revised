@@ -22,7 +22,7 @@ class AdminPayoutController extends Controller
      */
     public function riderPayouts(Request $request)
     {
-        $query = RiderPayout::with(['rider.user'])
+        $query = RiderPayout::with(['rider'])
             ->latest('created_at');
 
         // Apply status filter if provided
@@ -58,7 +58,7 @@ class AdminPayoutController extends Controller
      */
     public function vendorPayouts(Request $request)
     {
-        $query = VendorPayout::with(['vendor.user'])
+        $query = VendorPayout::with(['vendor'])
             ->latest('created_at');
 
         // Apply status filter if provided
@@ -94,7 +94,7 @@ class AdminPayoutController extends Controller
      */
     public function showRiderPayout($id)
     {
-        $payout = RiderPayout::with(['rider.user'])
+        $payout = RiderPayout::with(['rider'])
             ->findOrFail($id);
 
         return view('admin.financial.rider-payout.show', compact('payout'));
@@ -106,7 +106,7 @@ class AdminPayoutController extends Controller
      */
     public function showVendorPayout($id)
     {
-        $payout = VendorPayout::with(['vendor.user'])
+        $payout = VendorPayout::with(['vendor'])
             ->findOrFail($id);
 
         return view('admin.financial.vendor-payout.show', compact('payout'));
@@ -215,7 +215,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = RiderPayout::with(['rider.user'])->findOrFail($id);
+            $payout = RiderPayout::with(['rider'])->findOrFail($id);
 
             // Update payout status to paid
             $payout->update([
@@ -273,7 +273,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = VendorPayout::with(['vendor.user'])->findOrFail($id);
+            $payout = VendorPayout::with(['vendor'])->findOrFail($id);
 
             // Update payout status to paid
             $payout->update([
@@ -331,7 +331,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = RiderPayout::with(['rider.user'])->findOrFail($id);
+            $payout = RiderPayout::with(['rider'])->findOrFail($id);
 
             // Update payout status to failed
             $payout->update([
@@ -388,7 +388,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = VendorPayout::with(['vendor.user'])->findOrFail($id);
+            $payout = VendorPayout::with(['vendor'])->findOrFail($id);
 
             // Update payout status to failed
             $payout->update([
@@ -557,7 +557,24 @@ class AdminPayoutController extends Controller
      */
     public function dashboard()
     {
-        return view('admin.financial.payout.dashboard');
+        try {
+            $payoutService = new PayoutCalculationService();
+            $summary = $payoutService->getPayoutSummary();
+
+            return view('admin.financial.payout.dashboard', compact('summary'));
+        } catch (\Exception $e) {
+            Log::error('Error loading payout dashboard: ' . $e->getMessage());
+            
+            // Return view with empty summary if there's an error
+            $summary = [
+                'total_pending_rider_payouts' => 0,
+                'total_pending_vendor_payouts' => 0,
+                'total_pending_amount' => 0,
+                'recent_payouts' => []
+            ];
+            
+            return view('admin.financial.payout.dashboard', compact('summary'));
+        }
     }
 
     /**

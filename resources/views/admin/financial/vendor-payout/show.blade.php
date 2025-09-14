@@ -64,9 +64,9 @@
                                 <h4 class="text-xl font-medium text-gray-900">
                                     {{ $payout->vendor->vendor_name ?? 'Unknown Vendor' }}
                                 </h4>
-                                <p class="text-gray-600">{{ $payout->vendor->user->first_name ?? '' }} {{ $payout->vendor->user->last_name ?? '' }}</p>
-                                <p class="text-gray-600">{{ $payout->vendor->user->email ?? 'No email' }}</p>
-                                <p class="text-gray-600">{{ $payout->vendor->user->phone_number ?? 'No phone' }}</p>
+                                <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->first_name . ' ' . $payout->vendor->last_name : 'N/A' }}</p>
+                                <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->email : 'No email' }}</p>
+                                <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->phone_number : 'No phone' }}</p>
                                 <div class="mt-2">
                                     @if($payout->vendor->stall_number)
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">

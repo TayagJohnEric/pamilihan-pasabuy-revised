@@ -103,16 +103,16 @@
                                             <div class="flex-shrink-0 h-10 w-10">
                                                 <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                                                     <span class="text-sm font-medium text-gray-700">
-                                                        {{ substr($payout->rider->user->first_name, 0, 1) }}{{ substr($payout->rider->user->last_name, 0, 1) }}
+                                                        {{ $payout->rider ? substr($payout->rider->first_name, 0, 1) . substr($payout->rider->last_name, 0, 1) : 'N/A' }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">
-                                                    {{ $payout->rider->user->first_name }} {{ $payout->rider->user->last_name }}
+                                                    {{ $payout->rider ? $payout->rider->first_name . ' ' . $payout->rider->last_name : 'N/A' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
-                                                    {{ $payout->rider->user->email }}
+                                                    {{ $payout->rider ? $payout->rider->email : 'N/A' }}
                                                 </div>
                                             </div>
                                         </div>

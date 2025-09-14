@@ -35,7 +35,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending Rider Payouts</p>
-                        <p class="text-2xl font-bold text-gray-900" id="pending-rider-count">-</p>
+                        <p class="text-2xl font-bold text-gray-900" id="pending-rider-count">{{ $summary['total_pending_rider_payouts'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending Vendor Payouts</p>
-                        <p class="text-2xl font-bold text-gray-900" id="pending-vendor-count">-</p>
+                        <p class="text-2xl font-bold text-gray-900" id="pending-vendor-count">{{ $summary['total_pending_vendor_payouts'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Pending Amount</p>
-                        <p class="text-2xl font-bold text-gray-900" id="total-pending-amount">₱-</p>
+                        <p class="text-2xl font-bold text-gray-900" id="total-pending-amount">₱{{ number_format($summary['total_pending_amount'] ?? 0, 2) }}</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Orders to Process</p>
-                        <p class="text-2xl font-bold text-gray-900" id="orders-to-process">-</p>
+                        <p class="text-2xl font-bold text-gray-900" id="orders-to-process">{{ $summary['orders_to_process'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>

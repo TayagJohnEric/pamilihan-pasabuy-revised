@@ -140,7 +140,7 @@ class SystemSettingsSeeder extends Seeder
             ],
             [
                 'setting_key' => 'payout_minimum_amount',
-                'setting_value' => '100.00',
+                'setting_value' => '50.00',
                 'description' => 'Minimum amount required to generate a payout (in PHP).',
                 'created_at' => now(),
                 'updated_at' => now(),

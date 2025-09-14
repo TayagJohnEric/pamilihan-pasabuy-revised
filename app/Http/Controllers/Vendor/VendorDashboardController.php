@@ -139,7 +139,7 @@ class VendorDashboardController extends Controller
             ->whereHas('product', function ($query) use ($vendorId) {
                 $query->where('vendor_id', $vendorId);
             })
-            ->sum('actual_item_price') ?? 0;
+            ->sum(DB::raw('COALESCE(actual_item_price, unit_price_snapshot * quantity_requested)')) ?? 0;
     }
 
     /**
@@ -225,7 +225,7 @@ class VendorDashboardController extends Controller
             ->whereHas('product', function ($query) use ($vendorId) {
                 $query->where('vendor_id', $vendorId);
             })
-            ->sum('actual_item_price') ?? 0;
+            ->sum(DB::raw('COALESCE(actual_item_price, unit_price_snapshot * quantity_requested)')) ?? 0;
     }
 
     /**
@@ -287,7 +287,7 @@ class VendorDashboardController extends Controller
             ->whereHas('product', function ($query) use ($vendorId) {
                 $query->where('vendor_id', $vendorId);
             })
-            ->sum('actual_item_price') ?? 0;
+            ->sum(DB::raw('COALESCE(actual_item_price, unit_price_snapshot * quantity_requested)')) ?? 0;
     }
 
     /**
@@ -500,7 +500,7 @@ class VendorDashboardController extends Controller
             ->whereHas('product', function ($query) use ($vendorId) {
                 $query->where('vendor_id', $vendorId);
             })
-            ->sum('actual_item_price') ?? 0;
+            ->sum(DB::raw('COALESCE(actual_item_price, unit_price_snapshot * quantity_requested)')) ?? 0;
     }
 
     /**

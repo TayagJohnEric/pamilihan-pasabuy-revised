@@ -195,7 +195,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('vendor.financials.payout.details', $payout->id) }}" 
+                            <a href="{{ route('vendor.earnings.payout.details', $payout->id) }}" 
                                class="text-blue-600 hover:text-blue-900">View Details</a>
                         </td>
                     </tr>
@@ -245,7 +245,7 @@
                             </span>
                         @endif
                     </div>
-                    <a href="{{ route('vendor.financials.payout.details', $payout->id) }}" 
+                    <a href="{{ route('vendor.earnings.payout.details', $payout->id) }}" 
                        class="text-blue-600 hover:text-blue-900 text-sm font-medium">View Details</a>
                 </div>
             </div>

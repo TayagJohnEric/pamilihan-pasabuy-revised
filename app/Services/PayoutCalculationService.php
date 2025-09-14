@@ -26,7 +26,7 @@ class PayoutCalculationService
             // Get completed orders with online payments in the period
             $completedOrders = Order::with(['rider', 'orderItems.product.vendor', 'payment'])
                 ->where('status', 'delivered')
-                ->where('payment_method', 'online')
+                ->where('payment_method', 'online_payment')
                 ->where('payment_status', 'paid')
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->whereHas('payment', function($query) {
@@ -142,7 +142,13 @@ class PayoutCalculationService
             foreach ($order->orderItems as $orderItem) {
                 if (!$orderItem->product || !$orderItem->product->vendor) continue;
 
-                $vendorId = $orderItem->product->vendor_user_id;
+                // Get vendor user ID from the vendor relationship, not from product directly
+                $vendorId = $orderItem->product->vendor->user_id;
+                
+                // Skip if vendor user ID is null or invalid
+                if (!$vendorId || !is_numeric($vendorId)) {
+                    continue;
+                }
                 
                 if (!isset($vendorEarnings[$vendorId])) {
                     $vendorEarnings[$vendorId] = [
@@ -177,6 +183,11 @@ class PayoutCalculationService
             $minimumPayoutAmount = (float) SystemSetting::where('setting_key', 'payout_minimum_amount')
                 ->first()?->setting_value ?? 100.00;
 
+            // Validate vendor ID before creating payout
+            if (!is_numeric($vendorId) || $vendorId <= 0) {
+                continue;
+            }
+
             // Check if payout already exists for this period
             $existingPayout = VendorPayout::where('vendor_user_id', $vendorId)
                 ->where('payout_period_start_date', $startDate->format('Y-m-d'))
@@ -184,17 +195,30 @@ class PayoutCalculationService
                 ->first();
 
             if (!$existingPayout && $vendorPayout >= $minimumPayoutAmount) {
-                $payout = VendorPayout::create([
-                    'vendor_user_id' => $vendorId,
-                    'payout_period_start_date' => $startDate,
-                    'payout_period_end_date' => $endDate,
-                    'total_sales_amount' => $totalSales,
-                    'platform_commission_amount' => $platformCommission,
-                    'total_payout_amount' => $vendorPayout,
-                    'status' => 'pending_payment'
-                ]);
+                try {
+                    $payout = VendorPayout::create([
+                        'vendor_user_id' => (int) $vendorId,
+                        'payout_period_start_date' => $startDate,
+                        'payout_period_end_date' => $endDate,
+                        'total_sales_amount' => $totalSales,
+                        'platform_commission_amount' => $platformCommission,
+                        'total_payout_amount' => $vendorPayout,
+                        'status' => 'pending_payment'
+                    ]);
 
-                $createdPayouts[] = $payout;
+                    $createdPayouts[] = $payout;
+                } catch (\Exception $e) {
+                    Log::error('Failed to create vendor payout', [
+                        'vendor_id' => $vendorId,
+                        'error' => $e->getMessage(),
+                        'data' => [
+                            'total_sales' => $totalSales,
+                            'commission' => $platformCommission,
+                            'payout' => $vendorPayout
+                        ]
+                    ]);
+                    continue;
+                }
             }
         }
 

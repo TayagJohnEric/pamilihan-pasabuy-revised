@@ -120,10 +120,10 @@
                                                     {{ $payout->vendor->vendor_name ?? 'Unknown Vendor' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
-                                                    {{ $payout->vendor->user->first_name ?? '' }} {{ $payout->vendor->user->last_name ?? '' }}
+                                                    {{ $payout->vendor ? $payout->vendor->first_name . ' ' . $payout->vendor->last_name : 'N/A' }}
                                                 </div>
                                                 <div class="text-xs text-gray-400">
-                                                    {{ $payout->vendor->user->email ?? 'No email' }}
+                                                    {{ $payout->vendor ? $payout->vendor->email : 'No email' }}
                                                 </div>
                                             </div>
                                         </div>

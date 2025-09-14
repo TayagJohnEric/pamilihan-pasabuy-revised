@@ -6,7 +6,7 @@
     <nav class="flex mb-6" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('vendor.financials.earnings') }}" class="text-gray-600 hover:text-blue-600 text-sm">
+                <a href="{{ route('vendor.earnings.index') }}" class="text-gray-600 hover:text-blue-600 text-sm">
                     Earnings
                 </a>
             </li>
@@ -205,17 +205,6 @@
             <p class="text-gray-600">No orders found for this payout period</p>
         </div>
         @endif
-    </div>
-
-    <!-- Back Button -->
-    <div class="mt-6 flex justify-start">
-        <a href="{{ route('vendor.financials.earnings') }}" 
-           class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 flex items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back to Earnings
-        </a>
     </div>
 </div>
 @endsection
