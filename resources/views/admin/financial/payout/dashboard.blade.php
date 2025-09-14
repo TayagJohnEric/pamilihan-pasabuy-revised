@@ -179,9 +179,9 @@
 
         // Update summary cards with data
         function updateSummaryCards(data) {
-            document.getElementById('pending-rider-count').textContent = data.pending_rider_payouts || 0;
-            document.getElementById('pending-vendor-count').textContent = data.pending_vendor_payouts || 0;
-            document.getElementById('total-pending-amount').textContent = '₱' + (data.total_pending_amount || '0.00');
+            document.getElementById('pending-rider-count').textContent = data.total_pending_rider_payouts || 0;
+            document.getElementById('pending-vendor-count').textContent = data.total_pending_vendor_payouts || 0;
+            document.getElementById('total-pending-amount').textContent = '₱' + (parseFloat(data.total_pending_amount || 0).toFixed(2));
             document.getElementById('orders-to-process').textContent = data.orders_to_process || 0;
         }
 

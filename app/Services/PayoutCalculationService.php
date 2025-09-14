@@ -34,6 +34,9 @@ class PayoutCalculationService
                 })
                 ->get();
 
+            // Filter out orders that are already included in paid payouts
+            $completedOrders = $this->filterOrdersNotInPaidPayouts($completedOrders);
+
             // Calculate rider payouts
             $riderPayouts = $this->calculateRiderPayouts($completedOrders, $startDate, $endDate);
             
@@ -128,6 +131,54 @@ class PayoutCalculationService
         }
 
         return $createdPayouts;
+    }
+
+    /**
+     * Filter out orders that are already included in paid payouts
+     */
+    private function filterOrdersNotInPaidPayouts($orders)
+    {
+        // Get all paid rider payouts with their periods
+        $paidRiderPayouts = RiderPayout::where('status', 'paid')
+            ->select('rider_user_id', 'payout_period_start_date', 'payout_period_end_date')
+            ->get();
+
+        // Get all paid vendor payouts with their periods
+        $paidVendorPayouts = VendorPayout::where('status', 'paid')
+            ->select('vendor_user_id', 'payout_period_start_date', 'payout_period_end_date')
+            ->get();
+
+        return $orders->filter(function ($order) use ($paidRiderPayouts, $paidVendorPayouts) {
+            $orderDate = $order->created_at;
+            
+            // Check if this order's rider has been paid for a period that includes this order
+            if ($order->rider_user_id) {
+                foreach ($paidRiderPayouts as $payout) {
+                    if ($payout->rider_user_id == $order->rider_user_id &&
+                        $orderDate >= $payout->payout_period_start_date &&
+                        $orderDate <= $payout->payout_period_end_date) {
+                        return false; // Exclude this order
+                    }
+                }
+            }
+
+            // Check if any vendor in this order has been paid for a period that includes this order
+            foreach ($order->orderItems as $orderItem) {
+                if ($orderItem->product && $orderItem->product->vendor) {
+                    $vendorUserId = $orderItem->product->vendor->user_id;
+                    
+                    foreach ($paidVendorPayouts as $payout) {
+                        if ($payout->vendor_user_id == $vendorUserId &&
+                            $orderDate >= $payout->payout_period_start_date &&
+                            $orderDate <= $payout->payout_period_end_date) {
+                            return false; // Exclude this order
+                        }
+                    }
+                }
+            }
+
+            return true; // Include this order
+        });
     }
 
     /**
@@ -305,16 +356,15 @@ class PayoutCalculationService
         // Count orders that could be processed into payouts (completed orders with online payments)
         $ordersToProcess = Order::where('status', 'delivered')
             ->whereHas('payment', function($query) {
-                $query->where('payment_method', '!=', 'cash_on_delivery')
-                      ->where('payment_status', 'completed');
+                $query->where('payment_method', 'online_payment')
+                      ->where('payment_status', 'paid');
             })
-            ->whereDoesntHave('riderPayouts') // Orders not yet included in any rider payout
             ->count();
 
         return [
-            'pending_rider_payouts' => $pendingRiderCount,
-            'pending_vendor_payouts' => $pendingVendorCount,
-            'total_pending_amount' => number_format($totalPendingAmount, 2),
+            'total_pending_rider_payouts' => $pendingRiderCount,
+            'total_pending_vendor_payouts' => $pendingVendorCount,
+            'total_pending_amount' => $totalPendingAmount,
             'orders_to_process' => $ordersToProcess
         ];
     }

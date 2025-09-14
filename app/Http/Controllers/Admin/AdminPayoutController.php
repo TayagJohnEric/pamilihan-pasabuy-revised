@@ -570,7 +570,7 @@ class AdminPayoutController extends Controller
                 'total_pending_rider_payouts' => 0,
                 'total_pending_vendor_payouts' => 0,
                 'total_pending_amount' => 0,
-                'recent_payouts' => []
+                'orders_to_process' => 0
             ];
             
             return view('admin.financial.payout.dashboard', compact('summary'));
