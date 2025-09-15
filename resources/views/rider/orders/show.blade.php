@@ -270,27 +270,12 @@
         @endif
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span class="text-gray-700">Processing...</span>
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // CSRF token for AJAX requests
             const csrfToken = '{{ csrf_token() }}';
 
-            // Show/hide loading overlay
-            function showLoading() {
-                document.getElementById('loading-overlay').classList.remove('hidden');
-            }
-
-            function hideLoading() {
-                document.getElementById('loading-overlay').classList.add('hidden');
-            }
 
             // Handle order acceptance
             const acceptBtn = document.getElementById('accept-order-btn');
@@ -298,10 +283,7 @@
                 acceptBtn.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Are you sure you want to accept this delivery?')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/accept`, {
+                    fetch(`/rider/orders/${orderId}/accept`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -311,7 +293,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -321,11 +302,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             }
 
@@ -335,10 +314,7 @@
                 declineBtn.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Are you sure you want to decline this delivery? It will be assigned to another rider.')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/decline`, {
+                    fetch(`/rider/orders/${orderId}/decline`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -348,7 +324,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -362,11 +337,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             }
 
@@ -376,10 +349,7 @@
                 pickupBtn.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Confirm that you have picked up all items from the vendor(s)?')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/pickup`, {
+                    fetch(`/rider/orders/${orderId}/pickup`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -389,7 +359,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -399,11 +368,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             }
 
@@ -413,10 +380,7 @@
                 startDeliveryBtn.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Start delivery and mark order as out for delivery?')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/start-delivery`, {
+                    fetch(`/rider/orders/${orderId}/start-delivery`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -426,7 +390,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -436,11 +399,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             }
 
@@ -451,15 +412,7 @@
                     const orderId = this.dataset.orderId;
                     const paymentMethod = '{{ $order->payment_method }}';
                     
-                    let confirmMessage = 'Confirm that you have successfully delivered this order to the customer?';
-                    if (paymentMethod === 'cod') {
-                        confirmMessage = 'Confirm that you have delivered the order and collected ₱{{ number_format($order->final_total_amount, 2) }} from the customer?';
-                    }
-                    
-                    if (confirm(confirmMessage)) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/delivered`, {
+                    fetch(`/rider/orders/${orderId}/delivered`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -469,7 +422,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -483,11 +435,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             }
         });

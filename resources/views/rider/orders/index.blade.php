@@ -249,31 +249,15 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span class="text-gray-700">Processing...</span>
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // CSRF token for AJAX requests
             const csrfToken = '{{ csrf_token() }}';
 
-            // Show/hide loading overlay
-            function showLoading() {
-                document.getElementById('loading-overlay').classList.remove('hidden');
-            }
-
-            function hideLoading() {
-                document.getElementById('loading-overlay').classList.add('hidden');
-            }
 
             // Handle availability toggle
             document.getElementById('availability-toggle').addEventListener('click', function() {
-                showLoading();
                 
                 fetch('{{ route("rider.availability.toggle") }}', {
                     method: 'PATCH',
@@ -285,7 +269,6 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    hideLoading();
                     
                     if (data.success) {
                         // Update toggle appearance
@@ -323,7 +306,6 @@
                     }
                 })
                 .catch(error => {
-                    hideLoading();
                     console.error('Error:', error);
                     alert('An error occurred. Please try again.');
                 });
@@ -334,10 +316,7 @@
                 button.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Are you sure you want to accept this delivery?')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/accept`, {
+                    fetch(`/rider/orders/${orderId}/accept`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -347,7 +326,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -361,11 +339,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             });
 
@@ -374,10 +350,7 @@
                 button.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
                     
-                    if (confirm('Are you sure you want to decline this delivery? It will be assigned to another rider.')) {
-                        showLoading();
-                        
-                        fetch(`/rider/orders/${orderId}/decline`, {
+                    fetch(`/rider/orders/${orderId}/decline`, {
                             method: 'PATCH',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
@@ -387,7 +360,6 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            hideLoading();
                             
                             if (data.success) {
                                 alert(data.message);
@@ -397,11 +369,9 @@
                             }
                         })
                         .catch(error => {
-                            hideLoading();
                             console.error('Error:', error);
                             alert('An error occurred. Please try again.');
                         });
-                    }
                 });
             });
         });
