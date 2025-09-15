@@ -345,8 +345,8 @@ Route::prefix('rider')->name('rider.')->middleware(['auth', 'verified'])->group(
 Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
 
 
-    // Rider Profile
-    Route::get('profile', [RiderProfileController::class, 'show'])->name('profile.show');
+    // Rider Profile Routes
+    Route::get('profile', [RiderProfileController::class, 'show'])->name('profile');
     Route::get('profile/edit', [RiderProfileController::class, 'edit'])->name('profile.edit');
     Route::put('profile', [RiderProfileController::class, 'update'])->name('profile.update');
 

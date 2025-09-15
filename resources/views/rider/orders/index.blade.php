@@ -249,12 +249,52 @@
         </div>
     </div>
 
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // CSRF token for AJAX requests
             const csrfToken = '{{ csrf_token() }}';
 
+            // Toast notification function
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `flex items-center px-4 py-3 mb-2 text-sm rounded-lg shadow-md transform transition-all duration-300 ease-in-out translate-x-full opacity-0 ${
+                    type === 'success' ? 'text-white bg-green-500' :
+                    type === 'error' ? 'text-white bg-red-500' :
+                    'text-white bg-blue-500'
+                }`;
+                
+                toast.innerHTML = `
+                    <svg class="flex-shrink-0 w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        ${type === 'success' ? 
+                            '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>' :
+                            '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>'
+                        }
+                    </svg>
+                    <span>${message}</span>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 hover:bg-black hover:bg-opacity-10 inline-flex h-6 w-6 items-center justify-center" onclick="this.parentElement.remove()">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                `;
+                
+                document.getElementById('toast-container').appendChild(toast);
+                
+                // Animate in
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                }, 100);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
 
             // Handle availability toggle
             document.getElementById('availability-toggle').addEventListener('click', function() {
@@ -300,14 +340,14 @@
                         }
                         
                         // Show success message
-                        alert(data.message);
+                        showToast(data.message, 'success');
                     } else {
-                        alert(data.message || 'Failed to update availability status.');
+                        showToast(data.message || 'Failed to update availability status.', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                    showToast('An error occurred. Please try again.', 'error');
                 });
             });
 
@@ -328,19 +368,19 @@
                         .then(data => {
                             
                             if (data.success) {
-                                alert(data.message);
+                                showToast(data.message, 'success');
                                 if (data.redirect_url) {
                                     window.location.href = data.redirect_url;
                                 } else {
                                     location.reload();
                                 }
                             } else {
-                                alert(data.message || 'Failed to accept order.');
+                                showToast(data.message || 'Failed to accept order.', 'error');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('An error occurred. Please try again.');
+                            showToast('An error occurred. Please try again.', 'error');
                         });
                 });
             });
@@ -362,15 +402,15 @@
                         .then(data => {
                             
                             if (data.success) {
-                                alert(data.message);
+                                showToast(data.message, 'success');
                                 location.reload();
                             } else {
-                                alert(data.message || 'Failed to decline order.');
+                                showToast(data.message || 'Failed to decline order.', 'error');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('An error occurred. Please try again.');
+                            showToast('An error occurred. Please try again.', 'error');
                         });
                 });
             });

@@ -61,7 +61,7 @@
         </div>
 
         <div class="flex justify-between">
-            <a href="{{ route('rider.profile.show') }}" class="text-gray-600">Cancel</a>
+            <a href="{{ route('rider.profile') }}" class="text-gray-600">Cancel</a>
             <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Changes</button>
         </div>
     </form>
