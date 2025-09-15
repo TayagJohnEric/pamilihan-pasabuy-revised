@@ -298,6 +298,12 @@
 
             // Handle availability toggle
             document.getElementById('availability-toggle').addEventListener('click', function() {
+                const toggle = this;
+                const originalContent = toggle.innerHTML;
+                
+                // Show loading state
+                toggle.disabled = true;
+                toggle.classList.add('opacity-75', 'cursor-not-allowed');
                 
                 fetch('{{ route("rider.availability.toggle") }}', {
                     method: 'PATCH',
@@ -309,6 +315,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    // Reset button state
+                    toggle.disabled = false;
+                    toggle.classList.remove('opacity-75', 'cursor-not-allowed');
                     
                     if (data.success) {
                         // Update toggle appearance
@@ -346,6 +355,9 @@
                     }
                 })
                 .catch(error => {
+                    // Reset button state on error
+                    toggle.disabled = false;
+                    toggle.classList.remove('opacity-75', 'cursor-not-allowed');
                     console.error('Error:', error);
                     showToast('An error occurred. Please try again.', 'error');
                 });
@@ -355,6 +367,18 @@
             document.querySelectorAll('.accept-order-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
+                    const originalContent = this.innerHTML;
+                    
+                    // Show loading state
+                    this.disabled = true;
+                    this.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                    `;
+                    this.classList.add('opacity-75', 'cursor-not-allowed');
                     
                     fetch(`/rider/orders/${orderId}/accept`, {
                             method: 'PATCH',
@@ -366,6 +390,10 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            // Reset button state
+                            this.disabled = false;
+                            this.innerHTML = originalContent;
+                            this.classList.remove('opacity-75', 'cursor-not-allowed');
                             
                             if (data.success) {
                                 showToast(data.message, 'success');
@@ -379,6 +407,10 @@
                             }
                         })
                         .catch(error => {
+                            // Reset button state on error
+                            this.disabled = false;
+                            this.innerHTML = originalContent;
+                            this.classList.remove('opacity-75', 'cursor-not-allowed');
                             console.error('Error:', error);
                             showToast('An error occurred. Please try again.', 'error');
                         });
@@ -389,6 +421,18 @@
             document.querySelectorAll('.decline-order-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const orderId = this.dataset.orderId;
+                    const originalContent = this.innerHTML;
+                    
+                    // Show loading state
+                    this.disabled = true;
+                    this.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                    `;
+                    this.classList.add('opacity-75', 'cursor-not-allowed');
                     
                     fetch(`/rider/orders/${orderId}/decline`, {
                             method: 'PATCH',
@@ -400,6 +444,10 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            // Reset button state
+                            this.disabled = false;
+                            this.innerHTML = originalContent;
+                            this.classList.remove('opacity-75', 'cursor-not-allowed');
                             
                             if (data.success) {
                                 showToast(data.message, 'success');
@@ -409,6 +457,10 @@
                             }
                         })
                         .catch(error => {
+                            // Reset button state on error
+                            this.disabled = false;
+                            this.innerHTML = originalContent;
+                            this.classList.remove('opacity-75', 'cursor-not-allowed');
                             console.error('Error:', error);
                             showToast('An error occurred. Please try again.', 'error');
                         });
