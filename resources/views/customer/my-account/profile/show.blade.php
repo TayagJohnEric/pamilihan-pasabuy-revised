@@ -9,7 +9,7 @@
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900 sm:text-xl">My Profile</h1>
+                    <h1 class="text-2xl font-bold text-gray-900 sm:text-2xl">My Profile</h1>
                     <p class="mt-1 text-sm text-gray-600">View and manage your personal information and settings</p>
                 </div>
             </div>
@@ -19,7 +19,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Profile Summary Card - Left Sidebar -->
             <div class="lg:col-span-4">
-                <div class="bg-white shadow-xl rounded-2xl overflow-hidden sticky top-6">
+                <div class="bg-white shadow rounded-xl overflow-hidden sticky top-6">
                     <!-- Profile Header -->
                     <div class="px-6 py-8 bg-gradient-to-br from-green-50 to-green-100 border-b border-green-200">
                         <div class="text-center">
@@ -101,7 +101,7 @@
             <!-- Main Content Area -->
             <div class="lg:col-span-8 space-y-8">
                 <!-- Personal Information Card -->
-                <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+                <div class="bg-white shadow rounded overflow-hidden">
                    <div class="px-8 py-6 border-b border-gray-200 bg-gray-50">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
@@ -117,14 +117,14 @@
         </div>
 
         <div class="flex-shrink-0">
-            <a href="{{ route('customer.profile.edit') }}"
-               class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Edit Profile
-            </a>
+           <a href="{{ route('customer.profile.edit') }}"
+   class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+    </svg>
+    Edit Profile
+</a>
         </div>
     </div>
 </div>
@@ -168,7 +168,7 @@
                 </div>
 
                 <!-- Default Address Card -->
-                <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+                <div class="bg-white shadow rounded-xl overflow-hidden">
                     <div class="px-8 py-6 border-b border-gray-200 bg-gray-50">
     <div class="flex items-center justify-between">
         <div class="flex items-center">
@@ -184,13 +184,13 @@
         </div>
 
         <div class="flex-shrink-0">
-            <a href="{{ route('customer.saved_addresses.index') }}"
-               class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Edit Address
-            </a>
+           <a href="{{ route('customer.saved_addresses.index') }}"
+   class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+    </svg>
+    Edit Address
+</a>
         </div>
     </div>
 </div>
@@ -255,41 +255,6 @@
                                 </a>
                             </div>
                         @endif
-                    </div>
-                </div>
-
-                <!-- Account Settings Preview Card -->
-                <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
-                    <div class="px-8 py-6 border-b border-gray-200 bg-gray-50">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.786-2.924.86-2.138 2.231.348.608.026 1.399-.722 1.673-1.397.499-1.397 2.667 0 3.165.748.274 1.07 1.065.722 1.673-.786 1.372.766 3.017 2.138 2.231a1.532 1.532 0 012.286.948c.379 1.561 2.6 1.561 2.98 0a1.532 1.532 0 012.285-.948c1.372.786 2.924-.86 2.138-2.231-.347-.608-.026-1.399.722-1.673 1.397-.499 1.397-2.667 0-3.165-.748-.274-1.07-1.065-.722-1.673.786-1.372-.766-3.017-2.138-2.231a1.532 1.532 0 01-2.285-.948zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <h3 class="text-lg font-semibold text-gray-900">Account Settings</h3>
-                                    <p class="text-sm text-gray-600">Manage your account preferences</p>
-                                </div>
-                            </div>
-                            <a href="{{ route('customer.profile.edit') }}" 
-                               class="text-green-600 hover:text-green-500 font-medium text-sm transition-colors duration-200">
-                                Manage
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="px-8 py-6">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                                <span class="text-sm font-medium text-gray-700">Account Status</span>
-                            </div>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Active
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -7,20 +7,20 @@
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full pointer-events-none"></div>
 
 <div class="min-h-screen bg-gray-50">
-    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Page Header -->
-        <div class="mb-6 lg:mb-8">
-            <div class="flex items-center justify-between">
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">Shopping Cart</h1>
-                    <p class="text-sm lg:text-base text-gray-600 mt-1">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+                    <p class="text-gray-600">
                         {{ $cartItems->count() }} {{ $cartItems->count() === 1 ? 'item' : 'items' }} in your cart
                     </p>
                 </div>
                 
                 <!-- Breadcrumb Navigation -->
-                <nav class="hidden sm:flex items-center space-x-2 text-sm text-gray-500" aria-label="Breadcrumb">
-                    <a href="{{ route('products.index') }}" class="hover:text-gray-700 transition-colors">Products</a>
+                <nav class="flex items-center space-x-2 text-sm text-gray-500" aria-label="Breadcrumb">
+                    <a href="{{ route('products.index') }}" class="hover:text-green-600 transition-colors duration-200">Products</a>
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                     </svg>
@@ -32,55 +32,54 @@
         @if($cartItems->count() > 0)
             <!-- Desktop Layout: Two Columns -->
             <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <!-- Cart Items Column (Desktop: Left, Mobile: Full Width) -->
+                <!-- Cart Items Column -->
                 <div class="lg:col-span-8">
-                    <div class="space-y-4 lg:space-y-6">
+                    <div class="space-y-6">
                         @foreach($cartItems as $item)
                             @php
                                 $isBudgetBased = !is_null($item->customer_budget);
                             @endphp
                             
-                            <div class="bg-white rounded-lg lg:rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200">
-                                <div class="p-3 sm:p-4 lg:p-6">
-                                    <!-- Mobile-first responsive layout -->
-                                    <div class="space-y-4">
-                                        <!-- Product Header - Image + Title + Price -->
-                                        <div class="flex gap-3 sm:gap-4">
-                                            <!-- Product Image -->
-                                            <div class="flex-shrink-0">
-                                                @if($item->product->image_url)
-                                                    <img src="{{ asset('storage/' . $item->product->image_url) }}"
-                                                         alt="{{ $item->product->product_name }}" 
-                                                         class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-cover rounded-lg border border-gray-200">
-                                                @else
-                                                    <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-                                                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                @endif
-                                            </div>
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                                <div class="p-6">
+                                    <!-- Product Header -->
+                                    <div class="flex gap-4 mb-6">
+                                        <!-- Product Image -->
+                                        <div class="flex-shrink-0">
+                                            @if($item->product->image_url)
+                                                <img src="{{ asset('storage/' . $item->product->image_url) }}"
+                                                     alt="{{ $item->product->product_name }}" 
+                                                     class="w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-lg border border-gray-100">
+                                            @else
+                                                <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100">
+                                                    <svg class="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </div>
 
-                                            <!-- Product Info + Price -->
-                                            <div class="flex-grow min-w-0 flex flex-col justify-between">
+                                        <!-- Product Info -->
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 mb-1">
+                                                    <h3 class="text-lg font-medium text-gray-900 line-clamp-2 mb-1">
                                                         {{ $item->product->product_name }}
                                                     </h3>
-                                                    <p class="text-xs sm:text-sm text-gray-600">
-                                                        by <span class="font-medium">{{ $item->product->vendor->vendor_name }}</span>
+                                                    <p class="text-sm text-gray-500">
+                                                        by <span class="font-medium text-gray-700">{{ $item->product->vendor->vendor_name }}</span>
                                                     </p>
                                                 </div>
 
-                                                <!-- Price Display - Right aligned on mobile -->
-                                                <div class="text-right mt-2 sm:mt-0">
+                                                <!-- Price Display -->
+                                                <div class="text-right ml-4">
                                                     @if($isBudgetBased)
-                                                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
+                                                        <div class="text-2xl font-bold text-green-600">
                                                             ₱{{ number_format($item->customer_budget, 2) }}
                                                         </div>
                                                         <div class="text-xs text-gray-500">Your Budget</div>
                                                     @else
-                                                        <div class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                                                        <div class="text-2xl font-bold text-gray-900">
                                                             ₱{{ number_format($item->subtotal, 2) }}
                                                         </div>
                                                         <div class="text-xs text-gray-500">
@@ -89,100 +88,95 @@
                                                     @endif
                                                 </div>
                                             </div>
+
+                                            <!-- Status Badges -->
+                                            <div class="flex flex-wrap items-center gap-2 mb-4">
+                                                @if($isBudgetBased)
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                                                        Budget-Based
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200">
+                                                        <div class="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                                                        Fixed Price
+                                                    </span>
+                                                @endif
+                                                
+                                                @if($item->product->is_budget_based && !$isBudgetBased)
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                                        Budget Option Available
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
+                                    </div>
 
-                                        <!-- Status Badges -->
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            @if($isBudgetBased)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
-                                                        <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                    Budget-Based
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                    Fixed Price
-                                                </span>
-                                            @endif
-                                            
-                                            @if($item->product->is_budget_based && !$isBudgetBased)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
-                                                    Budget Option Available
-                                                </span>
-                                            @endif
-                                        </div>
-
-                                        <!-- Item Controls Section -->
-                                        <div class="border-t border-gray-100 pt-4">
-                                            @if(!$isBudgetBased)
-                                                <!-- Standard Item Controls -->
-                                                <div class="space-y-4">
-                                                    <!-- Quantity Control -->
-                                                    <div class="flex items-center justify-between">
-                                                        <div>
-                                                            <label for="quantity-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                                                Quantity
-                                                            </label>
-                                                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-                                                                <button type="button" 
-                                                                        onclick="decreaseCartQuantity({{ $item->id }})"
-                                                                        class="px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-                                                                        aria-label="Decrease quantity">
-                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                                                                    </svg>
-                                                                </button>
-                                                                <input type="number" 
-                                                                       id="quantity-{{ $item->id }}"
-                                                                       name="quantity" 
-                                                                       value="{{ $item->quantity }}" 
-                                                                       min="1" 
-                                                                       max="{{ $item->product->is_budget_based ? 999 : $item->product->quantity_in_stock }}"
-                                                                       class="w-16 px-2 py-2 text-center border-0 focus:ring-0 focus:outline-none bg-white"
-                                                                       data-price="{{ $item->product->price }}"
-                                                                       data-item-id="{{ $item->id }}"
-                                                                       aria-label="Quantity">
-                                                                <button type="button" 
-                                                                        onclick="increaseCartQuantity({{ $item->id }})"
-                                                                        class="px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-                                                                        aria-label="Increase quantity">
-                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                            <p class="text-xs text-gray-500 mt-1">
-                                                                {{ $item->product->is_budget_based ? 'Available' : $item->product->quantity_in_stock . ' available' }}
-                                                            </p>
-                                                        </div>
-
-                                                        <!-- Remove Button for Standard Items -->
+                                    <!-- Item Controls Section -->
+                                    <div class="border-t border-gray-50 pt-6">
+                                        @if(!$isBudgetBased)
+                                            <!-- Standard Item Controls -->
+                                            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                                                <!-- Quantity Control -->
+                                                <div class="flex-grow max-w-xs">
+                                                    <label for="quantity-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-3">
+                                                        Quantity
+                                                    </label>
+                                                    <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white">
                                                         <button type="button" 
-                                                                onclick="removeItem({{ $item->id }})"
-                                                                class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-red-50 rounded-lg text-sm font-medium hover:bg-red-100 hover:border-red-400 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                onclick="decreaseCartQuantity({{ $item->id }})"
+                                                                class="px-4 py-3 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-inset"
+                                                                aria-label="Decrease quantity">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                                                             </svg>
-                                                            Remove
+                                                        </button>
+                                                        <input type="number" 
+                                                               id="quantity-{{ $item->id }}"
+                                                               name="quantity" 
+                                                               value="{{ $item->quantity }}" 
+                                                               min="1" 
+                                                               max="{{ $item->product->is_budget_based ? 999 : $item->product->quantity_in_stock }}"
+                                                               class="w-20 px-3 py-3 text-center border-0 focus:ring-0 focus:outline-none bg-white text-gray-900"
+                                                               data-price="{{ $item->product->price }}"
+                                                               data-item-id="{{ $item->id }}"
+                                                               aria-label="Quantity">
+                                                        <button type="button" 
+                                                                onclick="increaseCartQuantity({{ $item->id }})"
+                                                                class="px-4 py-3 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-inset"
+                                                                aria-label="Increase quantity">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                            </svg>
                                                         </button>
                                                     </div>
+                                                    <p class="text-xs text-gray-500 mt-2">
+                                                        {{ $item->product->is_budget_based ? 'Available' : $item->product->quantity_in_stock . ' available' }}
+                                                    </p>
                                                 </div>
-                                            @else
-                                                <!-- Budget-based Item Controls - Improved Layout -->
-                                                <div class="space-y-4">
+
+                                                <!-- Remove Button -->
+                                                <button type="button" 
+                                                        onclick="removeItem({{ $item->id }})"
+                                                        class="inline-flex items-center px-4 py-2.5 border border-gray-200 text-gray-600 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        @else
+                                            <!-- Budget-based Item Controls -->
+                                            <div class="space-y-6">
+                                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                                     <!-- Budget Input -->
                                                     <div>
-                                                        <label for="budget-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                                            Budget Amount <span class="text-red-500">*</span>
+                                                        <label for="budget-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-3">
+                                                            Budget Amount <span class="text-green-500">*</span>
                                                         </label>
                                                         <div class="relative">
-                                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                                <span class="text-gray-500 sm:text-sm">₱</span>
+                                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                                <span class="text-gray-500">₱</span>
                                                             </div>
                                                             <input type="number" 
                                                                    id="budget-{{ $item->id }}"
@@ -192,12 +186,12 @@
                                                                    min="0.01"
                                                                    max="999999.99"
                                                                    required
-                                                                   class="block w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                                                                   class="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
                                                                    data-item-id="{{ $item->id }}"
                                                                    aria-label="Budget amount">
                                                         </div>
                                                         @if($item->product->indicative_price_per_unit)
-                                                            <p class="text-xs text-gray-500 mt-1">
+                                                            <p class="text-xs text-gray-500 mt-2">
                                                                 Indicative: ~₱{{ number_format($item->product->indicative_price_per_unit, 2) }}/{{ $item->product->unit }}
                                                             </p>
                                                         @endif
@@ -205,171 +199,172 @@
                                                     
                                                     <!-- Special Notes -->
                                                     <div>
-                                                        <label for="notes-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                                            Special Notes (Optional)
+                                                        <label for="notes-{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-3">
+                                                            Special Notes <span class="text-gray-400">(Optional)</span>
                                                         </label>
                                                         <textarea id="notes-{{ $item->id }}"
                                                                   name="customer_notes" 
                                                                   rows="3"
                                                                   placeholder="Special requests or preferences..."
-                                                                  class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
+                                                                  class="block w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none bg-white"
                                                                   data-item-id="{{ $item->id }}">{{ $item->customer_notes }}</textarea>
                                                     </div>
-
-                                                    <!-- Remove Button for Budget Items - Better positioned -->
-                                                    <div class="flex justify-end pt-2">
-                                                        <button type="button" 
-                                                                onclick="removeItem({{ $item->id }})"
-                                                                class="inline-flex items-center px-4 py-2 border border-red-300 text-red-700 bg-red-50 rounded-lg text-sm font-medium hover:bg-red-100 hover:border-red-400 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                            </svg>
-                                                            Remove
-                                                        </button>
-                                                    </div>
                                                 </div>
-                                            @endif
 
-                                            <!-- Hidden Remove Form -->
-                                            <form id="remove-form-{{ $item->id }}" method="POST" action="{{ route('cart.destroy', $item) }}" class="hidden">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </div>
-
-                                        <!-- Budget Notes Display -->
-                                        @if($isBudgetBased && $item->customer_notes)
-                                            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                                <div class="flex items-start">
-                                                    <svg class="w-4 h-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                    <div>
-                                                        <p class="text-sm font-medium text-blue-800">Special Notes:</p>
-                                                        <p class="text-sm text-blue-700 mt-1">{{ $item->customer_notes }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        <!-- Budget Conversion Option -->
-                                        @if($item->product->is_budget_based && !$isBudgetBased)
-                                            <div class="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-                                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                                    <div>
-                                                        <p class="text-sm font-medium text-amber-800">Want a custom quote instead?</p>
-                                                        <p class="text-xs text-amber-700">Switch to budget-based pricing for better flexibility</p>
-                                                    </div>
+                                                <!-- Remove Button for Budget Items -->
+                                                <div class="flex justify-end">
                                                     <button type="button" 
-                                                            onclick="showBudgetConversion({{ $item->id }})"
-                                                            class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-800 rounded-md text-sm font-medium hover:bg-amber-200 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 whitespace-nowrap">
-                                                        Switch to Budget
+                                                            onclick="removeItem({{ $item->id }})"
+                                                            class="inline-flex items-center px-4 py-2.5 border border-gray-200 text-gray-600 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                        Remove
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <!-- Budget Conversion Form -->
-                                            <div id="budget-conversion-{{ $item->id }}" class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg" data-item-id="{{ $item->id }}">
-                                                <form method="POST" action="{{ route('cart.update', $item) }}" class="space-y-4">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    
-                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                                Your Budget <span class="text-red-500">*</span>
-                                                            </label>
-                                                            <div class="relative">
-                                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                                    <span class="text-gray-500 sm:text-sm">₱</span>
-                                                                </div>
-                                                                <input type="number" 
-                                                                       name="customer_budget" 
-                                                                       step="0.01" 
-                                                                       min="0.01"
-                                                                       max="999999.99"
-                                                                       required
-                                                                       placeholder="Enter your budget"
-                                                                       class="block w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                                Special Notes (Optional)
-                                                            </label>
-                                                            <textarea name="customer_notes" 
-                                                                      rows="2"
-                                                                      placeholder="Any special requirements..."
-                                                                      class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div class="flex flex-col sm:flex-row gap-2">
-                                                        <button type="submit" 
-                                                                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                            </svg>
-                                                            Convert to Budget
-                                                        </button>
-                                                        <button type="button" 
-                                                                onclick="hideBudgetConversion({{ $item->id }})"
-                                                                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                                            Cancel
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
                                         @endif
+
+                                        <!-- Hidden Remove Form -->
+                                        <form id="remove-form-{{ $item->id }}" method="POST" action="{{ route('cart.destroy', $item) }}" class="hidden">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </div>
+
+                                    <!-- Budget Notes Display -->
+                                    @if($isBudgetBased && $item->customer_notes)
+                                        <div class="mt-6 p-4 bg-green-50 border border-green-100 rounded-xl">
+                                            <div class="flex items-start">
+                                                <div class="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0">
+                                                    <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-green-800">Special Notes:</p>
+                                                    <p class="text-sm text-green-700 mt-1">{{ $item->customer_notes }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Budget Conversion Option -->
+                                    @if($item->product->is_budget_based && !$isBudgetBased)
+                                        <div class="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-xl">
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                <div>
+                                                    <p class="text-sm font-medium text-amber-800">Want a custom quote instead?</p>
+                                                    <p class="text-xs text-amber-700 mt-1">Switch to budget-based pricing for better flexibility</p>
+                                                </div>
+                                                <button type="button" 
+                                                        onclick="showBudgetConversion({{ $item->id }})"
+                                                        class="inline-flex items-center px-4 py-2 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium hover:bg-amber-200 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 whitespace-nowrap">
+                                                    Switch to Budget
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Budget Conversion Form -->
+                                        <div id="budget-conversion-{{ $item->id }}" class="hidden mt-6 p-6 bg-green-50 border border-green-100 rounded-xl" data-item-id="{{ $item->id }}">
+                                            <form method="POST" action="{{ route('cart.update', $item) }}" class="space-y-6">
+                                                @csrf
+                                                @method('PUT')
+                                                
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                            Your Budget <span class="text-green-500">*</span>
+                                                        </label>
+                                                        <div class="relative">
+                                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                                <span class="text-gray-500">₱</span>
+                                                            </div>
+                                                            <input type="number" 
+                                                                   name="customer_budget" 
+                                                                   step="0.01" 
+                                                                   min="0.01"
+                                                                   max="999999.99"
+                                                                   required
+                                                                   placeholder="Enter your budget"
+                                                                   class="block w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                                                            Special Notes <span class="text-gray-400">(Optional)</span>
+                                                        </label>
+                                                        <textarea name="customer_notes" 
+                                                                  rows="3"
+                                                                  placeholder="Any special requirements..."
+                                                                  class="block w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none bg-white"></textarea>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="flex flex-col sm:flex-row gap-3">
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                                        </svg>
+                                                        Convert to Budget
+                                                    </button>
+                                                    <button type="button" 
+                                                            onclick="hideBudgetConversion({{ $item->id }})"
+                                                            class="inline-flex items-center justify-center px-6 py-3 border border-gray-200 text-gray-700 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- Cart Summary Column (Desktop: Right Sidebar, Mobile: Sticky Bottom) -->
+                <!-- Cart Summary Column -->
                 <div class="lg:col-span-4 mt-8 lg:mt-0">
-                    <!-- Desktop Summary (Hidden on Mobile) -->
-                    <div class="hidden lg:block sticky top-6">
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+                    <!-- Desktop Summary -->
+                    <div class="hidden lg:block sticky top-8">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h2 class="text-xl font-light text-gray-900 mb-6">Order Summary</h2>
                             
-                            <div class="space-y-3 mb-6">
+                            <div class="space-y-4 mb-6">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600">Items ({{ $cartItems->count() }})</span>
                                     <span class="font-medium text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
                                 </div>
                                 
                                 @if($cartItems->where('customer_budget', '!=', null)->count() > 0)
-                                    <div class="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                        <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <div class="flex items-start gap-3 p-4 bg-green-50 border border-green-100 rounded-xl">
+                                        <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                                         </svg>
-                                        <p class="text-xs text-blue-700">Budget-based items are subject to vendor confirmation</p>
+                                        <p class="text-sm text-green-700">Budget-based items are subject to vendor confirmation</p>
                                     </div>
                                 @endif
                             </div>
                             
-                            <div class="border-t border-gray-200 pt-4 mb-6">
+                            <div class="border-t border-gray-100 pt-6 mb-6">
                                 <div class="flex justify-between">
-                                    <span class="text-base font-semibold text-gray-900">Total</span>
-                                    <span class="text-xl font-bold text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
+                                    <span class="text-lg font-light text-gray-900">Total</span>
+                                    <span class="text-2xl font-bold text-gray-900">₱{{ number_format($subtotal, 2) }}</span>
                                 </div>
                             </div>
                             
                             <div class="space-y-3">
-                                <a href="{{ route('checkout.index') }}" 
-                                   class="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"/>
-                                    </svg>
-                                    Proceed to Checkout
-                                </a>
-                                
+                               <a href="{{ route('checkout.index') }}"
+                                        class="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-6 py-4 rounded-xl font-medium text-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center justify-center hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 003 3z"/>
+                                            </svg>
+                                            Proceed to Checkout
+                                        </a>                    
                                 <button onclick="clearCart()" 
-                                        class="w-full border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                        class="w-full border border-gray-200 text-gray-700 px-6 py-4 rounded-xl font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                                     Clear Cart
                                 </button>
                             </div>
@@ -378,16 +373,16 @@
                 </div>
             </div>
 
-            <!-- Mobile Sticky Summary (Hidden on Desktop) -->
-            <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-40">
-                <div class="flex items-center justify-between mb-3">
+            <!-- Mobile Sticky Summary -->
+            <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-xl z-40">
+                <div class="flex items-center justify-between mb-4">
                     <div>
-                        <p class="text-lg font-bold text-gray-900">₱{{ number_format($subtotal, 2) }}</p>
-                        <p class="text-xs text-gray-600">{{ $cartItems->count() }} {{ $cartItems->count() === 1 ? 'item' : 'items' }}</p>
+                        <p class="text-xl font-light text-gray-900">₱{{ number_format($subtotal, 2) }}</p>
+                        <p class="text-sm text-gray-600">{{ $cartItems->count() }} {{ $cartItems->count() === 1 ? 'item' : 'items' }}</p>
                     </div>
                     
                     @if($cartItems->where('customer_budget', '!=', null)->count() > 0)
-                        <div class="flex items-center text-blue-600">
+                        <div class="flex items-center text-green-600">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                             </svg>
@@ -398,12 +393,12 @@
                 
                 <div class="flex gap-3">
                     <button onclick="clearCart()" 
-                            class="flex-1 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            class="flex-1 border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         Clear Cart
                     </button>
                     
                     <a href="{{ route('checkout.index') }}" 
-                       class="flex-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center justify-center">
+                       class="flex-2 bg-green-600 text-white px-6 py-3 rounded-xl font-medium text-center hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center justify-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
@@ -412,8 +407,8 @@
                 </div>
             </div>
 
-            <!-- Mobile Bottom Padding to Prevent Content Overlap -->
-            <div class="lg:hidden h-24"></div>
+            <!-- Mobile Bottom Padding -->
+            <div class="lg:hidden h-32"></div>
 
             <!-- Hidden Clear Cart Form -->
             <form id="clear-cart-form" method="POST" action="{{ route('cart.clear') }}" class="hidden">
@@ -423,30 +418,28 @@
 
         @else
             <!-- Empty Cart State -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 lg:p-12 text-center">
-                <div class="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+                <div class="w-24 h-24 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-8">
+                    <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
                               d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl lg:text-2xl font-semibold text-gray-900 mb-3">Your cart is empty</h3>
+                <h3 class="text-2xl font-light text-gray-900 mb-4">Your cart is empty</h3>
                 <p class="text-gray-600 mb-8 max-w-md mx-auto">Looks like you haven't added anything to your cart yet. Start shopping to fill it up!</p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('products.index') }}" 
-                       class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        Start Shopping
-                    </a>
+                        class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white rounded-xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Start Shopping
+                        </a>
                     
                     <a href="{{ route('products.index') }}?filter=budget" 
-                       class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 bg-white rounded-lg font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                        </svg>
+                       class="inline-flex items-center justify-center px-8 py-4 border border-gray-200 text-gray-700 bg-white rounded-xl font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2 lucide lucide-philippine-peso-icon lucide-philippine-peso"><path d="M20 11H4"/><path d="M20 7H4"/><path d="M7 21V4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 12H7"/></svg>
                         Browse Budget Options
                     </a>
                 </div>

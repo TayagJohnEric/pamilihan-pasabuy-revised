@@ -10,7 +10,7 @@
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-2 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-full"></div>
                     <div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Rate Your Experience</h2>
+                        <h2 class="text-2xl sm:text-2xl font-bold text-gray-900">Rate Your Experience</h2>
                         <p class="text-gray-600 mt-1">Help us improve by sharing your feedback about Order #{{ $order->id }}</p>
                     </div>
                 </div>

@@ -52,9 +52,10 @@
 
                         <!-- Filter Buttons -->
                         <div class="flex items-end gap-3">
-                            <button type="submit" class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors font-medium">
-                                Apply
-                            </button>
+                             <button type="submit" 
+                                    class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+                                    Apply
+                                </button>
                             <a href="{{ route('customer.orders.index') }}" class="px-4 py-2.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                                 Clear
                             </a>

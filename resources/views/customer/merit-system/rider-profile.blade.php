@@ -29,7 +29,7 @@
     <div class="max-w-[90rem] mx-auto">
         <!-- Back Button -->
         <div class="mb-4">
-            <a href="{{ route('merit-system.index') }}" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800 font-medium">
+            <a href="{{ route('merit-system.index') }}" class="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-800 font-medium">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -40,7 +40,7 @@
         <!-- Main Profile Card -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 animate-slide-in">
             <!-- Header Section with Cover -->
-            <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-12 relative">
+            <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-8 py-12 relative">
                 <div class="flex items-center space-x-8">
                     <!-- Profile Image -->
                     <div class="w-32 h-32 bg-white rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">

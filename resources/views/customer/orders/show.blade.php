@@ -11,7 +11,7 @@
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
                             <div class="w-2 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-full"></div>
-                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Order #{{ $order->id }}</h1>
+                            <h1 class="text-2xl sm:text-2xl font-bold text-gray-900">Order #{{ $order->id }}</h1>
                         </div>
                         <p class="text-gray-600 text-sm sm:text-base">
                             Placed on {{ $order->order_date->format('F d, Y \a\t h:i A') }}
