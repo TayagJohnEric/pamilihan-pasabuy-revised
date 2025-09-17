@@ -1,5 +1,5 @@
 @extends('layout.customer')
-@section('title', 'home')
+@section('title', 'Home')
 @section('content')
 
 <style>

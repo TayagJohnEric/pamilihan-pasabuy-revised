@@ -3,27 +3,30 @@
 @section('title', 'Order Details #' . $order->id)
 
 @section('content')
-    <div class="max-w-[90rem] mx-auto">
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <div class="flex items-center space-x-4 mb-2">
+                    <div class="flex items-center space-x-4 mb-4">
                         <a href="{{ route('vendor.orders.index') }}" 
-                           class="text-blue-600 hover:text-blue-800 font-medium">
-                            ← Back to Orders
+                           class="inline-flex items-center text-green-600 hover:text-green-700 font-medium transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Back to Orders
                         </a>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-800">Order #{{ $order->id }}</h2>
-                    <p class="text-gray-600">Manage your items in this order</p>
+                    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Order #{{ $order->id }}</h1>
+                    <p class="text-gray-600 text-lg">Manage your items in this order</p>
                 </div>
                 <div class="mt-4 lg:mt-0">
-                    <span class="px-4 py-2 text-sm font-medium rounded-lg
-                        @if($order->status === 'processing') bg-yellow-100 text-yellow-800
-                        @elseif($order->status === 'awaiting_rider_assignment') bg-blue-100 text-blue-800
-                        @elseif($order->status === 'out_for_delivery') bg-purple-100 text-purple-800
-                        @elseif($order->status === 'delivered') bg-green-100 text-green-800
-                        @else bg-gray-100 text-gray-800
+                    <span class="inline-flex items-center px-4 py-2 font-medium rounded-xl border
+                        @if($order->status === 'processing') bg-amber-50 text-amber-700 border-amber-200
+                        @elseif($order->status === 'awaiting_rider_assignment') bg-blue-50 text-blue-700 border-blue-200
+                        @elseif($order->status === 'out_for_delivery') bg-purple-50 text-purple-700 border-purple-200
+                        @elseif($order->status === 'delivered') bg-green-50 text-green-700 border-green-200
+                        @else bg-gray-50 text-gray-700 border-gray-200
                         @endif">
                         {{ ucwords(str_replace('_', ' ', $order->status)) }}
                     </span>
@@ -34,172 +37,235 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Order Items Section -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-800">Your Items to Fulfill</h3>
-                        <div class="flex items-center space-x-4">
-                            <button type="button" id="bulk-ready-btn" 
-                                    class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                    disabled>
-                                <span class="btn-loading hidden">
-                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                </span>
-                                <span class="btn-text">Mark Selected as Ready</span>
-                            </button>
-                            <div class="text-sm text-gray-600">
-                                <span id="selected-count">0</span> selected
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <!-- Items Header -->
+                    <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-green-50/30">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 sm:mb-0">Your Items to Fulfill</h2>
+                            <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                <button type="button" id="bulk-ready-btn" 
+                                        class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors shadow-sm hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                        disabled>
+                                    <span class="btn-loading hidden">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="btn-text">Mark Selected as Ready</span>
+                                </button>
+                                <div class="inline-flex items-center px-3 py-2 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                                    <span id="selected-count">0</span> selected
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Items List -->
-                    <div class="space-y-4">
-                        @foreach($order->orderItems as $item)
-                            <div class="border border-gray-200 rounded-lg p-4" data-item-id="{{ $item->id }}">
-                                <!-- Item Header -->
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex items-start space-x-3">
-                                        <input type="checkbox" 
-                                               class="item-checkbox mt-1"
-                                               data-item-id="{{ $item->id }}"
-                                               @if($item->status === 'ready_for_pickup') disabled @endif>
-                                        <div class="flex-1">
-                                            <h4 class="font-semibold text-gray-800">{{ $item->product_name_snapshot }}</h4>
-                                            <div class="text-sm text-gray-600 mt-1">
-                                                <p>Requested Quantity: {{ $item->quantity_requested }} {{ $item->product->unit }}</p>
-                                                @if($item->customer_budget_requested)
-                                                    <p>Customer Budget: ₱{{ number_format($item->customer_budget_requested, 2) }}</p>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            @foreach($order->orderItems as $item)
+                                <div class="border border-gray-200 rounded-xl p-6 hover:border-green-200 hover:shadow-sm transition-all duration-200" data-item-id="{{ $item->id }}">
+                                    <!-- Item Header -->
+                                    <div class="flex items-start justify-between mb-6">
+                                        <div class="flex items-start space-x-4">
+                                            <input type="checkbox" 
+                                                   class="item-checkbox mt-2 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                                   data-item-id="{{ $item->id }}"
+                                                   @if($item->status === 'ready_for_pickup') disabled @endif>
+                                            
+                                            <!-- Product Image -->
+                                            <div class="flex-shrink-0">
+                                                @if($item->product && $item->product->image_url)
+                                                    <img src="{{ $item->product->image_url }}" 
+                                                         alt="{{ $item->product_name_snapshot }}"
+                                                         class="w-20 h-20 rounded-lg object-cover border border-gray-200">
                                                 @else
-                                                    <p>Unit Price: ₱{{ number_format($item->unit_price_snapshot, 2) }}</p>
+                                                    <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                                                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                    </div>
                                                 @endif
+                                            </div>
+                                            
+                                            <!-- Product Info -->
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ $item->product_name_snapshot }}</h3>
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                                        </svg>
+                                                        <span class="text-gray-600">
+                                                            <span class="font-medium">Qty:</span> {{ $item->quantity_requested }} {{ $item->product->unit }}
+                                                        </span>
+                                                    </div>
+                                                    @if($item->customer_budget_requested)
+                                                        <div class="flex items-center">
+                                                            <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-gray-600">
+                                                                <span class="font-medium">Budget:</span> ₱{{ number_format($item->customer_budget_requested, 2) }}
+                                                            </span>
+                                                        </div>
+                                                    @else
+                                                        <div class="flex items-center">
+                                                            <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                            <span class="text-gray-600">
+                                                                <span class="font-medium">Unit Price:</span> ₱{{ number_format($item->unit_price_snapshot, 2) }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                                 @if($item->customerNotes_snapshot)
-                                                    <p class="text-blue-600"><strong>Customer Notes:</strong> {{ $item->customerNotes_snapshot }}</p>
+                                                    <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-blue-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-sm font-medium text-blue-800 mb-1">Customer Notes:</p>
+                                                                <p class="text-sm text-blue-700">{{ $item->customerNotes_snapshot }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
+                                        
+                                        <!-- Status Controls -->
+                                        <div class="flex items-center space-x-3 ml-4">
+                                            <select class="status-select px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                    data-item-id="{{ $item->id }}" 
+                                                    data-original-value="{{ $item->status }}">
+                                                <option value="pending" @if($item->status === 'pending') selected @endif>Pending</option>
+                                                <option value="preparing" @if($item->status === 'preparing') selected @endif>Preparing</option>
+                                                <option value="ready_for_pickup" @if($item->status === 'ready_for_pickup') selected @endif>Ready for Pickup</option>
+                                            </select>
+                                            <div class="status-indicator w-4 h-4 rounded-full shadow-sm
+                                                @if($item->status === 'ready_for_pickup') bg-green-500
+                                                @elseif($item->status === 'preparing') bg-blue-500
+                                                @else bg-amber-400
+                                                @endif">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center space-x-3">
-                                        <select class="status-select px-3 py-1 border border-gray-300 rounded-md text-sm"
-                                                data-item-id="{{ $item->id }}" 
-                                                data-original-value="{{ $item->status }}">
-                                            <option value="pending" @if($item->status === 'pending') selected @endif>Pending</option>
-                                            <option value="preparing" @if($item->status === 'preparing') selected @endif>Preparing</option>
-                                            <option value="ready_for_pickup" @if($item->status === 'ready_for_pickup') selected @endif>Ready for Pickup</option>
-                                        </select>
-                                        <span class="status-indicator w-3 h-3 rounded-full
-                                            @if($item->status === 'ready_for_pickup') bg-green-500
-                                            @elseif($item->status === 'preparing') bg-blue-500
-                                            @else bg-yellow-400
-                                            @endif">
-                                        </span>
+
+                                    <!-- Item Details Form -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        @if($item->product->is_budget_based)
+                                            <!-- Budget-based item fields -->
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity Description</label>
+                                                <input type="text" 
+                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       data-item-id="{{ $item->id }}"
+                                                       data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                       value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                       placeholder="e.g., 1.25 kg, 3 pieces">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Actual Price</label>
+                                                <input type="number" 
+                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       data-item-id="{{ $item->id }}"
+                                                       data-original-value="{{ $item->actual_item_price ?? '' }}"
+                                                       value="{{ $item->actual_item_price ?? '' }}"
+                                                       step="0.01"
+                                                       min="0"
+                                                       placeholder="₱0.00">
+                                            </div>
+                                        @else
+                                            <!-- Regular item fields -->
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity Description (Optional)</label>
+                                                <input type="text" 
+                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       data-item-id="{{ $item->id }}"
+                                                       data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                       value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
+                                                       placeholder="Additional quantity details">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Final Price</label>
+                                                <input type="number" 
+                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       data-item-id="{{ $item->id }}"
+                                                       data-original-value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
+                                                       value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
+                                                       step="0.01"
+                                                       min="0"
+                                                       placeholder="₱0.00">
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Fulfillment Notes -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Fulfillment Notes</label>
+                                        <textarea class="fulfillment-notes w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"
+                                                  data-item-id="{{ $item->id }}"
+                                                  data-original-value="{{ $item->vendor_fulfillment_notes ?? '' }}"
+                                                  rows="3"
+                                                  placeholder="Any notes about this item...">{{ $item->vendor_fulfillment_notes ?? '' }}</textarea>
+                                    </div>
+
+                                    <!-- Update Button -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-t border-gray-100 pt-4">
+                                        <div class="mb-3 sm:mb-0">
+                                            <span class="changes-indicator inline-flex items-center px-3 py-1 bg-amber-100 text-amber-800 text-sm font-medium rounded-full hidden">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                                </svg>
+                                                Unsaved changes
+                                            </span>
+                                        </div>
+                                        <button type="button" 
+                                                class="update-item-btn inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors shadow-sm hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                                data-item-id="{{ $item->id }}"
+                                                disabled>
+                                            <span class="btn-loading hidden">
+                                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="btn-text">Update Item</span>
+                                        </button>
                                     </div>
                                 </div>
-
-                                <!-- Item Details Form -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    @if($item->product->is_budget_based)
-                                        <!-- Budget-based item fields -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity Description</label>
-                                            <input type="text" 
-                                                   class="vendor-quantity-desc w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                   value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                   placeholder="e.g., 1.25 kg, 3 pieces">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Actual Price</label>
-                                            <input type="number" 
-                                                   class="actual-price w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-original-value="{{ $item->actual_item_price ?? '' }}"
-                                                   value="{{ $item->actual_item_price ?? '' }}"
-                                                   step="0.01"
-                                                   min="0"
-                                                   placeholder="₱0.00">
-                                        </div>
-                                    @else
-                                        <!-- Regular item fields -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity Description (Optional)</label>
-                                            <input type="text" 
-                                                   class="vendor-quantity-desc w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                   value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                   placeholder="Additional quantity details">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Final Price</label>
-                                            <input type="number" 
-                                                   class="actual-price w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                                   data-item-id="{{ $item->id }}"
-                                                   data-original-value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
-                                                   value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
-                                                   step="0.01"
-                                                   min="0"
-                                                   placeholder="₱0.00">
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <!-- Fulfillment Notes -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fulfillment Notes</label>
-                                    <textarea class="fulfillment-notes w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                              data-item-id="{{ $item->id }}"
-                                              data-original-value="{{ $item->vendor_fulfillment_notes ?? '' }}"
-                                              rows="2"
-                                              placeholder="Any notes about this item...">{{ $item->vendor_fulfillment_notes ?? '' }}</textarea>
-                                </div>
-
-                                <!-- Update Button -->
-                                <div class="flex justify-between items-center">
-                                    <div class="text-sm">
-                                        <span class="changes-indicator text-amber-600 hidden">
-                                            Unsaved changes
-                                        </span>
-                                    </div>
-                                    <button type="button" 
-                                            class="update-item-btn px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-                                            data-item-id="{{ $item->id }}"
-                                            disabled>
-                                        <span class="btn-loading hidden">
-                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                        </span>
-                                        <span class="btn-text">Update Item</span>
-                                    </button>
-                                </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Order Information Sidebar -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1 space-y-6">
                 <!-- Customer Information -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Customer Information</h3>
-                    <div class="space-y-3">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">Customer Information</h3>
+                    </div>
+                    <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Name</p>
-                            <p class="text-sm text-gray-900">{{ $order->customer->first_name }} {{ $order->customer->last_name }}</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Name</p>
+                            <p class="text-sm text-gray-900 font-medium">{{ $order->customer->first_name }} {{ $order->customer->last_name }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Email</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Email</p>
                             <p class="text-sm text-gray-900">{{ $order->customer->email }}</p>
                         </div>
                         @if($order->customer->phone_number)
                             <div>
-                                <p class="text-sm font-medium text-gray-700">Phone</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Phone</p>
                                 <p class="text-sm text-gray-900">{{ $order->customer->phone_number }}</p>
                             </div>
                         @endif
@@ -207,47 +273,58 @@
                 </div>
 
                 <!-- Delivery Information -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Delivery Information</h3>
-                    <div class="space-y-3">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">Delivery Information</h3>
+                    </div>
+                    <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Address</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Address</p>
                             <p class="text-sm text-gray-900">{{ $order->deliveryAddress->address_line1 }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-700">District</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">District</p>
                             <p class="text-sm text-gray-900">{{ $order->deliveryAddress->district->name }}</p>
                         </div>
                         @if($order->deliveryAddress->delivery_notes)
                             <div>
-                                <p class="text-sm font-medium text-gray-700">Delivery Notes</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Delivery Notes</p>
                                 <p class="text-sm text-gray-900">{{ $order->deliveryAddress->delivery_notes }}</p>
                             </div>
                         @endif
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Delivery Fee</p>
-                            <p class="text-sm text-gray-900">₱{{ number_format($order->delivery_fee, 2) }}</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Delivery Fee</p>
+                            <p class="text-sm font-semibold text-gray-900">₱{{ number_format($order->delivery_fee, 2) }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Order Summary -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Order Summary</h3>
-                    <div class="space-y-3">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">Order Summary</h3>
+                    </div>
+                    <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Order Date</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Order Date</p>
                             <p class="text-sm text-gray-900">{{ $order->created_at->format('M d, Y h:i A') }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Payment Method</p>
+                            <p class="text-sm font-medium text-gray-500 mb-1">Payment Method</p>
                             <p class="text-sm text-gray-900">{{ $order->payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment' }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Payment Status</p>
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                            <p class="text-sm font-medium text-gray-500 mb-1">Payment Status</p>
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full
                                 @if($order->payment_status === 'paid') bg-green-100 text-green-800
-                                @elseif($order->payment_status === 'pending') bg-yellow-100 text-yellow-800
+                                @elseif($order->payment_status === 'pending') bg-amber-100 text-amber-800
                                 @else bg-red-100 text-red-800
                                 @endif">
                                 {{ ucfirst($order->payment_status) }}
@@ -255,13 +332,15 @@
                         </div>
                         @if($order->special_instructions)
                             <div>
-                                <p class="text-sm font-medium text-gray-700">Special Instructions</p>
-                                <p class="text-sm text-gray-900">{{ $order->special_instructions }}</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Special Instructions</p>
+                                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <p class="text-sm text-gray-900">{{ $order->special_instructions }}</p>
+                                </div>
                             </div>
                         @endif
-                        <div class="border-t pt-3">
-                            <p class="text-sm font-medium text-gray-700">Total Amount</p>
-                            <p class="text-lg font-bold text-gray-900">₱{{ number_format($order->final_total_amount, 2) }}</p>
+                        <div class="border-t border-gray-100 pt-4">
+                            <p class="text-sm font-medium text-gray-500 mb-1">Total Amount</p>
+                            <p class="text-2xl font-bold text-gray-900">₱{{ number_format($order->final_total_amount, 2) }}</p>
                         </div>
                     </div>
                 </div>
@@ -270,10 +349,10 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 hidden transition-all duration-300">
-        <div id="toast-content" class="flex items-center space-x-3">
-            <div id="toast-icon"></div>
-            <span id="toast-message"></span>
+    <div id="toast" class="fixed top-4 right-4 p-6 rounded-xl shadow-lg z-50 hidden transition-all duration-300 max-w-sm">
+        <div id="toast-content" class="flex items-start space-x-3">
+            <div id="toast-icon" class="flex-shrink-0"></div>
+            <span id="toast-message" class="text-sm font-medium"></span>
         </div>
     </div>
 
@@ -346,7 +425,7 @@
                                 $select.val('ready_for_pickup').attr('data-original-value', 'ready_for_pickup');
                                 
                                 // Update indicator
-                                $indicator.removeClass('bg-yellow-400 bg-blue-500').addClass('bg-green-500');
+                                $indicator.removeClass('bg-amber-400 bg-blue-500').addClass('bg-green-500');
                                 
                                 // Disable checkbox
                                 $checkbox.prop('disabled', true).prop('checked', false);
@@ -422,14 +501,14 @@
             // Update status indicator visual
             function updateStatusIndicator($container, status) {
                 const $indicator = $container.find('.status-indicator');
-                $indicator.removeClass('bg-yellow-400 bg-blue-500 bg-green-500');
+                $indicator.removeClass('bg-amber-400 bg-blue-500 bg-green-500');
                 
                 if (status === 'ready_for_pickup') {
                     $indicator.addClass('bg-green-500');
                 } else if (status === 'preparing') {
                     $indicator.addClass('bg-blue-500');
                 } else {
-                    $indicator.addClass('bg-yellow-400');
+                    $indicator.addClass('bg-amber-400');
                 }
             }
 
@@ -501,14 +580,14 @@
                 const $toastMessage = $('#toast-message');
 
                 // Reset classes
-                $toast.removeClass('bg-green-100 bg-red-100 border-green-400 border-red-400 text-green-700 text-red-700');
+                $toast.removeClass('bg-green-50 bg-red-50 border-green-200 border-red-200 text-green-800 text-red-800');
                 $toastIcon.empty();
 
                 if (type === 'success') {
-                    $toast.addClass('bg-green-100 border border-green-400 text-green-700');
+                    $toast.addClass('bg-green-50 border border-green-200 text-green-800');
                     $toastIcon.html('<svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>');
                 } else {
-                    $toast.addClass('bg-red-100 border border-red-400 text-red-700');
+                    $toast.addClass('bg-red-50 border border-red-200 text-red-800');
                     $toastIcon.html('<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>');
                 }
 
