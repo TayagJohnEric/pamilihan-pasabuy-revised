@@ -9,8 +9,8 @@
             <div class="px-6 py-8 border-b border-gray-100 bg-gradient-to-r from-white to-green-50/30">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                     <div class="mb-6 md:mb-0">
-                        <h1 class="text-3xl font-semibold text-gray-900 mb-2">Order Management</h1>
-                        <p class="text-gray-600 text-lg">View and manage orders containing your products</p>
+                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Order Management</h1>
+                        <p class="text-gray-600 text-md">View and manage orders containing your products</p>
                     </div>
                     
                     <!-- Status Legend -->
@@ -90,8 +90,8 @@
                                         </div>
                                         
                                         <div class="mt-6 lg:mt-0 lg:ml-6">
-                                            <a href="{{ route('vendor.orders.show', $order) }}" 
-                                               class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors duration-200 shadow-sm hover:shadow-md">
+                                          <a href="{{ route('vendor.orders.show', $order) }}"
+                                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 text-white font-medium rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
                                                 View Details
                                                 <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

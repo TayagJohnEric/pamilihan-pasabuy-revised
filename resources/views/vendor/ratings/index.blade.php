@@ -6,7 +6,7 @@
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Customer Ratings & Reviews</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-1">Customer Ratings & Reviews</h2>
                 <p class="text-gray-600">Track your customer satisfaction and feedback</p>
             </div>
             
@@ -21,7 +21,8 @@
                         <option value="2" {{ request('rating_filter') == '2' ? 'selected' : '' }}>2 Stars</option>
                         <option value="1" {{ request('rating_filter') == '1' ? 'selected' : '' }}>1 Star</option>
                     </select>
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                   <button type="submit" 
+                        class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-sm hover:shadow-md">
                         Filter
                     </button>
                 </form>
@@ -112,7 +113,7 @@
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                                <span class="text-sm font-medium text-gray-600">
+                                <span class="text-sm font-medium text-white">
                                     @php
                                         $initials = strtoupper(substr($rating->user->first_name ?? '', 0, 1) . substr($rating->user->last_name ?? '', 0, 1));
                                         @endphp

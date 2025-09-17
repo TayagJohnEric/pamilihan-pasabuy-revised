@@ -17,8 +17,8 @@
                             Back to Orders
                         </a>
                     </div>
-                    <h1 class="text-3xl font-semibold text-gray-900 mb-2">Order #{{ $order->id }}</h1>
-                    <p class="text-gray-600 text-lg">Manage your items in this order</p>
+                    <h1 class="text-2xl font-semibold text-gray-900 mb-1">Order #{{ $order->id }}</h1>
+                    <p class="text-gray-600 text-md">Manage your items in this order</p>
                 </div>
                 <div class="mt-4 lg:mt-0">
                     <span class="inline-flex items-center px-4 py-2 font-medium rounded-xl border
