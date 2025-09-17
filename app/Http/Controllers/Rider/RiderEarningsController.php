@@ -62,7 +62,7 @@ class RiderEarningsController extends Controller
 
         $riderStats = $rider->rider;
 
-        return view('rider.earnings.earnings', compact(
+        return view('rider.earnings.index', compact(
             'currentMonthEarnings',
             'currentMonthDeliveries',
             'currentMonthIncentives',
@@ -116,7 +116,7 @@ class RiderEarningsController extends Controller
             ->whereIn('status', ['pending_calculation', 'pending_payment'])
             ->sum('total_payout_amount');
 
-        return view('rider.earnings.payouts', compact(
+        return view('rider.payouts.index', compact(
             'payouts',
             'totalPaid',
             'totalPending',

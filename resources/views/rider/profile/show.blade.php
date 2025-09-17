@@ -142,12 +142,6 @@
                                 </svg>
                                 Save Changes
                             </button>
-                            <button type="button" onclick="cancelEdit()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-6 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                                Cancel
-                            </button>
                         </div>
                     </form>
                 </div>

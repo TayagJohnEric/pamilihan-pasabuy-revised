@@ -9,29 +9,19 @@
                 <h1 class="text-2xl font-bold text-gray-800">Payout History</h1>
                 <p class="text-gray-600 mt-1">Track your payment history and status</p>
             </div>
-            <div class="mt-4 sm:mt-0 flex space-x-3">
-                <a href="{{ route('rider.earnings') }}" 
-                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                    Back to Earnings
-                </a>
-                <a href="{{ route('rider.ratings') }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    View Ratings
-                </a>
-            </div>
         </div>
     </div>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-6 text-white">
+        <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-lg p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-green-100 text-sm">Total Paid</p>
                     <p class="text-3xl font-bold">₱{{ number_format($totalPaid, 2) }}</p>
                     <p class="text-green-100 text-sm">All completed payouts</p>
                 </div>
-                <div class="bg-green-500 p-3 rounded-full">
+                <div class="bg-emerald-500 p-3 rounded-full">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
                     </svg>

@@ -9,7 +9,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:p-8">
             <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
                 <div class="space-y-2">
-                    <h1 class="text-3xl font-bold text-gray-900">Delivery Dashboard</h1>
+                    <h1 class="text-2xl font-bold text-gray-900">Delivery Dashboard</h1>
                     <p class="text-gray-600">Manage your delivery assignments and track your progress</p>
                 </div>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
