@@ -5,14 +5,14 @@
 @section('content')
 <div class="max-w-[90rem] mx-auto space-y-6">
     <!-- Header Section -->
-    <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-xl shadow-xl p-8 text-white">
+    <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-xl p-8 text-white">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
                 <h1 class="text-4xl font-bold mb-2">Dashboard Overview</h1>
                 <p class="text-blue-100 text-lg">Monitor your marketplace performance at a glance</p>
                 <div class="flex items-center space-x-4 mt-3">
-                    <span class="bg-blue-500/30 px-3 py-1 rounded-full text-sm">{{ \Carbon\Carbon::now()->format('F d, Y') }}</span>
-                    <span class="bg-blue-500/30 px-3 py-1 rounded-full text-sm">{{ \Carbon\Carbon::now()->format('l') }}</span>
+                    <span class="bg-emerald-500/30 px-3 py-1 rounded-full text-sm">{{ \Carbon\Carbon::now()->format('F d, Y') }}</span>
+                    <span class="bg-emerald-500/30 px-3 py-1 rounded-full text-sm">{{ \Carbon\Carbon::now()->format('l') }}</span>
                 </div>
             </div>
             <div class="mt-4 md:mt-0">

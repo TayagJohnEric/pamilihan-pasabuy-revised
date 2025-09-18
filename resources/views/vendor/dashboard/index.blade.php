@@ -220,7 +220,7 @@
             </div>
         </div>
         <div class="mt-4 text-center">
-            <a href="{{ route('vendor.orders.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors">
+            <a href="{{ route('vendor.products.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors">
                 Manage Inventory
             </a>
         </div>
