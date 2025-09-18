@@ -139,9 +139,10 @@
                                         
                                         <!-- Status Controls -->
                                         <div class="flex items-center space-x-3 ml-4">
-                                            <select class="status-select px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                            <select class="status-select px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-green-500 @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                     data-item-id="{{ $item->id }}" 
-                                                    data-original-value="{{ $item->status }}">
+                                                    data-original-value="{{ $item->status }}"
+                                                    @if($item->status === 'ready_for_pickup') disabled @endif>
                                                 <option value="pending" @if($item->status === 'pending') selected @endif>Pending</option>
                                                 <option value="preparing" @if($item->status === 'preparing') selected @endif>Preparing</option>
                                                 <option value="ready_for_pickup" @if($item->status === 'ready_for_pickup') selected @endif>Ready for Pickup</option>
@@ -152,6 +153,14 @@
                                                 @else bg-amber-400
                                                 @endif">
                                             </div>
+                                            @if($item->status === 'ready_for_pickup')
+                                                <div class="flex items-center text-green-600 text-xs font-medium">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                    </svg>
+                                                    Locked
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -162,44 +171,48 @@
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity Description</label>
                                                 <input type="text" 
-                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                        data-item-id="{{ $item->id }}"
                                                        data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
                                                        value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                       placeholder="e.g., 1.25 kg, 3 pieces">
+                                                       placeholder="e.g., 1.25 kg, 3 pieces"
+                                                       @if($item->status === 'ready_for_pickup') disabled readonly @endif>
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Actual Price</label>
                                                 <input type="number" 
-                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                        data-item-id="{{ $item->id }}"
                                                        data-original-value="{{ $item->actual_item_price ?? '' }}"
                                                        value="{{ $item->actual_item_price ?? '' }}"
                                                        step="0.01"
                                                        min="0"
-                                                       placeholder="₱0.00">
+                                                       placeholder="₱0.00"
+                                                       @if($item->status === 'ready_for_pickup') disabled readonly @endif>
                                             </div>
                                         @else
                                             <!-- Regular item fields -->
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity Description (Optional)</label>
                                                 <input type="text" 
-                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       class="vendor-quantity-desc w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                        data-item-id="{{ $item->id }}"
                                                        data-original-value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
                                                        value="{{ $item->vendor_assigned_quantity_description ?? '' }}"
-                                                       placeholder="Additional quantity details">
+                                                       placeholder="Additional quantity details"
+                                                       @if($item->status === 'ready_for_pickup') disabled readonly @endif>
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Final Price</label>
                                                 <input type="number" 
-                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                       class="actual-price w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                        data-item-id="{{ $item->id }}"
                                                        data-original-value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
                                                        value="{{ $item->actual_item_price ?? $item->unit_price_snapshot * $item->quantity_requested }}"
                                                        step="0.01"
                                                        min="0"
-                                                       placeholder="₱0.00">
+                                                       placeholder="₱0.00"
+                                                       @if($item->status === 'ready_for_pickup') disabled readonly @endif>
                                             </div>
                                         @endif
                                     </div>
@@ -207,11 +220,12 @@
                                     <!-- Fulfillment Notes -->
                                     <div class="mb-6">
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">Fulfillment Notes</label>
-                                        <textarea class="fulfillment-notes w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"
+                                        <textarea class="fulfillment-notes w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none @if($item->status === 'ready_for_pickup') bg-gray-100 cursor-not-allowed @endif"
                                                   data-item-id="{{ $item->id }}"
                                                   data-original-value="{{ $item->vendor_fulfillment_notes ?? '' }}"
                                                   rows="3"
-                                                  placeholder="Any notes about this item...">{{ $item->vendor_fulfillment_notes ?? '' }}</textarea>
+                                                  placeholder="Any notes about this item..."
+                                                  @if($item->status === 'ready_for_pickup') disabled readonly @endif>{{ $item->vendor_fulfillment_notes ?? '' }}</textarea>
                                     </div>
 
                                     <!-- Update Button -->
@@ -224,18 +238,27 @@
                                                 Unsaved changes
                                             </span>
                                         </div>
-                                        <button type="button" 
-                                                class="update-item-btn inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors shadow-sm hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                data-item-id="{{ $item->id }}"
-                                                disabled>
-                                            <span class="btn-loading hidden">
-                                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        @if($item->status === 'ready_for_pickup')
+                                            <div class="inline-flex items-center px-6 py-3 bg-green-100 text-green-800 font-medium rounded-xl border border-green-200">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
-                                            </span>
-                                            <span class="btn-text">Update Item</span>
-                                        </button>
+                                                Item Ready - No Changes Allowed
+                                            </div>
+                                        @else
+                                            <button type="button" 
+                                                    class="update-item-btn inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors shadow-sm hover:shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                                    data-item-id="{{ $item->id }}"
+                                                    disabled>
+                                                <span class="btn-loading hidden">
+                                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                </span>
+                                                <span class="btn-text">Update Item</span>
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -420,15 +443,44 @@
                                 const $select = $container.find('.status-select');
                                 const $indicator = $container.find('.status-indicator');
                                 const $checkbox = $container.find('.item-checkbox');
+                                const $inputs = $container.find('.vendor-quantity-desc, .actual-price, .fulfillment-notes');
+                                const $updateBtn = $container.find('.update-item-btn');
                                 
-                                // Update status
-                                $select.val('ready_for_pickup').attr('data-original-value', 'ready_for_pickup');
+                                // Update status and disable dropdown
+                                $select.val('ready_for_pickup').attr('data-original-value', 'ready_for_pickup')
+                                       .prop('disabled', true).addClass('bg-gray-100 cursor-not-allowed');
                                 
                                 // Update indicator
                                 $indicator.removeClass('bg-amber-400 bg-blue-500').addClass('bg-green-500');
                                 
                                 // Disable checkbox
                                 $checkbox.prop('disabled', true).prop('checked', false);
+                                
+                                // Disable all input fields
+                                $inputs.prop('disabled', true).prop('readonly', true).addClass('bg-gray-100 cursor-not-allowed');
+                                
+                                // Replace update button with locked message
+                                $updateBtn.replaceWith(`
+                                    <div class="inline-flex items-center px-6 py-3 bg-green-100 text-green-800 font-medium rounded-xl border border-green-200">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Item Ready - No Changes Allowed
+                                    </div>
+                                `);
+                                
+                                // Add locked indicator to status controls
+                                const $statusControls = $container.find('.flex.items-center.space-x-3.ml-4');
+                                if (!$statusControls.find('.text-green-600').length) {
+                                    $statusControls.append(`
+                                        <div class="flex items-center text-green-600 text-xs font-medium">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                            Locked
+                                        </div>
+                                    `);
+                                }
                                 
                                 // Clear from selected items
                                 selectedItems.delete(itemId);
@@ -458,6 +510,13 @@
                 const newStatus = $(this).val();
                 const originalStatus = $(this).attr('data-original-value');
                 const itemContainer = $(`[data-item-id="${itemId}"]`);
+                
+                // Prevent changes if item is already ready for pickup
+                if (originalStatus === 'ready_for_pickup') {
+                    $(this).val(originalStatus);
+                    showToast('error', 'Cannot modify items that are already ready for pickup.');
+                    return;
+                }
                 
                 // Update status indicator immediately for better UX
                 updateStatusIndicator(itemContainer, newStatus);
@@ -550,9 +609,40 @@
                             // Hide changes indicator
                             $container.find('.changes-indicator').addClass('hidden');
                             
-                            // If status is ready_for_pickup, disable checkbox
+                            // If status is ready_for_pickup, lock the entire item
                             if (data.status === 'ready_for_pickup') {
-                                $container.find('.item-checkbox').prop('disabled', true).prop('checked', false);
+                                const $select = $container.find('.status-select');
+                                const $checkbox = $container.find('.item-checkbox');
+                                const $inputs = $container.find('.vendor-quantity-desc, .actual-price, .fulfillment-notes');
+                                
+                                // Disable and style all form elements
+                                $select.prop('disabled', true).addClass('bg-gray-100 cursor-not-allowed');
+                                $checkbox.prop('disabled', true).prop('checked', false);
+                                $inputs.prop('disabled', true).prop('readonly', true).addClass('bg-gray-100 cursor-not-allowed');
+                                
+                                // Replace update button with locked message
+                                $btn.replaceWith(`
+                                    <div class="inline-flex items-center px-6 py-3 bg-green-100 text-green-800 font-medium rounded-xl border border-green-200">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Item Ready - No Changes Allowed
+                                    </div>
+                                `);
+                                
+                                // Add locked indicator to status controls
+                                const $statusControls = $container.find('.flex.items-center.space-x-3.ml-4');
+                                if (!$statusControls.find('.text-green-600').length) {
+                                    $statusControls.append(`
+                                        <div class="flex items-center text-green-600 text-xs font-medium">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                            Locked
+                                        </div>
+                                    `);
+                                }
+                                
                                 selectedItems.delete(itemId);
                                 updateBulkButton();
                             }

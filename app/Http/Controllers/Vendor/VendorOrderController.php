@@ -109,6 +109,14 @@ class VendorOrderController extends Controller
             return redirect()->back()->with('error', 'Unauthorized to update this item.');
         }
 
+        // Prevent updates if item is already marked as ready for pickup
+        if ($orderItem->status === 'ready_for_pickup') {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Cannot update item that is already ready for pickup.'], 422);
+            }
+            return redirect()->back()->with('error', 'Cannot update item that is already ready for pickup.');
+        }
+
         // Validate request data
         $request->validate([
             'status' => 'required|in:pending,preparing,ready_for_pickup,picked_up',
@@ -186,18 +194,19 @@ class VendorOrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Get order items that belong to this vendor
+            // Get order items that belong to this vendor and are not already ready for pickup
             $orderItems = OrderItem::whereIn('id', $request->order_item_ids)
                 ->whereHas('product', function($query) use ($vendor) {
                     $query->where('vendor_id', $vendor->id);
                 })
+                ->where('status', '!=', 'ready_for_pickup')
                 ->get();
 
             if ($orderItems->isEmpty()) {
                 if ($request->ajax()) {
-                    return response()->json(['success' => false, 'message' => 'No valid items found to update.'], 400);
+                    return response()->json(['success' => false, 'message' => 'No valid items found to update. Items already marked as ready for pickup cannot be modified.'], 400);
                 }
-                return redirect()->back()->with('error', 'No valid items found to update.');
+                return redirect()->back()->with('error', 'No valid items found to update. Items already marked as ready for pickup cannot be modified.');
             }
 
             // Update all items to ready_for_pickup
