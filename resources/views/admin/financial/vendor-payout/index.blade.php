@@ -104,20 +104,20 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
-                                                @if($payout->vendor && $payout->vendor->shop_logo_url)
+                                                @if($payout->vendor && $payout->vendor->vendor && $payout->vendor->vendor->shop_logo_url)
                                                     <img class="h-10 w-10 rounded-full object-cover" 
-                                                         src="{{ $payout->vendor->shop_logo_url }}" alt="">
+                                                         src="{{ $payout->vendor->vendor->shop_logo_url }}" alt="">
                                                 @else
                                                     <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                                                         <span class="text-sm font-medium text-gray-700">
-                                                            {{ $payout->vendor ? substr($payout->vendor->vendor_name, 0, 1) : 'V' }}
+                                                            {{ $payout->vendor && $payout->vendor->vendor ? substr($payout->vendor->vendor->vendor_name, 0, 1) : 'V' }}
                                                         </span>
                                                     </div>
                                                 @endif
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">
-                                                    {{ $payout->vendor->vendor_name ?? 'Unknown Vendor' }}
+                                                    {{ $payout->vendor && $payout->vendor->vendor ? $payout->vendor->vendor->vendor_name : 'Unknown Vendor' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
                                                     {{ $payout->vendor ? $payout->vendor->first_name . ' ' . $payout->vendor->last_name : 'N/A' }}

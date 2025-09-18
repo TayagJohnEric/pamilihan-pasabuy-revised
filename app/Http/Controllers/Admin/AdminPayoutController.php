@@ -58,7 +58,7 @@ class AdminPayoutController extends Controller
      */
     public function vendorPayouts(Request $request)
     {
-        $query = VendorPayout::with(['vendor'])
+        $query = VendorPayout::with(['vendor.vendor'])
             ->latest('created_at');
 
         // Apply status filter if provided
@@ -106,7 +106,7 @@ class AdminPayoutController extends Controller
      */
     public function showVendorPayout($id)
     {
-        $payout = VendorPayout::with(['vendor'])
+        $payout = VendorPayout::with(['vendor.vendor'])
             ->findOrFail($id);
 
         return view('admin.financial.vendor-payout.show', compact('payout'));
@@ -273,7 +273,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = VendorPayout::with(['vendor'])->findOrFail($id);
+            $payout = VendorPayout::with(['vendor.vendor'])->findOrFail($id);
 
             // Update payout status to paid
             $payout->update([
@@ -388,7 +388,7 @@ class AdminPayoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $payout = VendorPayout::with(['vendor'])->findOrFail($id);
+            $payout = VendorPayout::with(['vendor.vendor'])->findOrFail($id);
 
             // Update payout status to failed
             $payout->update([
