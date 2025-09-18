@@ -49,38 +49,38 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">Vendor Information</h3>
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0 h-16 w-16">
-                                @if($payout->vendor && $payout->vendor->shop_logo_url)
+                                @if($payout->vendor && $payout->vendor->vendor && $payout->vendor->vendor->shop_logo_url)
                                     <img class="h-16 w-16 rounded-full object-cover" 
-                                         src="{{ $payout->vendor->shop_logo_url }}" alt="">
+                                         src="{{ $payout->vendor->vendor->shop_logo_url }}" alt="">
                                 @else
                                     <div class="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
                                         <span class="text-lg font-medium text-gray-700">
-                                            {{ $payout->vendor ? substr($payout->vendor->vendor_name, 0, 1) : 'V' }}
+                                            {{ $payout->vendor && $payout->vendor->vendor ? substr($payout->vendor->vendor->vendor_name, 0, 1) : 'V' }}
                                         </span>
                                     </div>
                                 @endif
                             </div>
                             <div>
                                 <h4 class="text-xl font-medium text-gray-900">
-                                    {{ $payout->vendor->vendor_name ?? 'Unknown Vendor' }}
+                                    {{ $payout->vendor && $payout->vendor->vendor ? $payout->vendor->vendor->vendor_name : 'Unknown Vendor' }}
                                 </h4>
                                 <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->first_name . ' ' . $payout->vendor->last_name : 'N/A' }}</p>
                                 <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->email : 'No email' }}</p>
                                 <p class="text-gray-600">{{ $payout->vendor ? $payout->vendor->phone_number : 'No phone' }}</p>
                                 <div class="mt-2">
-                                    @if($payout->vendor->stall_number)
+                                    @if($payout->vendor && $payout->vendor->vendor && $payout->vendor->vendor->stall_number)
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Stall: {{ $payout->vendor->stall_number }}
+                                            Stall: {{ $payout->vendor->vendor->stall_number }}
                                         </span>
                                     @endif
-                                    @if($payout->vendor->market_section)
+                                    @if($payout->vendor && $payout->vendor->vendor && $payout->vendor->vendor->market_section)
                                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                            Section: {{ $payout->vendor->market_section }}
+                                            Section: {{ $payout->vendor->vendor->market_section }}
                                         </span>
                                     @endif
-                                    @if($payout->vendor->average_rating)
+                                    @if($payout->vendor && $payout->vendor->vendor && $payout->vendor->vendor->average_rating)
                                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            ⭐ {{ number_format($payout->vendor->average_rating, 1) }} Rating
+                                            ⭐ {{ number_format($payout->vendor->vendor->average_rating, 1) }} Rating
                                         </span>
                                     @endif
                                 </div>

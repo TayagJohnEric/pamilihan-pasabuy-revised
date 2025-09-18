@@ -160,20 +160,37 @@
     <script>
         // Load dashboard data on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Ensure CSRF token is available
+            if (!document.querySelector('meta[name="csrf-token"]')) {
+                const meta = document.createElement('meta');
+                meta.name = 'csrf-token';
+                meta.content = '{{ csrf_token() }}';
+                document.head.appendChild(meta);
+            }
             loadDashboardSummary();
+            loadRecentActivity();
         });
 
         // Load payout summary data
         function loadDashboardSummary() {
             fetch('{{ route("admin.payouts.summary") }}')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         updateSummaryCards(data.data);
+                    } else {
+                        console.error('API returned error:', data.message);
+                        showMessage('Failed to load dashboard data', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error loading dashboard summary:', error);
+                    showMessage('Failed to load dashboard data', 'error');
                 });
         }
 
@@ -181,8 +198,116 @@
         function updateSummaryCards(data) {
             document.getElementById('pending-rider-count').textContent = data.total_pending_rider_payouts || 0;
             document.getElementById('pending-vendor-count').textContent = data.total_pending_vendor_payouts || 0;
-            document.getElementById('total-pending-amount').textContent = '₱' + (parseFloat(data.total_pending_amount || 0).toFixed(2));
+            
+            // Format the amount with proper number formatting
+            const amount = parseFloat(data.total_pending_amount || 0);
+            document.getElementById('total-pending-amount').textContent = '₱' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
             document.getElementById('orders-to-process').textContent = data.orders_to_process || 0;
+        }
+
+        // Load recent payout activity
+        function loadRecentActivity() {
+            fetch('{{ route("admin.payouts.recent-activity") }}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        updateRecentActivity(data.data);
+                    } else {
+                        showNoRecentActivity('Failed to load recent activity');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading recent activity:', error);
+                    showNoRecentActivity('Error loading recent activity');
+                });
+        }
+
+        // Update recent activity section
+        function updateRecentActivity(activities) {
+            const container = document.getElementById('recent-activity');
+            
+            if (!activities || activities.length === 0) {
+                showNoRecentActivity('No recent payout activity');
+                return;
+            }
+
+            let html = '';
+            activities.forEach(activity => {
+                const statusColor = getStatusColor(activity.status);
+                const timeAgo = getTimeAgo(activity.timestamp);
+                
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColor}">
+                                    ${activity.status.replace('_', ' ')}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">${activity.title}</p>
+                                <p class="text-xs text-gray-500">${activity.description}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-gray-400">${timeAgo}</span>
+                            <a href="${activity.url}" class="text-blue-600 hover:text-blue-800 text-xs">
+                                View
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Show no activity message
+        function showNoRecentActivity(message) {
+            const container = document.getElementById('recent-activity');
+            container.innerHTML = `
+                <div class="text-center text-gray-500 py-8">
+                    <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+        }
+
+        // Get status color classes
+        function getStatusColor(status) {
+            switch(status) {
+                case 'pending_payment':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'paid':
+                    return 'bg-green-100 text-green-800';
+                case 'failed':
+                    return 'bg-red-100 text-red-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - time) / 1000);
+            
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return Math.floor(diffInSeconds / 60) + 'm ago';
+            if (diffInSeconds < 86400) return Math.floor(diffInSeconds / 3600) + 'h ago';
+            return Math.floor(diffInSeconds / 86400) + 'd ago';
         }
 
         // Generate weekly payouts

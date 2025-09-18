@@ -551,6 +551,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/payouts/generate-weekly', [AdminPayoutController::class, 'generateWeeklyPayouts'])->name('payouts.generate-weekly');
     Route::post('/payouts/generate-monthly', [AdminPayoutController::class, 'generateMonthlyPayouts'])->name('payouts.generate-monthly');
     Route::get('/payouts/summary', [AdminPayoutController::class, 'getPayoutSummary'])->name('payouts.summary');
+    Route::get('/payouts/recent-activity', [AdminPayoutController::class, 'getRecentActivity'])->name('payouts.recent-activity');
     
 });
 //System Settings CRUD

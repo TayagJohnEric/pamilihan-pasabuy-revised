@@ -284,6 +284,11 @@ class PayoutCalculationService
         $bonusTarget = $this->getRiderBonusTarget();
         $bonusAmount = $this->getRiderBonusAmount();
 
+        // Prevent division by zero
+        if ($bonusTarget <= 0) {
+            return 0;
+        }
+
         // Calculate how many bonus targets were achieved
         $bonusesEarned = intval($deliveryCount / $bonusTarget);
         
@@ -296,7 +301,7 @@ class PayoutCalculationService
     private function getPlatformCommissionRate()
     {
         $setting = SystemSetting::where('setting_key', 'platform_commission_rate')->first();
-        return $setting ? floatval($setting->setting_value) : 0.10; // Default 10%
+        return $setting ? floatval($setting->setting_value) : 10.0; // Default 10%
     }
 
     /**
@@ -355,9 +360,10 @@ class PayoutCalculationService
         
         // Count orders that could be processed into payouts (completed orders with online payments)
         $ordersToProcess = Order::where('status', 'delivered')
+            ->where('payment_method', 'online_payment')
+            ->where('payment_status', 'paid')
             ->whereHas('payment', function($query) {
-                $query->where('payment_method', 'online_payment')
-                      ->where('payment_status', 'paid');
+                $query->where('status', 'completed');
             })
             ->count();
 

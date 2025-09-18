@@ -602,6 +602,68 @@ class AdminPayoutController extends Controller
     }
 
     /**
+     * Get recent payout activity for dashboard
+     */
+    public function getRecentActivity()
+    {
+        try {
+            // Get recent rider payouts (last 10)
+            $recentRiderPayouts = RiderPayout::with(['rider'])
+                ->latest('updated_at')
+                ->limit(5)
+                ->get();
+
+            // Get recent vendor payouts (last 10)
+            $recentVendorPayouts = VendorPayout::with(['vendor.vendor'])
+                ->latest('updated_at')
+                ->limit(5)
+                ->get();
+
+            // Combine and format activities
+            $activities = collect();
+
+            foreach ($recentRiderPayouts as $payout) {
+                $activities->push([
+                    'type' => 'rider_payout',
+                    'title' => 'Rider Payout ' . ucfirst($payout->status),
+                    'description' => ($payout->rider ? $payout->rider->first_name . ' ' . $payout->rider->last_name : 'Unknown Rider') . ' - ₱' . number_format($payout->total_payout_amount, 2),
+                    'status' => $payout->status,
+                    'timestamp' => $payout->updated_at,
+                    'url' => route('admin.payouts.riders.show', $payout->id)
+                ]);
+            }
+
+            foreach ($recentVendorPayouts as $payout) {
+                $vendorName = $payout->vendor && $payout->vendor->vendor ? $payout->vendor->vendor->vendor_name : 'Unknown Vendor';
+                $activities->push([
+                    'type' => 'vendor_payout',
+                    'title' => 'Vendor Payout ' . ucfirst($payout->status),
+                    'description' => $vendorName . ' - ₱' . number_format($payout->total_payout_amount, 2),
+                    'status' => $payout->status,
+                    'timestamp' => $payout->updated_at,
+                    'url' => route('admin.payouts.vendors.show', $payout->id)
+                ]);
+            }
+
+            // Sort by timestamp (most recent first) and take top 8
+            $activities = $activities->sortByDesc('timestamp')->take(8)->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $activities
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting recent payout activity: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get recent activity.'
+            ], 500);
+        }
+    }
+
+    /**
      * Create a payout-related notification
      * Follows the same pattern as your existing notification system
      */
