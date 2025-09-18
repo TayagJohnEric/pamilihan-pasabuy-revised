@@ -344,12 +344,6 @@ Route::prefix('rider')->name('rider.')->middleware(['auth', 'verified'])->group(
 // Rider Protected Routes (requires auth & rider role)
 Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
 
-
-    // Rider Profile Routes
-    Route::get('profile', [RiderProfileController::class, 'show'])->name('profile');
-    Route::get('profile/edit', [RiderProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('profile', [RiderProfileController::class, 'update'])->name('profile.update');
-
     // Rider Earnings, Payouts & Ratings
     Route::get('earnings', [RiderEarningsController::class, 'earnings'])->name('earnings');
     Route::get('payouts', [RiderEarningsController::class, 'payouts'])->name('payouts');
@@ -397,7 +391,13 @@ Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->grou
 });
 
 
-
+// Add these routes to your web.php file
+Route::middleware(['auth'])->prefix('rider')->name('rider.')->group(function () {
+    // Rider Profile Routes
+    Route::get('/profile', [RiderProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [RiderProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [RiderProfileController::class, 'update'])->name('profile.update');
+});
 
 
 

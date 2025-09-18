@@ -33,7 +33,7 @@
         @if($ratingStats && $ratingStats->total_ratings > 0)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Overall Rating Card -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border">
+            <div class="bg-gradient-to-r from-emerald-50 to-emerald-50 p-6 rounded-lg border">
                 <div class="text-center">
                     <div class="text-4xl font-bold text-gray-800 mb-2">
                         {{ number_format($ratingStats->average_rating ?? 0, 1) }}

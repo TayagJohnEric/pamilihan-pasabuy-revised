@@ -10,7 +10,7 @@
                 <p class="text-gray-600">Create a new product for your catalog</p>
             </div>
             <a href="{{ route('vendor.products.index') }}" 
-               class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+               class="bg-white border border-gray-300 text-gray-800 inline-flex items-center px-4 py-2 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -41,7 +41,7 @@
                            id="product_name" 
                            name="product_name" 
                            value="{{ old('product_name') }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('product_name') border-red-500 @enderror"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('product_name') border-red-500 @enderror"
                            placeholder="Enter product name">
                     @error('product_name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -53,7 +53,7 @@
                     <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                     <select id="category_id" 
                             name="category_id" 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category_id') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('category_id') border-red-500 @enderror">
                         <option value="">Select a category</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -73,7 +73,7 @@
                            id="unit" 
                            name="unit" 
                            value="{{ old('unit') }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('unit') border-red-500 @enderror"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('unit') border-red-500 @enderror"
                            placeholder="e.g., kg, piece, liter">
                     @error('unit')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -87,7 +87,7 @@
                            id="image" 
                            name="image" 
                            accept="image/*"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('image') border-red-500 @enderror">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('image') border-red-500 @enderror">
                     @error('image')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -101,7 +101,7 @@
                 <textarea id="description" 
                           name="description" 
                           rows="4" 
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('description') border-red-500 @enderror"
                           placeholder="Enter product description">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -121,9 +121,9 @@
                                class="sr-only peer"
                                {{ old('pricing_model', 'standard') == 'standard' ? 'checked' : '' }}>
                         <label for="standard_pricing" 
-                               class="flex p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-blue-600 peer-checked:bg-blue-50">
+                               class="flex p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-green-600 peer-checked:bg-green-50">
                             <div class="flex items-center">
-                                <div class="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 peer-checked:border-blue-600 peer-checked:bg-blue-600"></div>
+                                <div class="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 peer-checked:border-green-600 peer-checked:bg-green-600"></div>
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">Standard Pricing</div>
                                     <div class="text-sm text-gray-500">Set a fixed price with stock quantity</div>
@@ -141,9 +141,9 @@
                                class="sr-only peer"
                                {{ old('pricing_model') == 'budget_based' ? 'checked' : '' }}>
                         <label for="budget_pricing" 
-                               class="flex p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-blue-600 peer-checked:bg-blue-50">
+                               class="flex p-4 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-green-600 peer-checked:bg-green-50">
                             <div class="flex items-center">
-                                <div class="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 peer-checked:border-blue-600 peer-checked:bg-blue-600"></div>
+                                <div class="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 peer-checked:border-green-600 peer-checked:bg-green-600"></div>
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">Budget-Based Pricing</div>
                                     <div class="text-sm text-gray-500">Set indicative price per unit, quantity varies by budget</div>
@@ -167,7 +167,7 @@
                            value="{{ old('price') }}"
                            step="0.01" 
                            min="0"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('price') border-red-500 @enderror"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('price') border-red-500 @enderror"
                            placeholder="0.00">
                     @error('price')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -181,7 +181,7 @@
                            name="quantity_in_stock" 
                            value="{{ old('quantity_in_stock') }}"
                            min="0"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('quantity_in_stock') border-red-500 @enderror"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('quantity_in_stock') border-red-500 @enderror"
                            placeholder="0">
                     @error('quantity_in_stock')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -199,7 +199,7 @@
                            value="{{ old('indicative_price_per_unit') }}"
                            step="0.01" 
                            min="0"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('indicative_price_per_unit') border-red-500 @enderror"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent @error('indicative_price_per_unit') border-red-500 @enderror"
                            placeholder="0.00">
                     @error('indicative_price_per_unit')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -215,15 +215,15 @@
                            name="is_available" 
                            value="1" 
                            {{ old('is_available', true) ? 'checked' : '' }}
-                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                           class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2">
                     <span class="ml-2 text-sm font-medium text-gray-700">Product is available for sale</span>
                 </label>
             </div>
 
             <!-- Submit Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6">
-                <button type="submit" 
-                        class="flex-1 sm:flex-none px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+               <button type="submit" 
+                    class="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                     Create Product
                 </button>
                 <a href="{{ route('vendor.products.index') }}" 

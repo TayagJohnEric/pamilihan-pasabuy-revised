@@ -42,15 +42,15 @@
 
         <!-- Payout Breakdown -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                 <div class="text-center">
-                    <p class="text-sm font-medium text-blue-600">Total Sales</p>
+                    <p class="text-sm font-medium text-green-600">Total Sales</p>
                     <p class="text-2xl font-bold text-gray-900">₱{{ number_format($payout->total_sales_amount, 2) }}</p>
                 </div>
             </div>
-            <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                 <div class="text-center">
-                    <p class="text-sm font-medium text-orange-600">Platform Commission</p>
+                    <p class="text-sm font-medium text-green-600">Platform Commission</p>
                     <p class="text-2xl font-bold text-gray-900">₱{{ number_format($payout->platform_commission_amount, 2) }}</p>
                 </div>
             </div>
