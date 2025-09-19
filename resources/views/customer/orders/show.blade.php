@@ -88,11 +88,6 @@
                             Pay Now
                         </button>
                     @endif
-                    @if(in_array($order->status, ['pending_payment', 'processing']))
-                        <button class="px-6 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium text-sm shadow-sm">
-                            Cancel Order
-                        </button>
-                    @endif
                     @if($order->status === 'delivered')
                         @php
                             $hasRated = isset($order->ratings)

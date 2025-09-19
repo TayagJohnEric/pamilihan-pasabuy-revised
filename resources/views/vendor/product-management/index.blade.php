@@ -207,15 +207,21 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Update the status badge
-                    const productCard = this.closest('.bg-white');
-                    const statusBadge = productCard.querySelector('.absolute.top-3.right-3 span');
-                    
-                    if (data.is_available) {
-                        statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm bg-green-100 text-green-800 border border-green-200';
-                        statusBadge.innerHTML = '<div class="w-2 h-2 rounded-full mr-2 bg-green-500"></div>Available';
-                    } else {
-                        statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm bg-red-100 text-red-800 border border-red-200';
-                        statusBadge.innerHTML = '<div class="w-2 h-2 rounded-full mr-2 bg-red-500"></div>Unavailable';
+                    // Find the correct product card container. The card uses a generic 'border' class, not 'bg-white'.
+                    const productCard = this.closest('.border');
+                    const statusBadge = productCard ? productCard.querySelector('.absolute.top-3.right-3 span') : null;
+
+                    // Reflect server-confirmed state on the checkbox
+                    this.checked = !!data.is_available;
+
+                    if (statusBadge) {
+                        if (data.is_available) {
+                            statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm bg-green-100 text-green-800 border border-green-200';
+                            statusBadge.innerHTML = '<div class="w-2 h-2 rounded-full mr-2 bg-green-500"></div>Available';
+                        } else {
+                            statusBadge.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm bg-red-100 text-red-800 border border-red-200';
+                            statusBadge.innerHTML = '<div class="w-2 h-2 rounded-full mr-2 bg-red-500"></div>Unavailable';
+                        }
                     }
                     
                     // Show success message
