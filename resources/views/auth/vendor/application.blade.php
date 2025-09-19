@@ -104,7 +104,27 @@
             </div>
         </div>
 
-        <!-- Success Message -->
+        <!-- Laravel Error Messages -->
+        @if ($errors->any())
+            <div class="mb-8 bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-sm font-medium text-red-800">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Laravel Success Message -->
         @if(session('success'))
             <div class="mb-8 bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
                 <div class="flex">
@@ -139,24 +159,24 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                            <input type="text" name="applicant_first_name" placeholder="Enter your first name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
+                            <input type="text" name="applicant_first_name" value="{{ old('applicant_first_name') }}" placeholder="Enter your first name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                            <input type="text" name="applicant_last_name" placeholder="Enter your last name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
+                            <input type="text" name="applicant_last_name" value="{{ old('applicant_last_name') }}" placeholder="Enter your last name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                            <input type="email" name="applicant_email" placeholder="your@email.com" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
+                            <input type="email" name="applicant_email" value="{{ old('applicant_email') }}" placeholder="your@email.com" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                            <input type="text" name="applicant_phone_number" placeholder="+63 xxx xxx xxxx" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
+                            <input type="text" name="applicant_phone_number" value="{{ old('applicant_phone_number') }}" placeholder="+63 xxx xxx xxxx" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
                         </div>
                     </div>
                 </div>
@@ -176,31 +196,31 @@
                 <div class="px-8 py-6 space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Proposed Vendor Name *</label>
-                        <input type="text" name="proposed_vendor_name" placeholder="Enter your business/vendor name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
+                        <input type="text" name="proposed_vendor_name" value="{{ old('proposed_vendor_name') }}" placeholder="Enter your business/vendor name" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200" required>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Stall Number Preference</label>
-                            <input type="text" name="stall_number_preference" placeholder="e.g., A-01, B-15 (Optional)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200">
+                            <input type="text" name="stall_number_preference" value="{{ old('stall_number_preference') }}" placeholder="e.g., A-01, B-15 (Optional)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200">
                             <p class="text-sm text-gray-500 mt-1">Preferred stall number if you have one in mind</p>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Market Section Preference</label>
-                            <input type="text" name="market_section_preference" placeholder="e.g., Food Court, Electronics (Optional)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200">
+                            <input type="text" name="market_section_preference" value="{{ old('market_section_preference') }}" placeholder="e.g., Food Court, Electronics (Optional)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200">
                             <p class="text-sm text-gray-500 mt-1">Which section of the market you prefer</p>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Business Description *</label>
-                        <textarea name="business_description" rows="4" placeholder="Describe your business, what you plan to sell, your experience, target customers, etc." class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200 resize-none" required></textarea>
+                        <textarea name="business_description" rows="4" placeholder="Describe your business, what you plan to sell, your experience, target customers, etc." class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200 resize-none" required>{{ old('business_description') }}</textarea>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Primary Product Categories *</label>
-                        <textarea name="primary_product_categories_description" rows="3" placeholder="List the main categories of products or services you will offer (e.g., Fresh vegetables, Cooked meals, Electronics, Clothing, etc.)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200 resize-none" required></textarea>
+                        <textarea name="primary_product_categories_description" rows="3" placeholder="List the main categories of products or services you will offer (e.g., Fresh vegetables, Cooked meals, Electronics, Clothing, etc.)" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-green-600 focus:outline-none transition duration-200 resize-none" required>{{ old('primary_product_categories_description') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -298,7 +318,7 @@
                         </div>
 
                         <div class="checkbox-custom mt-6">
-                            <input type="checkbox" name="agreed_to_terms" id="agreed_to_terms" required>
+                            <input type="checkbox" name="agreed_to_terms" id="agreed_to_terms" {{ old('agreed_to_terms') ? 'checked' : '' }} required>
                             <label for="agreed_to_terms" class="text-sm font-medium text-gray-700">
                                 I have read and agree to the terms and conditions *
                             </label>

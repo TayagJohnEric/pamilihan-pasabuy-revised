@@ -8,6 +8,8 @@ use App\Models\VendorApplication;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 
 class VendorAuthController extends Controller
@@ -19,6 +21,17 @@ class VendorAuthController extends Controller
 
     public function store(Request $request)
     {
+        // Debug: Log all request data
+        \Log::info('Vendor application submission received', [
+            'has_files' => $request->hasFile(['business_permit_document_url', 'dti_registration_url', 'bir_registration_url', 'other_documents']),
+            'files' => [
+                'business_permit_document_url' => $request->hasFile('business_permit_document_url'),
+                'dti_registration_url' => $request->hasFile('dti_registration_url'),
+                'bir_registration_url' => $request->hasFile('bir_registration_url'),
+                'other_documents' => $request->hasFile('other_documents'),
+            ]
+        ]);
+
         $validated = $request->validate([
             'applicant_first_name' => 'required|string|max:255',
             'applicant_last_name' => 'required|string|max:255',
@@ -36,33 +49,64 @@ class VendorAuthController extends Controller
             'agreed_to_terms' => 'required|accepted',
         ]);
 
-        // Convert agreed_to_terms to integer
-        $validated['agreed_to_terms'] = $request->has('agreed_to_terms') ? 1 : 0;
+        try {
+            // Convert agreed_to_terms to integer
+            $validated['agreed_to_terms'] = $request->has('agreed_to_terms') ? 1 : 0;
 
-        // File handling
-        if ($request->hasFile('business_permit_document_url')) {
-            $validated['business_permit_document_url'] = $request->file('business_permit_document_url')->store('vendor_documents');
-        }
-
-        if ($request->hasFile('dti_registration_url')) {
-            $validated['dti_registration_url'] = $request->file('dti_registration_url')->store('vendor_documents');
-        }
-
-        if ($request->hasFile('bir_registration_url')) {
-            $validated['bir_registration_url'] = $request->file('bir_registration_url')->store('vendor_documents');
-        }
-
-        if ($request->hasFile('other_documents')) {
-            $paths = [];
-            foreach ($request->file('other_documents') as $file) {
-                $paths[] = $file->store('vendor_documents');
+            // Handle file uploads with better naming and storage
+            if ($request->hasFile('business_permit_document_url') && $request->file('business_permit_document_url')->isValid()) {
+                $file = $request->file('business_permit_document_url');
+                $filename = time() . '_permit_' . $file->getClientOriginalName();
+                $path = $file->storeAs('vendor_documents', $filename, 'public');
+                $validated['business_permit_document_url'] = $path;
+                \Log::info('Business permit file uploaded', ['path' => $path]);
             }
-            $validated['other_documents'] = json_encode($paths);
+
+            if ($request->hasFile('dti_registration_url') && $request->file('dti_registration_url')->isValid()) {
+                $file = $request->file('dti_registration_url');
+                $filename = time() . '_dti_' . $file->getClientOriginalName();
+                $path = $file->storeAs('vendor_documents', $filename, 'public');
+                $validated['dti_registration_url'] = $path;
+                \Log::info('DTI registration file uploaded', ['path' => $path]);
+            }
+
+            if ($request->hasFile('bir_registration_url') && $request->file('bir_registration_url')->isValid()) {
+                $file = $request->file('bir_registration_url');
+                $filename = time() . '_bir_' . $file->getClientOriginalName();
+                $path = $file->storeAs('vendor_documents', $filename, 'public');
+                $validated['bir_registration_url'] = $path;
+                \Log::info('BIR registration file uploaded', ['path' => $path]);
+            }
+
+            if ($request->hasFile('other_documents')) {
+                $paths = [];
+                foreach ($request->file('other_documents') as $index => $file) {
+                    if ($file->isValid()) {
+                        $filename = time() . '_other_' . $index . '_' . $file->getClientOriginalName();
+                        $path = $file->storeAs('vendor_documents', $filename, 'public');
+                        $paths[] = $path;
+                        \Log::info('Other document file uploaded', ['path' => $path]);
+                    }
+                }
+                $validated['other_documents'] = json_encode($paths);
+            }
+
+            // Create the record
+            $application = VendorApplication::create($validated);
+            \Log::info('Vendor application created', ['id' => $application->id]);
+
+            return redirect()->back()->with('success', 'Vendor application submitted successfully! We will review your application and contact you soon.');
+
+        } catch (\Exception $e) {
+            \Log::error('Vendor application submission failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to submit application: ' . $e->getMessage()])
+                ->withInput();
         }
-
-        VendorApplication::create($validated);
-
-        return redirect()->back()->with('success', 'Vendor application submitted successfully!');
     }
 
 

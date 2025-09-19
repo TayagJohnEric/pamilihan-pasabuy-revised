@@ -82,7 +82,7 @@
                                 <div class="flex items-center space-x-4 mb-4">
                                     <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                                         @if($rider->profile_image_url)
-                                            <img src="{{ asset($rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset('storage/' . $rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
                                                 {{ strtoupper(substr($rider->first_name, 0, 1)) }}{{ strtoupper(substr($rider->last_name, 0, 1)) }}
@@ -150,7 +150,7 @@
                                         <!-- Profile Image -->
                                         <div class="w-16 h-16 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                                             @if($rider->profile_image_url)
-                                                <img src="{{ asset($rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset('storage/' . $rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
                                             @else
                                                 <div class="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
                                                     {{ strtoupper(substr($rider->first_name, 0, 1)) }}{{ strtoupper(substr($rider->last_name, 0, 1)) }}

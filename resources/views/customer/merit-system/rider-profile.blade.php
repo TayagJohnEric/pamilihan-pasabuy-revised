@@ -45,7 +45,7 @@
                     <!-- Profile Image -->
                     <div class="w-32 h-32 bg-white rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">
                         @if($rider->profile_image_url)
-                            <img src="{{ asset($rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $rider->profile_image_url) }}" alt="{{ $rider->first_name }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-500 text-4xl font-bold">
                                 {{ strtoupper(substr($rider->first_name, 0, 1)) }}{{ strtoupper(substr($rider->last_name, 0, 1)) }}

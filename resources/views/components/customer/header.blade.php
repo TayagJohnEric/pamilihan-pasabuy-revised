@@ -23,6 +23,7 @@
             @include('components.notification')
 
             <!-- Profile Section -->
+            @auth
             <div class="relative">
                 <!-- Profile Button -->
                 <button 
@@ -97,6 +98,7 @@
                     </div>
                 </div>
             </div>
+            @endauth
         </div>
     </div>
 </header>

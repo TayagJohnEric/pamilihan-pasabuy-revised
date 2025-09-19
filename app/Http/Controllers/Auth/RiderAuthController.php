@@ -10,9 +10,15 @@ use App\Models\VendorApplication;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+
 
 class RiderAuthController extends Controller
 {
+    public function showLoginForm()
+    {
+        return view('auth.rider.login');
+    }
     
    public function create()
     {
@@ -20,46 +26,77 @@ class RiderAuthController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'contact_number' => 'required|string|max:20',
-            'birth_date' => 'required|date',
-            'address' => 'required|string',
-            'vehicle_type' => 'required|string|max:100',
-            'vehicle_model' => 'required|string|max:100',
-            'license_plate_number' => 'required|string|max:50',
-            'driver_license_number' => 'required|string|max:100',
-            'license_expiry_date' => 'required|date',
-            'nbi_clearance_url' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'valid_id_url' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'selfie_with_id_url' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'tin_number' => 'nullable|string|max:100',
+{
+    // Debug: Log all request data
+    \Log::info('Form submission received', [
+        'has_files' => $request->hasFile(['nbi_clearance_url', 'valid_id_url', 'selfie_with_id_url']),
+        'files' => [
+            'nbi_clearance_url' => $request->hasFile('nbi_clearance_url'),
+            'valid_id_url' => $request->hasFile('valid_id_url'),
+            'selfie_with_id_url' => $request->hasFile('selfie_with_id_url'),
+        ]
+    ]);
+
+    $validated = $request->validate([
+        'full_name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'contact_number' => 'required|string|max:20',
+        'birth_date' => 'required|date|before:today',
+        'address' => 'required|string|max:500',
+        'vehicle_type' => 'required|string|max:100',
+        'vehicle_model' => 'required|string|max:100',
+        'license_plate_number' => 'required|string|max:50',
+        'driver_license_number' => 'required|string|max:100',
+        'license_expiry_date' => 'required|date|after:today',
+        'nbi_clearance_url' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        'valid_id_url' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        'selfie_with_id_url' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+        'tin_number' => 'nullable|string|max:100',
+    ]);
+
+    try {
+        // Handle file uploads
+        if ($request->hasFile('nbi_clearance_url') && $request->file('nbi_clearance_url')->isValid()) {
+            $file = $request->file('nbi_clearance_url');
+            $filename = time() . '_nbi_' . $file->getClientOriginalName();
+            $path = $file->storeAs('rider_documents', $filename, 'public');
+            $validated['nbi_clearance_url'] = $path;
+            \Log::info('NBI file uploaded', ['path' => $path]);
+        }
+
+        if ($request->hasFile('valid_id_url') && $request->file('valid_id_url')->isValid()) {
+            $file = $request->file('valid_id_url');
+            $filename = time() . '_id_' . $file->getClientOriginalName();
+            $path = $file->storeAs('rider_documents', $filename, 'public');
+            $validated['valid_id_url'] = $path;
+            \Log::info('Valid ID file uploaded', ['path' => $path]);
+        }
+
+        if ($request->hasFile('selfie_with_id_url') && $request->file('selfie_with_id_url')->isValid()) {
+            $file = $request->file('selfie_with_id_url');
+            $filename = time() . '_selfie_' . $file->getClientOriginalName();
+            $path = $file->storeAs('rider_documents', $filename, 'public');
+            $validated['selfie_with_id_url'] = $path;
+            \Log::info('Selfie file uploaded', ['path' => $path]);
+        }
+
+        // Create the record
+        $application = RiderApplication::create($validated);
+        \Log::info('Application created', ['id' => $application->id]);
+
+        return redirect()->back()->with('success', 'Application submitted successfully! We will review your application and contact you soon.');
+
+    } catch (\Exception $e) {
+        \Log::error('Application submission failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
         ]);
 
-        // Handle file uploads
-        if ($request->hasFile('nbi_clearance_url')) {
-            $validated['nbi_clearance_url'] = $request->file('nbi_clearance_url')->store('rider_documents');
-        }
-
-        if ($request->hasFile('valid_id_url')) {
-            $validated['valid_id_url'] = $request->file('valid_id_url')->store('rider_documents');
-        }
-
-        if ($request->hasFile('selfie_with_id_url')) {
-            $validated['selfie_with_id_url'] = $request->file('selfie_with_id_url')->store('rider_documents');
-        }
-
-        RiderApplication::create($validated);
-
-        return redirect()->back()->with('success', 'Application submitted successfully!');
+        return redirect()->back()
+            ->withErrors(['error' => 'Failed to submit application: ' . $e->getMessage()])
+            ->withInput();
     }
-
-     public function showLoginForm()
-    {
-        return view('auth.rider.login');
-    }
+}
 
    // Updated login function to set is_available to true
 public function login(Request $request)

@@ -103,8 +103,8 @@ class RiderSeeder extends Seeder
         if (!in_array('09221234569', $existingPhoneNumbers)) {
             $rider3UserId = DB::table('users')->insertGetId([
                 'role' => 'rider',
-                'first_name' => 'Juan',
-                'last_name' => 'dela Cruz',
+                'first_name' => 'David',
+                'last_name' => 'Ramos',
                 'email' => 'rider3@example.com',
                 'phone_number' => '09221234569',
                 'password' => Hash::make('password123'),

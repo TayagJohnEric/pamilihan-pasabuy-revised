@@ -9,10 +9,12 @@
             <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
         </svg>
         <!-- Badge -->
+        @auth
         <span id="cart-badge"
             class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium {{ Auth::user()->shoppingCartItems()->count() > 0 ? '' : 'hidden' }}">
             {{ Auth::user()->shoppingCartItems()->count() }}
         </span>
+        @endauth
     </button>
 </div>
 
