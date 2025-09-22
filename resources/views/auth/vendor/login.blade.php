@@ -35,7 +35,8 @@
             <input type="password" name="password" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all duration-200" required placeholder="Enter your password">
         </div>
         <div>
-            <button type="submit" id="login-btn" class="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:to-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+            <button type="submit" id="login-btn" 
+                class="w-full bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
                 <span id="btn-text">Sign In</span>
                 <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

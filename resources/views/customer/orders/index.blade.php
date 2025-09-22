@@ -151,7 +151,7 @@
                                         <div class="flex items-center gap-3 p-3 bg-gray-50/50 rounded-lg">
                                             <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                                 @if($item->product && $item->product->image_url)
-                                                    <img src="{{ $item->product->image_url }}" 
+                                                    <img src="{{ asset('storage/' . $item->product->image_url ) }}" 
                                                          alt="{{ $item->product_name_snapshot }}"
                                                          class="w-full h-full object-cover">
                                                 @else

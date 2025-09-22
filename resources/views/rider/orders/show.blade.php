@@ -151,7 +151,7 @@
                                         <div class="flex-shrink-0">
                                             @if($order->customer->profile_image_url)
                                                 <img class="w-16 h-16 rounded-full object-cover border-2 border-green-100" 
-                                                     src="{{ $order->customer->profile_image_url }}" 
+                                                     src="{{asset('storage/' . $order->customer->profile_image_url)  }}" 
                                                      alt="{{ $order->customer->first_name }} {{ $order->customer->last_name }}">
                                             @else
                                                 <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-200">
@@ -242,7 +242,7 @@
                                                     <div class="flex-shrink-0">
                                                         @if($vendor->shop_logo_url)
                                                             <img class="w-12 h-12 rounded-xl object-cover border border-gray-200" 
-                                                                 src="{{ $vendor->shop_logo_url }}" 
+                                                                 src="{{asset('storage/' . $vendor->shop_logo_url ) }}" 
                                                                  alt="{{ $vendor->vendor_name }}">
                                                         @else
                                                             <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center border border-green-200">

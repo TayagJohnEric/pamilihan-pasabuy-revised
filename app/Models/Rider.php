@@ -41,4 +41,9 @@ class Rider extends Model
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
+
+    public function ratingsReceived()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 }

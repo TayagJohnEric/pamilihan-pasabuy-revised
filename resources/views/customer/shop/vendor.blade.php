@@ -80,7 +80,7 @@
             @if($vendor->shop_banner_url)
                 <div class="h-52 sm:h-72 relative overflow-hidden">
                     <img 
-                        src="{{ $vendor->shop_banner_url }}" 
+                        src="{{asset('storage/' . $vendor->shop_banner_url )  }}" 
                         alt="{{ $vendor->vendor_name }} banner"
                         class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     >

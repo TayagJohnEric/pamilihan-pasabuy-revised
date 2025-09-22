@@ -61,7 +61,7 @@
                                     <!-- Customer Profile Image -->
                                     <div class="flex-shrink-0">
                                         @if($order->customer->profile_image_url)
-                                            <img src="{{ $order->customer->profile_image_url }}" 
+                                            <img src="{{asset('storage/' .  $order->customer->profile_image_url) }}" 
                                                  alt="{{ $order->customer->first_name }}"
                                                  class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
                                         @else
@@ -181,7 +181,7 @@
                             <!-- Customer Profile Image -->
                             <div class="flex-shrink-0">
                                 @if($order->customer->profile_image_url)
-                                    <img src="{{ $order->customer->profile_image_url }}" 
+                                    <img src="{{asset('storage/' . $order->customer->profile_image_url)  }}" 
                                          alt="{{ $order->customer->first_name }}"
                                          class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
                                 @else
@@ -282,7 +282,7 @@
                             <!-- Customer Profile Image -->
                             <div class="flex-shrink-0">
                                 @if($order->customer->profile_image_url)
-                                    <img src="{{ $order->customer->profile_image_url }}" 
+                                    <img src="{{asset('storage/' . $order->customer->profile_image_url ) }}" 
                                          alt="{{ $order->customer->first_name }}"
                                          class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
                                 @else

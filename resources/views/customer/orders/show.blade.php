@@ -125,7 +125,7 @@
                                         <!-- Product Image -->
                                         <div class="flex-shrink-0 mx-auto sm:mx-0">
                                             @if($item->product && $item->product->image_url)
-                                                <img src="{{ $item->product->image_url }}" 
+                                                <img src="{{ asset('storage/' . $item->product->image_url ) }}" 
                                                      alt="{{ $item->product_name_snapshot }}"
                                                      class="w-20 h-20 object-cover rounded-xl shadow-sm">
                                             @else
@@ -396,7 +396,7 @@
                                 <span class="text-xs font-medium text-gray-700 uppercase tracking-wide block mb-3">Assigned Rider</span>
                                 <div class="flex items-center gap-4 bg-gray-50 rounded-lg p-4">
                                     @if($order->rider->profile_image_url)
-                                        <img src="{{ $order->rider->profile_image_url }}" 
+                                        <img src="{{ asset('storage/' . $order->rider->profile_image_url ) }}" 
                                              alt="{{ $order->rider->first_name }}"
                                              class="w-12 h-12 rounded-xl object-cover shadow-sm">
                                     @else

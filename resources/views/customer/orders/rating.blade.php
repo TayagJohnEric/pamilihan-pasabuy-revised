@@ -54,7 +54,7 @@
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-lg p-4 border border-gray-100">
                                     <div class="flex items-center gap-4">
                                         @if($order->rider->profile_image_url)
-                                            <img src="{{ $order->rider->profile_image_url }}" 
+                                            <img src="{{ asset('storage/' . $order->rider->profile_image_url ) }}" 
                                                  alt="{{ $order->rider->first_name }}"
                                                  class="w-12 h-12 rounded-full object-cover shadow-sm">
                                         @else
@@ -103,7 +103,7 @@
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-lg p-4 border border-gray-100">
                                         <div class="flex items-center gap-4">
                                             @if($vendor->shop_logo_url)
-                                                <img src="{{ $vendor->shop_logo_url }}" 
+                                                <img src="{{ asset('storage/' . $vendor->shop_logo_url) }}" 
                                                      alt="{{ $vendor->vendor_name }}"
                                                      class="w-12 h-12 rounded-lg object-cover shadow-sm">
                                             @else
@@ -158,7 +158,7 @@
                             <div class="bg-gray-50 rounded-xl p-6 mb-6">
                                 <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
                                     @if($order->rider->profile_image_url)
-                                        <img src="{{ $order->rider->profile_image_url }}" 
+                                        <img src="{{ asset('storage/' . $order->rider->profile_image_url ) }}" 
                                              alt="{{ $order->rider->first_name }}"
                                              class="w-20 h-20 rounded-full object-cover shadow-sm">
                                     @else
@@ -228,7 +228,7 @@
                                     <div class="bg-gray-50 rounded-xl p-6">
                                         <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
                                             @if($vendor->shop_logo_url)
-                                                <img src="{{ $vendor->shop_logo_url }}" 
+                                                <img src="{{asset('storage/' . $vendor->shop_logo_url)  }}" 
                                                      alt="{{ $vendor->vendor_name }}"
                                                      class="w-20 h-20 rounded-xl object-cover shadow-sm">
                                             @else
