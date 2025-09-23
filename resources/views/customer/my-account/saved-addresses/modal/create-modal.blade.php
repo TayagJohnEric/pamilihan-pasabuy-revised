@@ -1,6 +1,6 @@
 <!-- Create Address Modal -->
-<div id="create-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
-    <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-6 relative">
+<div id="create-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
+    <div class="modal-content bg-white rounded-lg w-full max-w-md shadow-lg p-6 relative">
         <button onclick="closeCreateModal()" class="absolute top-2 right-2 text-gray-600 hover:text-black">×</button>
 
         <h2 class="text-lg font-semibold mb-4">Add New Address</h2>
@@ -54,7 +54,7 @@
                         </label>
                 </div>
             <div class="flex justify-end">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
+                <button type="submit" class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-4 py-2 rounded hover:bg-emerald -700">Save</button>
             </div>
         </form>
     </div>

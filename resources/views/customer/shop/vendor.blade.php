@@ -107,7 +107,7 @@
                     @if($vendor->shop_logo_url)
                         <div class="w-36 h-36 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white transition-all duration-300 group-hover:shadow-2xl group-hover:scale-105">
                             <img 
-                                src="{{ $vendor->shop_logo_url }}" 
+                                src="{{ asset('storage/' . $vendor->shop_logo_url)  }}" 
                                 alt="{{ $vendor->vendor_name }} logo"
                                 class="w-full h-full object-cover"
                             >

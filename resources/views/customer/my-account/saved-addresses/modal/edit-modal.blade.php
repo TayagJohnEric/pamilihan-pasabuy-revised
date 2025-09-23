@@ -1,7 +1,7 @@
  <!-- Edit Modal Background (move this inside the loop) -->
-                        <div id="edit-modal-{{ $address->id }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
+                        <div id="edit-modal-{{ $address->id }}" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden justify-center items-center">
                             <!-- Modal Content -->
-                            <div class="bg-white rounded-lg w-full max-w-md shadow-lg p-6 relative">
+                            <div class="modal-content bg-white rounded-lg w-full max-w-md shadow-lg p-6 relative">
                                 <button onclick="closeEditModal({{ $address->id }})" class="absolute top-2 right-2 text-gray-600 hover:text-black">×</button>
                                 <h2 class="text-lg font-semibold mb-4">Edit Address</h2>
                                 <form action="{{ route('customer.saved_addresses.update', $address->id) }}" method="POST">
@@ -58,7 +58,7 @@
                                     </div>
 
                                     <div class="mb-4 flex items-center justify-end">
-                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                        <button type="submit" class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white px-4 py-2 rounded hover:bg-emerald-700">
                                             Update
                                         </button>
                                     </div>

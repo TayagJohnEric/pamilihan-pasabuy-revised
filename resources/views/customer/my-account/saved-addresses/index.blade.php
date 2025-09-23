@@ -3,6 +3,42 @@
 @section('title', 'My Saved Addresses')
 
 @section('content')
+
+<style>
+    .modal-overlay {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-overlay.closing {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal-overlay.closing .modal-content {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+}
+
+
+</style>
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
@@ -126,7 +162,7 @@
                          <button 
                             type="button"
                             onclick="openCreateModal()"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:w-auto w-full">
+                            class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:bg-emerald     -600 text-white font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:w-auto w-full">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                             </svg>
@@ -170,38 +206,64 @@ document.addEventListener('click', function(event) {
         });
     }
 });
-    function openEditModal(id) {
-        document.getElementById('edit-modal-' + id).classList.remove('hidden');
-        document.getElementById('edit-modal-' + id).classList.add('flex');
-    }
+   function openEditModal(id) {
+    const modal = document.getElementById('edit-modal-' + id);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Add animation class after a short delay
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
 
-    function closeEditModal(id) {
-        document.getElementById('edit-modal-' + id).classList.add('hidden');
-        document.getElementById('edit-modal-' + id).classList.remove('flex');
-    }
+function closeEditModal(id) {
+    const modal = document.getElementById('edit-modal-' + id);
+    
+    modal.classList.remove('show'); // remove show first if you’re animating
+    modal.classList.add('closing'); // optional, if you use a closing animation
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex', 'closing');
+    }, 300); // match this with your CSS transition duration
+}
+
     
     function openCreateModal() {
         const modal = document.getElementById('create-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+            setTimeout(() => modal.classList.add('show'), 10);
+
     }
 
     function closeCreateModal() {
         const modal = document.getElementById('create-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex', 'closing');
+    }, 300);
     }
 
     function openDeleteModal(id) {
         const modal = document.getElementById('delete-modal-' + id);
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+            setTimeout(() => modal.classList.add('show'), 10);
+
     }
 
     function closeDeleteModal(id) {
         const modal = document.getElementById('delete-modal-' + id);
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex', 'closing');
+    }, 300);
     }
 </script>
 @endsection
