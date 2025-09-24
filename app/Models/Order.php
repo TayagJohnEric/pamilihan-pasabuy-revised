@@ -24,6 +24,7 @@ class Order extends Model
         'payment_status',
         'payment_intent_id',
         'special_instructions',
+        'delivery_proof_image',
     ];
 
     protected $casts = [

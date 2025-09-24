@@ -108,18 +108,69 @@
                                         </div>
                                     </button>
                                 @elseif($order->status === 'out_for_delivery')
-                                    <button id="mark-delivered-btn" 
-                                            class="relative inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 w-full sm:w-auto"
-                                            data-order-id="{{ $order->id }}">
-                                        <span class="button-text">Mark as Delivered</span>
-                                        <div class="button-loading hidden flex items-center justify-center">
-                                            <svg class="animate-spin h-4 w-4 text-white mr-2" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Processing...</span>
+                                    <!-- Delivery Proof Upload Section -->
+                                    <div class="w-full space-y-4">
+                                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                            <div class="flex items-start space-x-3">
+                                                <div class="p-1 bg-amber-100 rounded">
+                                                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold text-amber-800 text-sm">Delivery Proof Required</p>
+                                                    <p class="text-amber-700 text-sm">Please upload a photo as proof of delivery before marking the order as delivered.</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </button>
+                                        
+                                        <form id="delivery-proof-form" enctype="multipart/form-data" class="space-y-4">
+                                            @csrf
+                                            <div>
+                                                <label for="delivery_proof_image" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Upload Delivery Proof Image
+                                                </label>
+                                                <div class="relative">
+                                                    <input type="file" 
+                                                           id="delivery_proof_image" 
+                                                           name="delivery_proof_image" 
+                                                           accept="image/*" 
+                                                           capture="environment"
+                                                           required
+                                                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                                    <div class="mt-2 text-xs text-gray-500">
+                                                        Accepted formats: JPG, PNG, GIF (Max: 5MB)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Image Preview -->
+                                            <div id="image-preview" class="hidden">
+                                                <div class="relative inline-block">
+                                                    <img id="preview-img" class="w-32 h-32 object-cover rounded-lg border border-gray-300" alt="Delivery proof preview">
+                                                    <button type="button" id="remove-image" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="submit" 
+                                                    id="mark-delivered-btn" 
+                                                    disabled
+                                                    class="relative inline-flex items-center justify-center px-6 py-3 bg-gray-400 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg w-full sm:w-auto disabled:cursor-not-allowed"
+                                                    data-order-id="{{ $order->id }}">
+                                                <span class="button-text">Mark as Delivered</span>
+                                                <div class="button-loading hidden flex items-center justify-center">
+                                                    <svg class="animate-spin h-4 w-4 text-white mr-2" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <span>Processing...</span>
+                                                </div>
+                                            </button>
+                                        </form>
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -598,12 +649,131 @@
                 });
             }
 
-            // Handle delivery confirmation
+            // Handle delivery proof image upload and preview
+            const deliveryProofInput = document.getElementById('delivery_proof_image');
+            const imagePreview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            const removeImageBtn = document.getElementById('remove-image');
             const deliveredBtn = document.getElementById('mark-delivered-btn');
-            if (deliveredBtn) {
-                deliveredBtn.addEventListener('click', function() {
-                    handleButtonClick(this, 'delivered');
+            const deliveryProofForm = document.getElementById('delivery-proof-form');
+
+            if (deliveryProofInput && deliveredBtn) {
+                // Handle file input change
+                deliveryProofInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size (5MB max)
+                        if (file.size > 5 * 1024 * 1024) {
+                            showToast('File size must be less than 5MB', 'error');
+                            e.target.value = '';
+                            return;
+                        }
+
+                        // Validate file type
+                        if (!file.type.startsWith('image/')) {
+                            showToast('Please select a valid image file', 'error');
+                            e.target.value = '';
+                            return;
+                        }
+
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+
+                        // Enable the submit button
+                        deliveredBtn.disabled = false;
+                        deliveredBtn.classList.remove('bg-gray-400', 'disabled:cursor-not-allowed');
+                        deliveredBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'transform', 'hover:-translate-y-0.5');
+                    }
                 });
+
+                // Handle image removal
+                if (removeImageBtn) {
+                    removeImageBtn.addEventListener('click', function() {
+                        deliveryProofInput.value = '';
+                        imagePreview.classList.add('hidden');
+                        deliveredBtn.disabled = true;
+                        deliveredBtn.classList.add('bg-gray-400', 'disabled:cursor-not-allowed');
+                        deliveredBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'transform', 'hover:-translate-y-0.5');
+                    });
+                }
+
+                // Handle form submission with file upload
+                if (deliveryProofForm) {
+                    deliveryProofForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const orderId = deliveredBtn.dataset.orderId;
+                        const buttonText = deliveredBtn.querySelector('.button-text');
+                        const buttonLoading = deliveredBtn.querySelector('.button-loading');
+                        const formData = new FormData();
+                        
+                        // Add the image file
+                        const imageFile = deliveryProofInput.files[0];
+                        if (!imageFile) {
+                            showToast('Please select a delivery proof image', 'error');
+                            return;
+                        }
+                        
+                        formData.append('delivery_proof_image', imageFile);
+                        formData.append('_token', csrfToken);
+                        formData.append('_method', 'PATCH');
+                        
+                        // Show loading state
+                        deliveredBtn.disabled = true;
+                        buttonText.classList.add('hidden');
+                        buttonLoading.classList.remove('hidden');
+                        deliveredBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                        
+                        fetch(`/rider/orders/${orderId}/delivered`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Reset button state
+                            deliveredBtn.disabled = false;
+                            buttonText.classList.remove('hidden');
+                            buttonLoading.classList.add('hidden');
+                            deliveredBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                            
+                            if (data.success) {
+                                showToast(data.message, 'success');
+                                if (data.redirect_url) {
+                                    setTimeout(() => window.location.href = data.redirect_url, 1500);
+                                } else {
+                                    setTimeout(() => location.reload(), 1500);
+                                }
+                            } else {
+                                showToast(data.message || 'Failed to mark order as delivered.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            // Reset button state on error
+                            deliveredBtn.disabled = false;
+                            buttonText.classList.remove('hidden');
+                            buttonLoading.classList.add('hidden');
+                            deliveredBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                            console.error('Error:', error);
+                            showToast('An error occurred. Please try again.', 'error');
+                        });
+                    });
+                }
+            } else {
+                // Fallback for other order statuses (existing functionality)
+                if (deliveredBtn) {
+                    deliveredBtn.addEventListener('click', function() {
+                        handleButtonClick(this, 'delivered');
+                    });
+                }
             }
         });
     </script>

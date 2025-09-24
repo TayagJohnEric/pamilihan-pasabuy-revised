@@ -214,33 +214,67 @@
 
         <!-- Sidebar -->
         <div class="space-y-6">
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                
-                <!-- Update Status -->
-                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="mb-4">
-                    @csrf
-                    @method('PATCH')
-                    <div class="mb-3">
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Update Status</label>
-                        <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
-                            <option value="out_for_delivery" {{ $order->status == 'out_for_delivery' ? 'selected' : '' }}>Out for Delivery</option>
-                            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-                        <textarea name="notes" id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Add any notes about this status change..."></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
-                        Update Status
-                    </button>
-                </form>
+            <!-- Delivery Proof Image -->
+            @if($order->status === 'delivered')
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Delivery Proof
+                    </h3>
+                    
+                    @if($order->delivery_proof_image)
+                        <div class="space-y-3">
+                            <div class="relative group">
+                                <img src="{{ asset('storage/' . $order->delivery_proof_image) }}" 
+                                     alt="Delivery Proof for Order #{{ $order->id }}" 
+                                     class="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                                     onclick="openImageModal('{{ asset('storage/' . $order->delivery_proof_image) }}', 'Delivery Proof for Order #{{ $order->id }}')">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-sm text-gray-600">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Verified Delivery
+                                </span>
+                                <button onclick="openImageModal('{{ asset('storage/' . $order->delivery_proof_image) }}', 'Delivery Proof for Order #{{ $order->id }}')" 
+                                        class="text-blue-600 hover:text-blue-800 font-medium">
+                                    View Full Size
+                                </button>
+                            </div>
+                            
+                            @if($order->rider)
+                                <div class="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                    <strong>Uploaded by:</strong> {{ $order->rider->first_name }} {{ $order->rider->last_name }}
+                                    <br>
+                                    <strong>Upload time:</strong> {{ $order->updated_at->format('M d, Y h:i A') }}
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="text-center py-8">
+                            <div class="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                                <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                            </div>
+                            <p class="text-gray-600 font-medium">No Delivery Proof Available</p>
+                            <p class="text-sm text-gray-500 mt-1">This order was delivered without proof image</p>
+                        </div>
+                    @endif
+                </div>
+            @endif
 
+            <div class="">
                 <!-- Assign Rider -->
                 @if(!$order->rider || $order->status != 'delivered')
                 <form action="{{ route('admin.orders.assignRider', $order->id) }}" method="POST">
@@ -335,4 +369,58 @@
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="modalImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+        <div id="modalCaption" class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
+            <p class="text-center font-medium"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openImageModal(imageSrc, caption) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption').querySelector('p');
+    
+    modalImage.src = imageSrc;
+    modalImage.alt = caption;
+    modalCaption.textContent = caption;
+    modal.classList.remove('hidden');
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside the image
+document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImageModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
+    }
+});
+</script>
+
 @endsection

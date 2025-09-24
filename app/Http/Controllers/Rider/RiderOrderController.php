@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class RiderOrderController extends Controller
@@ -529,7 +530,7 @@ class RiderOrderController extends Controller
 
     /**
      * Mark order as delivered
-     * Updates order status, rider stats, and payment status for COD orders
+     * Updates order status, rider stats, payment status for COD orders, and handles delivery proof image
      */
     public function markDelivered(Request $request, Order $order)
     {
@@ -550,11 +551,35 @@ class RiderOrderController extends Controller
             return redirect()->back()->with('error', 'Unable to mark this order as delivered.');
         }
 
+        // Validate delivery proof image if provided
+        $deliveryProofPath = null;
+        if ($request->hasFile('delivery_proof_image')) {
+            $request->validate([
+                'delivery_proof_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            ]);
+        }
+
         try {
             DB::beginTransaction();
 
-            // Update order status to delivered
-            $order->update(['status' => 'delivered']);
+            // Handle delivery proof image upload
+            if ($request->hasFile('delivery_proof_image')) {
+                $image = $request->file('delivery_proof_image');
+                $timestamp = now()->format('Y-m-d_H-i-s');
+                $filename = "delivery_proof_order_{$order->id}_{$timestamp}." . $image->getClientOriginalExtension();
+                
+                // Store the image using Laravel's 'public' disk
+                $deliveryProofPath = $image->storeAs('delivery_proofs', $filename, 'public');
+                
+                Log::info("Delivery proof image uploaded for order {$order->id}: {$deliveryProofPath}");
+            }
+
+            // Update order status to delivered and save delivery proof image path
+            $updateData = ['status' => 'delivered'];
+            if ($deliveryProofPath) {
+                $updateData['delivery_proof_image'] = $deliveryProofPath;
+            }
+            $order->update($updateData);
 
             // If payment method is COD, mark payment as paid
             if ($order->payment_method === 'cod') {
@@ -573,11 +598,16 @@ class RiderOrderController extends Controller
                 $rider->update(['is_available' => true]);
             }
 
-            // Log delivery completion
+            // Log delivery completion with proof image info
+            $notes = 'Order successfully delivered to customer';
+            if ($deliveryProofPath) {
+                $notes .= ' with delivery proof image uploaded';
+            }
+            
             $this->logOrderStatusChange(
                 $order->id,
                 'delivered',
-                'Order successfully delivered to customer',
+                $notes,
                 Auth::id()
             );
 
@@ -600,15 +630,21 @@ class RiderOrderController extends Controller
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Order marked as delivered successfully!',
+                    'message' => 'Order marked as delivered successfully with proof of delivery!',
                     'redirect_url' => route('rider.orders.index')
                 ]);
             }
 
-            return redirect()->route('rider.orders.index')->with('success', 'Order marked as delivered successfully!');
+            return redirect()->route('rider.orders.index')->with('success', 'Order marked as delivered successfully with proof of delivery!');
 
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            // Clean up uploaded file if there was an error
+            if ($deliveryProofPath && Storage::disk('public')->exists($deliveryProofPath)) {
+                Storage::disk('public')->delete($deliveryProofPath);
+            }
+            
             Log::error('Error marking order as delivered: ' . $e->getMessage());
             
             if ($request->ajax()) {
