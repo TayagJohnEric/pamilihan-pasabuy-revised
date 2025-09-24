@@ -7,10 +7,10 @@
         <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg p-8 mb-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center text-white">
                 <div class="mb-6 lg:mb-0">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 text-white drop-shadow-sm">
+                    <h2 class="text-2xl lg:text-2xl font-bold  text-white drop-shadow-sm">
                         Categories Management
                     </h2>
-                    <p class="text-emerald-100 text-lg">
+                    <p class="text-emerald-100 text-md">
                         Manage product categories for your marketplace
                     </p>
                 </div>
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
             <!-- Success/Error Messages -->
             @if(session('success'))
                 <div class="mx-6 mt-6 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl flex items-center">

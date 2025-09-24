@@ -7,10 +7,10 @@
         <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg p-8 mb-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center text-white">
                 <div class="mb-6 lg:mb-0">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 text-white drop-shadow-sm">
+                    <h2 class="text-2xl lg:text-2xl font-bold  text-white drop-shadow-sm">
                         Orders Management
                     </h2>
-                    <p class="text-emerald-100 text-lg">
+                    <p class="text-emerald-100 text-md">
                         Track and manage customer orders and payments
                     </p>
                 </div>
@@ -29,7 +29,7 @@
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
             <!-- Filters Section -->
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6">
                 <form method="GET" class="space-y-4">

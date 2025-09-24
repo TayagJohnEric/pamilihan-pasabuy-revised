@@ -7,10 +7,10 @@
         <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg p-8 mb-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center text-white">
                 <div class="mb-6 lg:mb-0">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 text-white drop-shadow-sm">
+                    <h2 class="text-2xl lg:text-2xl font-bold text-white drop-shadow-sm">
                         System Settings Management
                     </h2>
-                    <p class="text-emerald-100 text-lg">
+                    <p class="text-emerald-100 text-md">
                         Configure and manage your system settings
                     </p>
                 </div>
@@ -27,7 +27,7 @@
         </div>
 
         <!-- Search and Filter Bar -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+        <div class="bg-white rounded-xl shadow border border-gray-100 p-6 mb-8">
             <div class="flex flex-col sm:flex-row gap-4 items-center">
                 <div class="flex-1 w-full sm:w-auto">
                     <form method="GET" action="{{ route('system-settings.index') }}" class="flex">

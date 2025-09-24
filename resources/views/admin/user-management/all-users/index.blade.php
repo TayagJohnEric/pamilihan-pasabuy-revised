@@ -8,13 +8,13 @@
         <!-- Header Section -->
         <div class="mb-8">
             <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl p-6 text-white shadow-lg">
-                <h1 class="text-3xl font-bold mb-2">User Management</h1>
+                <h1 class="text-2xl font-bold ">User Management</h1>
                 <p class="text-emerald-100 opacity-90">Manage and monitor all users across your platform</p>
             </div>
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-white rounded-xl shadow overflow-hidden">
             <!-- Controls Section -->
             <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
                 <form method="GET" class="space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">

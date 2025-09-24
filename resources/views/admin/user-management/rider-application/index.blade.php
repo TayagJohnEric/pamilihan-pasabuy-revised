@@ -8,13 +8,13 @@
         <!-- Header Section -->
         <div class="mb-8">
             <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl p-6 text-white shadow-lg">
-                <h1 class="text-3xl font-bold mb-2">Rider Applications</h1>
+                <h1 class="text-2xl font-bold ">Rider Applications</h1>
                 <p class="text-emerald-100 opacity-90">Review and manage incoming rider applications</p>
             </div>
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-white rounded-xl shadow overflow-hidden">
             <!-- Table Section -->
             <div class="overflow-x-auto">
                 <table class="w-full">

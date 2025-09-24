@@ -12,14 +12,27 @@
                     <p class="text-gray-600">Generate and manage rider and vendor payouts</p>
                 </div>
                 <div class="flex gap-3">
-                    <a href="{{ route('admin.payouts.riders') }}" 
-                       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        View Rider Payouts
-                    </a>
-                    <a href="{{ route('admin.payouts.vendors') }}" 
-                       class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        View Vendor Payouts
-                    </a>
+                  <a href="{{ route('admin.payouts.riders') }}"
+   class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-900 rounded-lg shadow-sm hover:bg-gray-100 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck">
+        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+        <path d="M15 18H9"/>
+        <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+        <circle cx="17" cy="18" r="2"/>
+        <circle cx="7" cy="18" r="2"/>
+    </svg>
+    View Rider Payouts
+</a>
+
+                   <a href="{{ route('admin.payouts.vendors') }}"
+   class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-900 rounded-lg shadow-sm hover:bg-gray-100 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-store">
+        <path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/>
+        <path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/>
+        <path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/>
+    </svg>
+    View Vendor Payouts
+</a>
                 </div>
             </div>
         </div>
@@ -29,9 +42,7 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
                     <div class="p-3 bg-blue-100 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                        </svg>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-600 lucide lucide-philippine-peso-icon lucide-philippine-peso"><path d="M20 11H4"/><path d="M20 7H4"/><path d="M7 21V4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 12H7"/></svg>
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending Rider Payouts</p>
@@ -57,9 +68,7 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center">
                     <div class="p-3 bg-yellow-100 rounded-full">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                        </svg>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-yellow-600 lucide lucide-philippine-peso-icon lucide-philippine-peso"><path d="M20 11H4"/><path d="M20 7H4"/><path d="M7 21V4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 12H7"/></svg>
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Pending Amount</p>
@@ -92,14 +101,29 @@
                 <div class="space-y-4">
                     <!-- Quick Generate Buttons -->
                     <div class="flex gap-3">
-                        <button onclick="generateWeeklyPayouts()" 
-                                class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            Generate Weekly Payouts
-                        </button>
-                        <button onclick="generateMonthlyPayouts()" 
-                                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            Generate Monthly Payouts
-                        </button>
+                       <button onclick="generateWeeklyPayouts()"
+        class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-900 rounded-lg shadow-sm hover:bg-gray-100 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-1">
+        <path d="M11 14h1v4"/>
+        <path d="M16 2v4"/>
+        <path d="M3 10h18"/>
+        <path d="M8 2v4"/>
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+    </svg>
+    Generate Weekly Payouts
+</button>
+
+<button onclick="generateMonthlyPayouts()"
+        class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-sm font-medium text-gray-900 rounded-lg shadow-sm hover:bg-gray-100 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-1">
+        <path d="M11 14h1v4"/>
+        <path d="M16 2v4"/>
+        <path d="M3 10h18"/>
+        <path d="M8 2v4"/>
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+    </svg>
+    Generate Monthly Payouts
+</button>
                     </div>
 
                     <!-- Custom Period Form -->
@@ -118,8 +142,15 @@
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                             </div>
-                            <button type="submit" 
-                                    class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                           <button type="submit"
+                                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 text-white text-sm font-medium rounded-lg shadow-sm transition-colors hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check">
+                                    <path d="M8 2v4"/>
+                                    <path d="M16 2v4"/>
+                                    <rect width="18" height="18" x="3" y="4" rx="2"/>
+                                    <path d="M3 10h18"/>
+                                    <path d="m9 16 2 2 4-4"/>
+                                </svg>
                                 Generate Custom Period Payouts
                             </button>
                         </form>

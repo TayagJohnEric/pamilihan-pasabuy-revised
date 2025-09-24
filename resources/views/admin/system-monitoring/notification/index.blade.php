@@ -9,10 +9,10 @@
         <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg p-8 mb-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center text-white">
                 <div class="mb-6 lg:mb-0">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 text-white drop-shadow-sm">
+                    <h2 class="text-2xl lg:text-2xl font-bold text-white drop-shadow-sm">
                         Notification Log
                     </h2>
-                    <p class="text-emerald-100 text-lg">
+                    <p class="text-emerald-100 text-md">
                         Track all notifications happening in the system
                     </p>
                 </div>
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
             <!-- Filters Section -->
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-100">
                 <form method="GET" action="{{ route('admin.notifications.index') }}" class="space-y-4">
@@ -83,9 +83,6 @@
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider hidden lg:table-cell">
                                     Title
-                                </th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider hidden xl:table-cell">
-                                    Message
                                 </th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                     Status
@@ -155,13 +152,6 @@
                                     <td class="px-6 py-4 hidden lg:table-cell">
                                         <div class="text-sm font-medium text-gray-900 max-w-xs truncate">
                                             {{ $notification->title ?? '-' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 hidden xl:table-cell">
-                                        <div class="text-sm text-gray-600 max-w-md">
-                                            <div class="line-clamp-2">
-                                                {{ is_array($notification->message) ? json_encode($notification->message) : $notification->message }}
-                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">

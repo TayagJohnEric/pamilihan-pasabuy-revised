@@ -7,10 +7,10 @@
         <div class="bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 rounded-xl shadow-lg p-8 mb-8">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center text-white">
                 <div class="mb-6 lg:mb-0">
-                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 text-white drop-shadow-sm">
+                    <h2 class="text-2xl lg:text-2xl font-bold text-white drop-shadow-sm">
                         Ratings & Reviews Management
                     </h2>
-                    <p class="text-emerald-100 text-lg">
+                    <p class="text-emerald-100 text-md">
                         Track and review customer feedback for Vendors and Riders
                     </p>
                 </div>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Filters Section -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+        <div class="bg-white rounded-xl shadow border border-gray-100 p-6 mb-8">
             <div class="flex items-center mb-4">
                 <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"></path>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Main Content Card -->
-        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
             <!-- Ratings Table -->
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
