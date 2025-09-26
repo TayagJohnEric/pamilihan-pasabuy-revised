@@ -88,97 +88,31 @@
             font-variant-numeric: tabular-nums;
         }
         
-        /* Fix for scrolling issues */
         body {
             overflow-x: hidden;
             padding-top: 0;
         }
         
-        /* Ensure sections are properly spaced and visible */
         section {
             position: relative;
             z-index: 1;
         }
         
-        /* Fix header positioning */
         header {
             z-index: 1000;
         }
         
-        /* Ensure content doesn't get hidden behind fixed header */
         #home {
             padding-top: 80px;
         }
         
-        /* Fix any potential z-index conflicts */
-        .relative {
-            position: relative;
-        }
-        
-        .absolute {
-            position: absolute;
-        }
-        
-        /* Ensure proper stacking context */
-        .z-10 {
-            z-index: 10;
-        }
-        
-        .z-50 {
-            z-index: 50;
-        }
-        
-        /* Smooth scrolling */
         html {
             scroll-behavior: smooth;
         }
         
-        /* Ensure all sections are visible */
-        section {
-            min-height: auto;
-            width: 100%;
-        }
-        
-        /* Fix for mobile responsiveness */
         @media (max-width: 768px) {
             #home {
                 padding-top: 60px;
-            }
-        }
-        
-        /* Ensure proper spacing between sections */
-        section:not(:first-child) {
-            margin-top: 0;
-        }
-        
-        /* Fix for any potential overflow issues */
-        .container {
-            max-width: 100%;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        
-        @media (min-width: 640px) {
-            .container {
-                max-width: 640px;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .container {
-                max-width: 768px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 1024px;
-            }
-        }
-        
-        @media (min-width: 1280px) {
-            .container {
-                max-width: 1280px;
             }
         }
 
@@ -206,7 +140,6 @@
             color: #fff !important;
         }
         
-        /* Hero Entrance Animations */
         .hero-title.animate-in {
             animation: heroTitleIn 1.2s ease-out forwards;
         }
@@ -290,7 +223,6 @@
             }
         }
         
-        /* Add a subtle background animation */
         #home::before {
             content: '';
             position: absolute;
@@ -312,18 +244,162 @@
                 opacity: 1;
             }
         }
+
+        /* Feature Card Styles */
+        .feature-card {
+            position: relative;
+            height: 300px;
+            border-radius: 1rem;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease-in-out;
+        }
+
+        .feature-card:hover::before {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+        }
+
+        .feature-content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            color: white;
+        }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .carousel-slides {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            width: 25%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-arrow:hover {
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-arrow.prev {
+            left: 1rem;
+        }
+
+        .carousel-arrow.next {
+            right: 1rem;
+        }
+
+        .carousel-arrow i {
+            color: #059669;
+            font-size: 1.125rem;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                height: 250px;
+            }
+            
+            .feature-content {
+                padding: 1.5rem;
+            }
+            
+            .carousel-container {
+                height: 300px;
+            }
+            
+            .carousel-arrow {
+                width: 40px;
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body class="font-sans bg-white">
     
-
    <!-- Header for top of hero (white content) -->
 <header id="header-top" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                <i class="fas fa-shopping-basket text-white text-lg"></i>
+           <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
+                <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
             </div>
             <div>
                 <span class="text-2xl font-bold text-white">PamilihanPasabuy</span>
@@ -342,14 +418,11 @@
 
         <!-- Action Buttons -->
         <div class="hidden lg:flex items-center space-x-3">
-            <a href="{{ route('customer.login') }}" 
-                class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">
-                    Log In
+            <a href="{{ route('customer.login') }}" class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">
+                Log In
             </a>
-
-            <a href="{{ route('customer.register') }}" 
-                class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                    Sign Up Free
+            <a href="{{ route('customer.register') }}" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 theme text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                Sign Up Free
             </a>
         </div>
 
@@ -368,28 +441,30 @@
             <a href="#testimonials" class="block text-gray-700 hover:text-green-600 py-2 font-medium">Reviews</a>
             <a href="#about" class="block text-gray-700 hover:text-green-600 py-2 font-medium">About</a>
             <div class="pt-4 border-t space-y-3">
-                <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Join as Vendor</button>
-                <button class="w-full px-4 py-3 text-green-600 border-2 border-green-600 rounded-xl font-semibold">Become Rider</button>
-                <button class="w-full px-4 py-3 text-green-600 border border-green-600 rounded-xl font-medium">Log In</button>
-                <button class="w-full px-4 py-3 bg-green-600 text-white rounded-xl font-semibold">Sign Up Free</button>
-            </div>
+               
+<a href="{{ route('customer.login') }}" class="px-3 py-2.5 text-white hover:bg-white hover:text-green-600 border border-white rounded-xl transition-colors font-medium">
+                Log In
+            </a>
+             <a href="{{ route('customer.register') }}" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 theme text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                Sign Up Free
+            </a>            </div>
         </div>
     </div>
 </header>
 
 <!-- Header for scrolling (original style) -->
-<header id="header-scroll" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down" style="display:none;">
+<header id="header-scroll" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down glass-effect" style="display:none;">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo -->
-        <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                <i class="fas fa-shopping-basket text-white text-lg"></i>
-            </div>
-            <div>
-                <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
-                <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
-            </div>
-        </div>
+       <div class="flex items-center space-x-3">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
+        <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
+    </div>
+    <div>
+        <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
+        <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
+    </div>
+</div>
 
         <!-- Desktop Navigation -->
         <div class="hidden lg:flex items-center space-x-8">
@@ -402,10 +477,14 @@
 
         <!-- Action Buttons -->
         <div class="hidden lg:flex items-center space-x-3">
-            <button class="px-3 py-2.5 text-gray-600 hover:text-green-600 border border-white rounded-xl transition-colors font-medium">Log In</button>
-            <button class="px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+ <a href="{{ route('customer.login') }}" 
+                class="px-3 py-2.5 text-black hover:bg-white hover:text-green-600 border border-gray-300 rounded-xl transition-colors font-medium">
+                    Log In
+            </a>           
+            
+            <a href="{{ route('customer.register') }}" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 theme text-white rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
                 Sign Up Free
-            </button>
+            </a>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -419,34 +498,34 @@
 <section id="home" 
          class="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat" 
          style="background-image: url('{{ asset('images/hero-bg.png') }}');">
+             <div class="absolute inset-0 bg-black/60 z-0"></div>
 
-    <div class="absolute inset-0 bg-black/60 z-0"></div>
+                         <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
     <div class="relative z-10 w-full px-4 py-20">
         <div class="max-w-5xl mx-auto text-center text-white">
-            <h1 class="text-5xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg hero-title opacity-0 transform translate-y-8">
-                Your 
-                <span class="gradient-text">San Fernando Market</span>, 
-                <br>Delivered 
-                <span class="text-green-300">Fresh</span> 
+           <h1 class="text-4xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg hero-title opacity-0 transform translate-y-8">
+                Your
+                <span class="text-white">San Fernando Market</span>,
+                <br>Delivered
+                <span class="text-emerald-500 font-serif italic" style="font-family: 'Pacifico', cursive;">Fresh</span>
                 to Your Door
             </h1>
-            <p class="text-xl lg:text-2xl text-gray-100 mb-8 leading-relaxed drop-shadow hero-subtitle opacity-0 transform translate-y-8">
+
+
+            <p class="text-lg lg:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow hero-subtitle opacity-0 transform translate-y-8">
                 Experience the convenience of online grocery shopping while supporting 
                 local businesses. Fresh produce, authentic flavors, delivered with care.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8 hero-buttons opacity-0 transform translate-y-8">
-              <a href="{{ route('customer.register') }}" 
-                class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
+              <a href="{{ route('customer.register') }}" class="bg-emerald-600 text-white-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
                     <i class="fas fa-shopping-cart mr-3"></i>
                     Start Shopping Now
                 </a>
-
-                <button class="border-2 border-white text-white hover:bg-white hover:text-green-700 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center">
+                <button class="border-2 border-white text-white hover:bg-white hover:text-emerald-600 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center">
                     <i class="fas fa-info-circle mr-3"></i>
                     Learn More
                 </button>
-
             </div>
             <!-- Trust Indicators -->
             <div class="flex items-center justify-center space-x-6 text-sm text-white/80 hero-trust opacity-0 transform translate-y-8">
@@ -474,37 +553,11 @@
     </div>
 </section>
 
-
-
-    <!-- Stats Section -->
-    <section class="py-16 bg-white animate-on-scroll">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="text-4xl lg:text-5xl font-bold text-green-600 mb-2 stats-counter" data-count="10000">0</div>
-                    <div class="text-gray-600 font-medium">Happy Customers</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl lg:text-5xl font-bold text-green-600 mb-2 stats-counter" data-count="500">0</div>
-                    <div class="text-gray-600 font-medium">Local Vendors</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl lg:text-5xl font-bold text-green-600 mb-2 stats-counter" data-count="50000">0</div>
-                    <div class="text-gray-600 font-medium">Orders Delivered</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-4xl lg:text-5xl font-bold text-green-600 mb-2 stats-counter" data-count="98">0</div>
-                    <div class="text-gray-600 font-medium">% Satisfaction</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
    <!-- Apply Section -->
-<section class="py-20 bg-gradient-to-br from-gray-50 to-green-50 animate-on-scroll">
+<section class="py-20 bg-gray-50 animate-on-scroll">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
-            <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
+            <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
                 <i class="fas fa-users mr-2"></i>
                 Join Our Growing Community
             </div>
@@ -514,7 +567,7 @@
 
         <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto justify-center">
             <!-- Vendor Card -->
-            <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-green-200 relative overflow-hidden">
+            <div class="group bg-white rounded-3xl p-8 shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative overflow-hidden">
                 <div class="text-center">
                     <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-store text-white text-3xl"></i>
@@ -523,32 +576,30 @@
                     <p class="text-gray-600 mb-6 leading-relaxed">Transform your market stall into a digital storefront. Reach thousands of customers and grow your business exponentially.</p>
                     <ul class="text-left space-y-3 mb-8">
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Easy online store setup
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Reach 10,000+ customers
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Real-time order management
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Weekly payouts
                         </li>
                     </ul>
-                   <a href="{{ route('vendor-applications.create') }}" 
-   class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
-    Become a Vendor
-</a>
-
+                   <a href="{{ route('vendor-applications.create') }}" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
+                            Become a Vendor
+                    </a>
                 </div>
             </div>
 
             <!-- Rider Card -->
-            <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+            <div class="group bg-white rounded-3xl p-8 shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
                 <div class="text-center">
                     <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-motorcycle text-white text-3xl"></i>
@@ -557,46 +608,43 @@
                     <p class="text-gray-600 mb-6 leading-relaxed">Earn flexible income by connecting your community with fresh groceries. Be your own boss with competitive rates.</p>
                     <ul class="text-left space-y-3 mb-8">
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Flexible working hours
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Competitive delivery rates
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Weekly earnings
                         </li>
                         <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <i class="fas fa-check text-emerald-500 mr-3"></i>
                             Fuel bonus incentives
                         </li>
                     </ul>
-                    <a href="{{ route('rider-applications.create') }}" 
-   class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
-    Become a Rider
-</a>
-
+                    <a href="{{ route('rider-applications.create') }}" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
+                        Become a Rider
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-
     <!-- How It Works Section -->
-<section id="how-it-works" class="py-16 md:py-20 bg-white animate-on-scroll">
+<section id="how-it-works" class="py-16 md:py-20 bg-gray-50 animate-on-scroll">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 md:mb-16">
-            <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4 hover:bg-green-200 transition-colors duration-200">
-                <i class="fas fa-cogs mr-2 text-green-600" aria-hidden="true"></i>
+            <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4 hover:bg-emerald-200 transition-colors duration-200">
+                <i class="fas fa-cogs mr-2 text-emerald-600" aria-hidden="true"></i>
                 Simple Process
             </div>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
                 Fresh Groceries in 3 Easy Steps
             </h2>
-            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <p class="text-md md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
                 From browsing to delivery, we've made grocery shopping as simple as 1-2-3. Experience the easiest way to get fresh market products.
             </p>
         </div>
@@ -604,11 +652,11 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 <!-- Step 1 -->
-                <div class="text-center group relative">       
-                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                <div class=" group relative">       
+                    <div class="bg-white rounded-2xl shadow p-6 md:p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-2">
                         <div class="relative mb-6">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-search text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-search text-emerald-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
                             </div>
                         </div>
                         
@@ -616,44 +664,22 @@
                         <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
                             Explore our extensive catalog of fresh produce, meats, seafood, and local specialties from verified San Fernando Market vendors.
                         </p>
-                        
-                        <!-- Feature Tags -->
-                        <div class="p-4">
-                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-apple-alt mr-1 text-green-500" aria-hidden="true"></i> 
-                                    Fruits
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-carrot mr-1 text-orange-500" aria-hidden="true"></i> 
-                                    Vegetables
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-fish mr-1 text-blue-500" aria-hidden="true"></i> 
-                                    Seafood
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-drumstick-bite mr-1 text-red-500" aria-hidden="true"></i> 
-                                    Meats
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- Mobile Connection Line -->
                 <div class="flex justify-center md:hidden">
-                    <div class="w-1 h-8 bg-gradient-to-b from-green-400 to-green-600 rounded-full relative overflow-hidden">
+                    <div class="w-1 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-full relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
                     </div>
                 </div>
 
                 <!-- Step 2 -->
                 <div class="text-center group relative">           
-                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                    <div class="bg-white rounded-2xl shadow p-6 md:p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-2">
                         <div class="relative mb-6">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-hands text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-hands text-emerald-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
                             </div>
                         </div>
                         
@@ -661,40 +687,22 @@
                         <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
                             Our experienced vendors personally select and prepare your order, ensuring you get the freshest, highest-quality products available.
                         </p>
-                        
-                        <!-- Feature Tags -->
-                        <div class="p-4">
-                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-eye mr-1 text-blue-500" aria-hidden="true"></i> 
-                                    Quality Check
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-box mr-1 text-amber-500" aria-hidden="true"></i> 
-                                    Careful Packing
-                                </span>
-                                  <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-leaf mr-1 text-green-500" aria-hidden="true"></i> 
-                                    Fresh Produce
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
                 <!-- Mobile Connection Line -->
                 <div class="flex justify-center md:hidden">
-                    <div class="w-1 h-8 bg-gradient-to-b from-green-400 to-green-600 rounded-full relative overflow-hidden">
+                    <div class="w-1 h-8 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-full relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
                     </div>
                 </div>
 
                 <!-- Step 3 -->
                 <div class="text-center group relative">      
-                    <div class="bg-white rounded-2xl p-6 md:p-8  hover:shadow-xl transition-all duration-300 border border-gray-50 hover:border-green-200 hover:-translate-y-2">
+                    <div class="bg-white rounded-2xl shadow p-6 md:p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-2">
                         <div class="relative mb-6">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow-md group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-truck-fast text-green-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-truck-fast text-emerald-600 text-3xl sm:text-4xl" aria-hidden="true"></i>
                             </div>                          
                         </div>
                         
@@ -702,24 +710,6 @@
                         <p class="text-gray-600 leading-relaxed mb-4 md:mb-6 text-sm sm:text-base">
                             Our local riders deliver your fresh groceries straight to your doorstep, maintaining the cold chain for optimal freshness.
                         </p>
-                        
-                        <!-- Feature Tags -->
-                        <div class=" p-4 ">
-                            <div class="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-clock mr-1 text-indigo-500" aria-hidden="true"></i> 
-                                    Same Day
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-thermometer-half mr-1 text-cyan-500" aria-hidden="true"></i> 
-                                    Cold Chain
-                                </span>
-                                <span class="flex items-center bg-white px-3 py-1 rounded-full border">
-                                    <i class="fas fa-hand-holding-heart mr-1 text-pink-500" aria-hidden="true"></i> 
-                                    Careful Handling
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -727,19 +717,19 @@
             <!-- Desktop Process Flow -->
             <div class="hidden md:flex justify-center mt-12 lg:mt-16">
                 <div class="flex items-center space-x-4 lg:space-x-8">
-                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xl rounded-full font-bold shadow-lg">
                         1
                     </div>
-                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-green-400 to-green-500 rounded-full relative overflow-hidden">
+                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xl rounded-full font-bold shadow-lg">
                         2
                     </div>
-                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-green-400 to-green-500 rounded-full relative overflow-hidden">
+                    <div class="h-1 w-12 lg:w-20 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white text-xl rounded-full font-bold shadow-lg">
+                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xl rounded-full font-bold shadow-lg">
                         3
                     </div>
                 </div>
@@ -748,11 +738,11 @@
     </div>
 </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-20 bg-gradient-to-br from-green-50 to-blue-50 animate-on-scroll">
+    <!-- Features Section - Redesigned -->
+    <section id="features" class="py-20 bg-gray-50 animate-on-scroll">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
+                <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
                     <i class="fas fa-star mr-2"></i>
                     Why Choose Us
                 </div>
@@ -761,236 +751,122 @@
             </div>
 
             <div class="max-w-7xl mx-auto">
-                <div class="grid lg:grid-cols-2 gap-16 items-center">
-                    <!-- Features List -->
-                    <div class="space-y-8">
-                        <div class="flex items-start space-x-4 group">
-                            <div class="flex-shrink-0 w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center group-hover:bg-green-600 transition-colors duration-300">
-                                <i class="fas fa-heart text-green-600 group-hover:text-white text-2xl transition-colors duration-300"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Support Local Businesses</h3>
-                                <p class="text-gray-600 leading-relaxed">Every purchase directly supports San Fernando Market vendors and their families, helping preserve our local economy and traditional market culture.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 group">
-                            <div class="flex-shrink-0 w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center group-hover:bg-yellow-500 transition-colors duration-300">
-                                <i class="fas fa-leaf text-yellow-600 group-hover:text-white text-2xl transition-colors duration-300"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Unbeatable Freshness</h3>
-                                <p class="text-gray-600 leading-relaxed">Get the same quality you'd hand-pick yourself. Our vendors select only the freshest produce, meat, and seafood for your orders.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 group">
-                            <div class="flex-shrink-0 w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
-                                <i class="fas fa-clock text-blue-600 group-hover:text-white text-2xl transition-colors duration-300"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Ultimate Convenience</h3>
-                                <p class="text-gray-600 leading-relaxed">Skip the crowds and parking hassles. Shop from home and have everything delivered fresh to your door within hours.</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 group">
-                            <div class="flex-shrink-0 w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center group-hover:bg-purple-600 transition-colors duration-300">
-                                <i class="fas fa-shield-alt text-purple-600 group-hover:text-white text-2xl transition-colors duration-300"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Trusted & Secure</h3>
-                                <p class="text-gray-600 leading-relaxed">Shop with confidence using our secure payment system and reliable delivery network. Your satisfaction is guaranteed.</p>
-                            </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <!-- Feature Card 1 - Support Local Businesses -->
+                    <div class="feature-card" style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=300&fit=crop&crop=center');">
+                        <div class="feature-content">
+                            <h3 class="text-2xl font-bold mb-3">Support Local</h3>
+                            <p class="text-white/90 mb-4 leading-relaxed">Every purchase directly supports San Fernando Market vendors and their families.</p>
+                            <a href="#" class="inline-flex items-center text-white hover:text-emerald-300 font-semibold transition-colors">
+                                Learn More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Visual Element -->
-                    <div class="relative">
-                        <div class="relative z-10">
-                            <div class="bg-gradient-to-br from-green-400 to-blue-500 rounded-3xl p-8 shadow-2xl">
-                                <div class="bg-white rounded-2xl p-8">
-                                    <div class="text-center mb-6">
-                                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <i class="fas fa-shopping-basket text-green-600 text-3xl"></i>
-                                        </div>
-                                        <h4 class="text-2xl font-bold text-gray-900 mb-2">Market Fresh Daily</h4>
-                                        <p class="text-gray-600">Connecting you to authentic market experience</p>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div class="bg-green-50 rounded-xl p-4 text-center">
-                                            <div class="text-2xl font-bold text-green-600">500+</div>
-                                            <div class="text-sm text-gray-600">Products</div>
-                                        </div>
-                                        <div class="bg-blue-50 rounded-xl p-4 text-center">
-                                            <div class="text-2xl font-bold text-blue-600">2hrs</div>
-                                            <div class="text-sm text-gray-600">Avg Delivery</div>
-                                        </div>
-                                        <div class="bg-yellow-50 rounded-xl p-4 text-center">
-                                            <div class="text-2xl font-bold text-yellow-600">98%</div>
-                                            <div class="text-sm text-gray-600">Fresh Rating</div>
-                                        </div>
-                                        <div class="bg-purple-50 rounded-xl p-4 text-center">
-                                            <div class="text-2xl font-bold text-purple-600">24/7</div>
-                                            <div class="text-sm text-gray-600">Support</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Feature Card 2 - Unbeatable Freshness -->
+                    <div class="feature-card" style="background-image: url('https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=500&h=300&fit=crop&crop=center');">
+                        <div class="feature-content">
+                            <h3 class="text-2xl font-bold mb-3">Unbeatable Freshness</h3>
+                            <p class="text-white/90 mb-4 leading-relaxed">Get the same quality you'd hand-pick yourself from our trusted vendors.</p>
+                            <a href="#" class="inline-flex items-center text-white hover:text-emerald-300 font-semibold transition-colors">
+                                Learn More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
                         </div>
-                        <!-- Floating decorations -->
-                        <div class="absolute -top-6 -right-6 w-24 h-24 bg-yellow-400 rounded-full opacity-20 animate-float"></div>
-                        <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-green-400 rounded-full opacity-15 animate-float" style="animation-delay: -1s;"></div>
+                    </div>
+
+                    <!-- Feature Card 3 - Ultimate Convenience -->
+                    <div class="feature-card" style="background-image: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=500&h=300&fit=crop&crop=center');">
+                        <div class="feature-content">
+                            <h3 class="text-2xl font-bold mb-3">Ultimate Convenience</h3>
+                            <p class="text-white/90 mb-4 leading-relaxed">Skip the crowds and parking hassles. Shop from home with ease.</p>
+                            <a href="#" class="inline-flex items-center text-white hover:text-emerald-300 font-semibold transition-colors">
+                                Learn More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 4 - Trusted & Secure -->
+                    <div class="feature-card" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&h=300&fit=crop&crop=center');">
+                        <div class="feature-content">
+                            <h3 class="text-2xl font-bold mb-3">Trusted & Secure</h3>
+                            <p class="text-white/90 mb-4 leading-relaxed">Shop with confidence using our secure payment system and reliable delivery.</p>
+                            <a href="#" class="inline-flex items-center text-white hover:text-emerald-300 font-semibold transition-colors">
+                                Learn More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-20 bg-white animate-on-scroll">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-quote-left mr-2"></i>
-                    Customer Stories
-                </div>
-                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">What Our Community Says</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Real experiences from real customers who've made PamilihanPasabuy part of their daily routine.</p>
-            </div>
-
-            <div class="max-w-6xl mx-auto">
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <!-- Testimonial 1 -->
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                        <div class="flex items-center mb-6">
-                            <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                                M
-                            </div>
-                            <div>
-                                <div class="font-bold text-gray-900">Maria Santos</div>
-                                <div class="text-gray-600 text-sm">Busy Mom, San Fernando</div>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-gray-700 leading-relaxed italic">"PamilihanPasabuy has been a lifesaver! I can get all my fresh groceries delivered while managing my kids. The produce is always fresh, and I love supporting our local vendors."</p>
-                    </div>
-
-                    <!-- Testimonial 2 -->
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                        <div class="flex items-center mb-6">
-                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                                J
-                            </div>
-                            <div>
-                                <div class="font-bold text-gray-900">Juan Dela Cruz</div>
-                                <div class="text-gray-600 text-sm">Vendor, San Fernando Market</div>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-gray-700 leading-relaxed italic">"As a vendor, this platform doubled my sales! I can now reach customers beyond the physical market. The system is easy to use and payments are always on time."</p>
-                    </div>
-
-                    <!-- Testimonial 3 -->
-                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                        <div class="flex items-center mb-6">
-                            <div class="w-16 h-16 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                                A
-                            </div>
-                            <div>
-                                <div class="font-bold text-gray-900">Anna Reyes</div>
-                                <div class="text-gray-600 text-sm">Delivery Rider</div>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-gray-700 leading-relaxed italic">"Working as a rider gives me flexible income while helping my community. The app is user-friendly and the support team is always there when I need help."</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-gradient-to-br from-gray-50 to-green-50 animate-on-scroll">
+    <!-- About Section - Redesigned with Carousel -->
+    <section id="about" class="py-20 bg-gradient-to-br from-gray-50 to-emerald-50 animate-on-scroll">
         <div class="container mx-auto px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="grid lg:grid-cols-2 gap-16 items-center">
                     <!-- Content -->
                     <div>
-                        <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-6">
+                        <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-6">
                             <i class="fas fa-info-circle mr-2"></i>
                             Our Story
                         </div>
-                        <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Connecting Community Through Fresh Food</h2>
-                        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Connecting Community Through Fresh Food</h2>
+                        <p class="text-md text-gray-600 mb-8 leading-relaxed">
                             Born from a deep love for San Fernando's rich market tradition, PamilihanPasabuy bridges the gap between time-honored vendors and modern convenience. We believe that fresh, quality food should be accessible to everyone, while preserving the livelihoods of our local market heroes.
                         </p>
                         <div class="space-y-4 mb-8">
                             <div class="flex items-center space-x-3">
-                                <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                                <div class="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
                                     <i class="fas fa-check text-white text-sm"></i>
                                 </div>
-                                <span class="text-gray-700 font-medium">Supporting 500+ local vendors and their families</span>
+                                <span class="text-gray-700 font-medium">Supporting 100+ local vendors and their families</span>
                             </div>
                             <div class="flex items-center space-x-3">
-                                <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                                <div class="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
                                     <i class="fas fa-check text-white text-sm"></i>
                                 </div>
-                                <span class="text-gray-700 font-medium">Serving 10,000+ happy customers daily</span>
+                                <span class="text-gray-700 font-medium">Serving 1,000+ happy customers daily</span>
                             </div>
                             <div class="flex items-center space-x-3">
-                                <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                                <div class="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center">
                                     <i class="fas fa-check text-white text-sm"></i>
                                 </div>
                                 <span class="text-gray-700 font-medium">Committed to sustainable, eco-friendly practices</span>
                             </div>
                         </div>
-                        <button class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
                             <i class="fas fa-users mr-2"></i>
                             Join Our Mission
                         </button>
                     </div>
 
-                    <!-- Visual -->
-                    <div class="relative">
-                        <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-3xl p-8 shadow-2xl">
-                            <div class="text-center text-white">
-                                <i class="fas fa-handshake text-6xl mb-6 opacity-80"></i>
-                                <h3 class="text-2xl font-bold mb-4">Building Stronger Communities</h3>
-                                <p class="text-green-100 mb-6">Every order creates a ripple effect of positive impact throughout San Fernando</p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-white bg-opacity-20 rounded-xl p-4">
-                                        <div class="text-2xl font-bold">₱2M+</div>
-                                        <div class="text-sm text-green-100">Vendor Earnings</div>
-                                    </div>
-                                    <div class="bg-white bg-opacity-20 rounded-xl p-4">
-                                        <div class="text-2xl font-bold">50K+</div>
-                                        <div class="text-sm text-green-100">Orders Delivered</div>
-                                    </div>
-                                </div>
+                    <!-- Image Carousel -->
+                    <div class="flex justify-center lg:justify-end">
+                        <div class="carousel-container" id="aboutCarousel">
+                            <div class="carousel-slides" id="carouselSlides">
+                                <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=400&fit=crop&crop=center');"></div>
+                                <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop&crop=center');"></div>
+                                <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&h=400&fit=crop&crop=center');"></div>
+                                <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop&crop=center');"></div>
+                            </div>
+                            
+                            <!-- Navigation Arrows -->
+                            <button class="carousel-arrow prev" id="prevBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-arrow next" id="nextBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            
+                            <!-- Navigation Dots -->
+                            <div class="carousel-nav" id="carouselNav">
+                                <div class="carousel-dot active" data-slide="0"></div>
+                                <div class="carousel-dot" data-slide="1"></div>
+                                <div class="carousel-dot" data-slide="2"></div>
+                                <div class="carousel-dot" data-slide="3"></div>
                             </div>
                         </div>
-                        <!-- Decorative elements -->
-                        <div class="absolute -top-4 -right-4 w-20 h-20 bg-yellow-400 rounded-full opacity-30 animate-pulse-slow"></div>
-                        <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-blue-400 rounded-full opacity-20 animate-bounce-gentle"></div>
                     </div>
                 </div>
             </div>
@@ -998,22 +874,22 @@
     </section>
 
     <!-- Final CTA Section -->
-    <section class="py-20 bg-gradient-to-r from-green-600 to-green-700 animate-on-scroll">
+    <section class="py-20 bg-gradient-to-r from-emerald-600 to-teal-600 animate-on-scroll">
         <div class="container mx-auto px-4 text-center">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">Ready to Get Started?</h2>
-                <p class="text-2xl text-green-100 mb-8 leading-relaxed">Join thousands of satisfied customers who've made the switch to convenient, fresh grocery delivery.</p>
+                <p class="text-2xl text-emerald-100 mb-8 leading-relaxed">Join thousands of satisfied customers who've made the switch to convenient, fresh grocery delivery.</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                    <button class="bg-white text-green-600 hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    <button class="bg-white text-emerald-600 hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
                         <i class="fas fa-user-plus mr-3"></i>
                         Create Your Free Account
                     </button>
-                    <button class="border-2 border-white text-white hover:bg-white hover:text-green-600 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300">
+                    <button class="border-2 border-white text-white hover:bg-white hover:text-emerald-600 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300">
                         <i class="fas fa-phone mr-3"></i>
                         Contact Us
                     </button>
                 </div>
-                <div class="flex items-center justify-center space-x-8 text-green-100">
+                <div class="flex items-center justify-center space-x-8 text-emerald-100">
                     <div class="flex items-center">
                         <i class="fas fa-mobile-alt mr-2"></i>
                         <span>Mobile Friendly</span>
@@ -1038,9 +914,9 @@
                 <!-- Company Info -->
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-shopping-basket text-white text-lg"></i>
-                        </div>
+                         <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
+                                <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
+                            </div>
                         <div>
                             <span class="text-2xl font-bold">PamilihanPasabuy</span>
                             <div class="text-xs text-gray-400">San Fernando Market</div>
@@ -1048,16 +924,16 @@
                     </div>
                     <p class="text-gray-400 mb-6 leading-relaxed">Connecting San Fernando's rich market tradition with modern convenience. Fresh groceries delivered with care.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-green-600 rounded-full flex items-center justify-center transition-colors">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors">
                             <i class="fab fa-youtube"></i>
                         </a>
                     </div>
@@ -1067,12 +943,12 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6">Quick Links</h3>
                     <ul class="space-y-3">
-                        <li><a href="#home" class="text-gray-400 hover:text-green-400 transition-colors">Home</a></li>
-                        <li><a href="#how-it-works" class="text-gray-400 hover:text-green-400 transition-colors">How It Works</a></li>
-                        <li><a href="#features" class="text-gray-400 hover:text-green-400 transition-colors">Features</a></li>
-                        <li><a href="#about" class="text-gray-400 hover:text-green-400 transition-colors">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Help Center</a></li>
+                        <li><a href="#home" class="text-gray-400 hover:text-emerald-400 transition-colors">Home</a></li>
+                        <li><a href="#how-it-works" class="text-gray-400 hover:text-emerald-400 transition-colors">How It Works</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-emerald-400 transition-colors">Features</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-emerald-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Help Center</a></li>
                     </ul>
                 </div>
 
@@ -1080,12 +956,12 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6">For Partners</h3>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Become a Vendor</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Become a Rider</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Vendor Portal</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Rider Portal</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Partner Resources</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Commission Structure</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Become a Vendor</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Become a Rider</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Vendor Portal</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Rider Portal</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Partner Resources</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Commission Structure</a></li>
                     </ul>
                 </div>
 
@@ -1094,22 +970,22 @@
                     <h3 class="text-xl font-bold mb-6">Contact Info</h3>
                     <div class="space-y-4">
                         <div class="flex items-start space-x-3">
-                            <i class="fas fa-map-marker-alt text-green-400 mt-1"></i>
+                            <i class="fas fa-map-marker-alt text-emerald-400 mt-1"></i>
                             <div class="text-gray-400">
                                 <div>New San Fernando Public Market</div>
                                 <div>San Fernando, Pampanga</div>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <i class="fas fa-phone text-green-400"></i>
+                            <i class="fas fa-phone text-emerald-400"></i>
                             <span class="text-gray-400">+63 917 123 4567</span>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <i class="fas fa-envelope text-green-400"></i>
+                            <i class="fas fa-envelope text-emerald-400"></i>
                             <span class="text-gray-400">hello@pamilihan.ph</span>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <i class="fas fa-clock text-green-400"></i>
+                            <i class="fas fa-clock text-emerald-400"></i>
                             <span class="text-gray-400">24/7 Customer Support</span>
                         </div>
                     </div>
@@ -1123,10 +999,10 @@
                         <p>&copy; 2024 PamilihanPasabuy. All rights reserved.</p>
                     </div>
                     <div class="flex flex-wrap justify-center lg:justify-end space-x-6 text-sm">
-                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Privacy Policy</a>
-                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Terms of Service</a>
-                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Cookie Policy</a>
-                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Legal</a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Cookie Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Legal</a>
                     </div>
                 </div>
             </div>
@@ -1157,8 +1033,8 @@
         }
 
         window.addEventListener('scroll', toggleHeaders);
-        window.addEventListener('resize', toggleHeaders); // Also update on resize
-        toggleHeaders(); // Run on load
+        window.addEventListener('resize', toggleHeaders);
+        toggleHeaders();
 
         // Smooth Scrolling for Navigation Links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1172,7 +1048,6 @@
                         block: 'start'
                     });
                 }
-                // Close mobile menu if open
                 const mobileMenu = document.getElementById('mobile-menu');
                 mobileMenu.classList.add('hidden');
             });
@@ -1196,31 +1071,49 @@
             observer.observe(el);
         });
 
-        // Stats Counter Animation
-        function animateCounters() {
-            const counters = document.querySelectorAll('.stats-counter');
-            const speed = 200;
+        // Carousel Functionality
+        let currentSlide = 0;
+        const totalSlides = 4;
 
-            counters.forEach(counter => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute('data-count');
-                    const count = +counter.innerText;
-                    const inc = target / speed;
-
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + inc);
-                        setTimeout(updateCount, 1);
-                    } else {
-                        counter.innerText = target;
-                    }
-                };
-                updateCount();
+        function updateCarousel() {
+            const slides = document.getElementById('carouselSlides');
+            const dots = document.querySelectorAll('.carousel-dot');
+            
+            slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
             });
         }
 
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateCarousel();
+        }
+
+        // Event Listeners for Carousel
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+
+        // Auto-play carousel
+        setInterval(nextSlide, 5000);
+
         // Initialize animations when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Hero entrance animations
             function triggerHeroAnimations() {
                 const heroTitle = document.querySelector('.hero-title');
                 const heroSubtitle = document.querySelector('.hero-subtitle');
@@ -1228,7 +1121,6 @@
                 const heroTrust = document.querySelector('.hero-trust');
                 const heroScroll = document.querySelector('.hero-scroll');
                 
-                // Trigger animations in sequence
                 setTimeout(() => heroTitle.classList.add('animate-in'), 100);
                 setTimeout(() => heroSubtitle.classList.add('animate-in'), 400);
                 setTimeout(() => heroButtons.classList.add('animate-in'), 700);
@@ -1236,23 +1128,7 @@
                 setTimeout(() => heroScroll.classList.add('animate-in'), 1300);
             }
             
-            // Trigger hero animations after a short delay
             setTimeout(triggerHeroAnimations, 200);
-            
-            // Animate counters when stats section comes into view
-            const statsSection = document.querySelector('.animate-on-scroll');
-            if (statsSection) {
-                const statsObserver = new IntersectionObserver(function(entries) {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            animateCounters();
-                            statsObserver.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.5 });
-
-                statsObserver.observe(statsSection);
-            }
 
             // Add active state to navigation links
             const navLinks = document.querySelectorAll('.nav-link');
@@ -1269,26 +1145,14 @@
                 });
 
                 navLinks.forEach(link => {
-                    link.classList.remove('text-green-600');
+                    link.classList.remove('text-emerald-600');
                     if (link.getAttribute('href') === `#${current}`) {
-                        link.classList.add('text-green-600');
+                        link.classList.add('text-emerald-600');
                     }
-                });
-            });
-
-            // Add hover effects to buttons
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                });
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
                 });
             });
         });
 
-        // Add smooth reveal animations for sections
         function revealOnScroll() {
             const reveals = document.querySelectorAll('.animate-on-scroll');
             reveals.forEach(element => {
@@ -1303,7 +1167,7 @@
         }
 
         window.addEventListener('scroll', revealOnScroll);
-        revealOnScroll(); // Call once on load
+        revealOnScroll();
 
         // Add parallax effect to hero section
         window.addEventListener('scroll', () => {
@@ -1318,8 +1182,6 @@
                 parallax2.style.transform = `translateY(${scrolled * 0.3}px)`;
             }
         });
-
-        
 
         // Add form validation for any future forms
         function validateForm(form) {
@@ -1355,6 +1217,50 @@
                 imageObserver.observe(img);
             });
         }
+
+        // Touch/swipe support for carousel on mobile
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        const carousel = document.getElementById('aboutCarousel');
+
+        carousel.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        carousel.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+        });
+
+        carousel.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const diffX = startX - currentX;
+            const threshold = 50;
+            
+            if (Math.abs(diffX) > threshold) {
+                if (diffX > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        });
+
+        // Pause auto-play on hover
+        carousel.addEventListener('mouseenter', () => {
+            clearInterval(autoPlayInterval);
+        });
+
+        carousel.addEventListener('mouseleave', () => {
+            autoPlayInterval = setInterval(nextSlide, 5000);
+        });
+
+        let autoPlayInterval = setInterval(nextSlide, 5000);
     </script>
 </body>
 </html>
