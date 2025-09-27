@@ -398,9 +398,11 @@
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-3">
-           <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
-                <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
-            </div>
+           <a href="{{ route('admin.login') }}">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center transform hover:scale-110 transition-transform overflow-hidden">
+                    <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
+                </div>
+            </a>
             <div>
                 <span class="text-2xl font-bold text-white">PamilihanPasabuy</span>
                 <div class="text-xs text-white leading-none">San Fernando Market</div>

@@ -5,10 +5,11 @@ use App\Http\Controllers\NotificationController;  //Built In Notification
 
 
 
-//Landing Page
+// Landing Page
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('landing.page');
+
 
 
 

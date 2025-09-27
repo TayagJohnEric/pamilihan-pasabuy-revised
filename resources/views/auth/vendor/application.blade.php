@@ -18,7 +18,7 @@
         }
 
         .form-section {
-            border-left: 4px solid #3bf689;
+            border-left: 4px solid #50C878;
             background: #F8FAFC;
         }
 
@@ -28,12 +28,12 @@
         }
 
         .file-upload:hover {
-            border-color: #35ff86;
+            border-color: #50C878;
             background-color: #F1F5F9;
         }
 
         .progress-bar {
-            background: linear-gradient(90deg,  #5cff9d,  #35ff86);
+            background: linear-gradient(90deg,  #5cff9d,  #50C878);
             height: 4px;
             border-radius: 2px;
         }
@@ -67,8 +67,8 @@
         }
         
         .checkbox-custom input[type="checkbox"]:checked + label:before {
-            background: #35ff86;
-            border-color: #35ff86;
+            background: #50C878;
+            border-color: ##50C878;
         }
         
         .checkbox-custom input[type="checkbox"]:checked + label:after {
@@ -88,21 +88,32 @@
     <div class="max-w-4xl mx-auto">
         <!-- Header Section -->
         <div class="text-center mb-10">
-            <div class="mx-auto flex items-center justify-center mb-4">
-               <div>
-                <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
-                <div class="text-xs text-gray-800 leading-none">San Fernando Market</div>
-            </div>
+            <!-- Logo + Title -->
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <!-- Logo -->
+            <a href="{{ route('landing.page') }}">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center transform hover:scale-110 transition-transform overflow-hidden">
+                    <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
+                </div>
+            </a>
+
+                <!-- Text -->
+                <div class="text-left">
+                <span class="text-2xl font-bold text-gray-900 block">PamilihanPasabuy</span>
+                <div class="text-xs text-gray-700 leading-none">San Fernando Market</div>
+                </div>
             </div>
 
+            <!-- Heading -->
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Join Our Vendor Network</h1>
             <p class="text-gray-600 text-lg">Apply to become a verified vendor in our marketplace</p>
 
             <!-- Progress Bar -->
             <div class="mt-6 bg-gray-200 rounded-full h-2 max-w-md mx-auto">
-                <div class="progress-bar w-0 h-full rounded-full transition-all duration-500"></div>
+                <div class="progress-bar w-0 h-full rounded-full bg-emerald-600 transition-all duration-500"></div>
             </div>
-        </div>
+            </div>
+
 
         <!-- Laravel Error Messages -->
         @if ($errors->any())
