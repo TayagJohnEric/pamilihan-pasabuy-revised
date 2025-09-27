@@ -456,13 +456,13 @@
 <header id="header-scroll" class="fixed top-0 w-full z-50 transition-all duration-300 animate-fade-in-down glass-effect" style="display:none;">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
         <!-- Logo -->
-       <div class="flex items-center space-x-3">
-    <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
-        <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
-    </div>
-    <div>
-        <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
-        <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
+    <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform overflow-hidden">
+            <img src="{{ asset('images/logo.png') }}" alt="San Fernando Market Logo" class="w-full h-full object-cover" />
+        </div>
+        <div>
+            <span class="text-2xl font-bold text-gray-800">PamilihanPasabuy</span>
+            <div class="text-xs text-gray-500 leading-none">San Fernando Market</div>
     </div>
 </div>
 
@@ -477,8 +477,8 @@
 
         <!-- Action Buttons -->
         <div class="hidden lg:flex items-center space-x-3">
- <a href="{{ route('customer.login') }}" 
-                class="px-3 py-2.5 text-black hover:bg-white hover:text-green-600 border border-gray-300 rounded-xl transition-colors font-medium">
+            <a href="{{ route('customer.login') }}" 
+                class="px-3 py-2.5 text-gray-700 hover:bg-white hover:text-green-600 border border-gray-300 rounded-xl transition-colors font-medium">
                     Log In
             </a>           
             
@@ -518,7 +518,7 @@
                 local businesses. Fresh produce, authentic flavors, delivered with care.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8 hero-buttons opacity-0 transform translate-y-8">
-              <a href="{{ route('customer.register') }}" class="bg-emerald-600 text-white-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
+              <a href="{{ route('customer.register') }}" class="bg-emerald-600 text-white-600 hover:bg-emerald-500 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center">
                     <i class="fas fa-shopping-cart mr-3"></i>
                     Start Shopping Now
                 </a>
@@ -553,98 +553,187 @@
     </div>
 </section>
 
-   <!-- Apply Section -->
+ <!-- Apply Section -->
 <section class="py-20 bg-gray-50 animate-on-scroll">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
-            <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
-                <i class="fas fa-users mr-2"></i>
-                Join Our Growing Community
-            </div>
-            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Choose Your Journey</h2>
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Choose Your 
+                                <span class="text-emerald-500 font-serif italic" style="font-family: 'Pacifico', cursive;">Journey</span>
+
+            </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">Whether you're shopping for fresh groceries, growing your business, or earning flexible income - we have the perfect path for you.</p>
         </div>
 
-        <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto justify-center">
-            <!-- Vendor Card -->
-            <div class="group bg-white rounded-3xl p-8 shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative overflow-hidden">
-                <div class="text-center">
-                    <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-store text-white text-3xl"></i>
+        <div class="max-w-5xl mx-auto space-y-8">
+
+            <!-- Customer Card -->
+            <div class="group bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div class="flex flex-col lg:flex-row">
+                    <!-- Image Section -->
+                    <div class="lg:w-1/3 h-64 lg:h-auto relative overflow-hidden">
+                        <img src="{{ asset('images/apply-section1.png') }}"
+                             alt="Fresh produce and market stall" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Sell as a Vendor</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">Transform your market stall into a digital storefront. Reach thousands of customers and grow your business exponentially.</p>
-                    <ul class="text-left space-y-3 mb-8">
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Easy online store setup
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Reach 10,000+ customers
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Real-time order management
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Weekly payouts
-                        </li>
-                    </ul>
-                   <a href="{{ route('vendor-applications.create') }}" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
+                    
+                    <!-- Content Section -->
+                    <div class="lg:w-2/3 p-8 lg:p-10">
+                        <div class="flex gap-1 items-center mb-2">
+                            <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-lg text-emerald-600 lucide lucide-users-icon lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>                            </div>
+                            <h3 class="text-2xl lg:text-3xl font-bold text-gray-900">Shop as a Customer</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 text-md mb-6 leading-relaxed">
+                                Browse thousands of fresh products from trusted local vendors. Get everything delivered fast and fresh to your doorstep. 
+                        </p>
+                        
+                        <!-- Key Features -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">  500+ Fresh products daily</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Same-day delivery available</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">100% freshness guarantee</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm"> Secure payment options</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ route('customer.register') }}" 
+                           class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors duration-200">
+                            Become a Customer
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendor Card - Image moved to right -->
+            <div class="group bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div class="flex flex-col lg:flex-row">
+                    <!-- Content Section - Now first on desktop -->
+                    <div class="lg:w-2/3 p-8 lg:p-10">
+                        <div class="flex gap-1 items-center mb-2">
+                            <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-lg text-emerald-600 lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg>                            </div>
+                            <h3 class="text-2xl lg:text-3xl font-bold text-gray-900">Sell as a Vendor</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 text-md mb-6 leading-relaxed">
+                           Transform your market stall into a digital storefront. Reach thousands of customers and grow your business exponentially.
+                        </p>
+                        
+                        <!-- Key Features -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Easy online store setup</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Reach 1,000+ customers</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Real-time order management</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Weekly payouts</span>
+                            </div>
+                        </div>
+                        
+                            <a href="{{ route('vendor-applications.create') }}" 
+                           class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors duration-200">
                             Become a Vendor
-                    </a>
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Image Section - Now on the right -->
+                    <div class="lg:w-1/3 h-64 lg:h-auto relative overflow-hidden order-first lg:order-last">
+                        <img src="{{ asset('images/apply-section2.png') }}"
+                             alt="Fresh produce and market stall" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
                 </div>
             </div>
 
             <!-- Rider Card -->
-            <div class="group bg-white rounded-3xl p-8 shadow hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
-                <div class="text-center">
-                    <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-motorcycle text-white text-3xl"></i>
+            <div class="group bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <div class="flex flex-col lg:flex-row">
+                    <!-- Image Section -->
+                    <div class="lg:w-1/3 h-64 lg:h-auto relative overflow-hidden">
+                        <img src="{{ asset('images/apply-section3.png') }}" 
+                             alt="Delivery rider on motorcycle" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Deliver as a Rider</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">Earn flexible income by connecting your community with fresh groceries. Be your own boss with competitive rates.</p>
-                    <ul class="text-left space-y-3 mb-8">
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Flexible working hours
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Competitive delivery rates
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Weekly earnings
-                        </li>
-                        <li class="flex items-center text-gray-600">
-                            <i class="fas fa-check text-emerald-500 mr-3"></i>
-                            Fuel bonus incentives
-                        </li>
-                    </ul>
-                    <a href="{{ route('rider-applications.create') }}" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg block text-center">
-                        Become a Rider
-                    </a>
+                    
+                    <!-- Content Section -->
+                    <div class="lg:w-2/3 p-8 lg:p-10">
+                        <div class="flex gap-1 items-center mb-2">
+                            <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-lg text-emerald-600 lucide lucide-truck-icon lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>                            </div>
+                            <h3 class="text-2xl lg:text-3xl font-bold text-gray-900">Deliver as a Rider</h3>
+                        </div>
+                        
+                        <p class="text-gray-600 text-md mb-6 leading-relaxed">
+                            Earn flexible income by connecting your community with fresh groceries. Be your own boss with competitive rates.
+                        </p>
+                        
+                        <!-- Key Features -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Flexible working hours</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Competitive delivery rates</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Weekly earnings</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm">Fuel bonus incentives</span>
+                            </div>
+                        </div>
+                        
+                             <a href="{{ route('rider-applications.create') }}" 
+                           class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors duration-200">
+                            Become a Rider
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
+
+
     <!-- How It Works Section -->
 <section id="how-it-works" class="py-16 md:py-20 bg-gray-50 animate-on-scroll">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 md:mb-16">
-            <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4 hover:bg-emerald-200 transition-colors duration-200">
-                <i class="fas fa-cogs mr-2 text-emerald-600" aria-hidden="true"></i>
-                Simple Process
-            </div>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
-                Fresh Groceries in 3 Easy Steps
+                Fresh Groceries in 3 Easy 
+                                <span class="text-emerald-500 font-serif italic" style="font-family: 'Pacifico', cursive;">Steps</span>
+
             </h2>
-            <p class="text-md md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
                 From browsing to delivery, we've made grocery shopping as simple as 1-2-3. Experience the easiest way to get fresh market products.
             </p>
         </div>
@@ -652,7 +741,7 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
                 <!-- Step 1 -->
-                <div class=" group relative">       
+                <div class="text-center group relative">       
                     <div class="bg-white rounded-2xl shadow p-6 md:p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-2">
                         <div class="relative mb-6">
                             <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto shadow group-hover:scale-110 transition-transform duration-300">
@@ -742,11 +831,9 @@
     <section id="features" class="py-20 bg-gray-50 animate-on-scroll">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
-                    <i class="fas fa-star mr-2"></i>
-                    Why Choose Us
-                </div>
-                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Experience the Difference</h2>
+                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Experience the 
+                    <span class="text-emerald-500 font-serif italic" style="font-family: 'Pacifico', cursive;">Difference</span>
+                </h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">We're more than just a delivery app - we're your bridge to authentic, fresh, and affordable market goods from the heart of San Fernando.</p>
             </div>
 
@@ -807,9 +894,11 @@
                 <div class="grid lg:grid-cols-2 gap-16 items-center">
                     <!-- Content -->
                     <div>
-                        <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-6">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Our Story
+                        <div class="flex justify-center lg:justify-start">
+                            <div class="inline-flex items-center px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-6">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Our Story
+                            </div>
                         </div>
                         <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Connecting Community Through Fresh Food</h2>
                         <p class="text-md text-gray-600 mb-8 leading-relaxed">
@@ -835,10 +924,13 @@
                                 <span class="text-gray-700 font-medium">Committed to sustainable, eco-friendly practices</span>
                             </div>
                         </div>
-                        <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-                            <i class="fas fa-users mr-2"></i>
-                            Join Our Mission
-                        </button>
+                      <div class="flex justify-center lg:justify-start">
+                            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <i class="fas fa-users mr-2"></i>
+                                Join Our Mission
+                            </button>
+                        </div>
+
                     </div>
 
                     <!-- Image Carousel -->
@@ -873,39 +965,90 @@
         </div>
     </section>
 
-    <!-- Final CTA Section -->
-    <section class="py-20 bg-gradient-to-r from-emerald-600 to-teal-600 animate-on-scroll">
-        <div class="container mx-auto px-4 text-center">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">Ready to Get Started?</h2>
-                <p class="text-2xl text-emerald-100 mb-8 leading-relaxed">Join thousands of satisfied customers who've made the switch to convenient, fresh grocery delivery.</p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                    <button class="bg-white text-emerald-600 hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-xl">
-                        <i class="fas fa-user-plus mr-3"></i>
-                        Create Your Free Account
-                    </button>
-                    <button class="border-2 border-white text-white hover:bg-white hover:text-emerald-600 px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300">
-                        <i class="fas fa-phone mr-3"></i>
-                        Contact Us
-                    </button>
+   <!-- Final CTA Section with Mobile Mockups Left, Content Right -->
+<section class="py-20 relative overflow-hidden animate-on-scroll">
+    <!-- Background Image -->
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{ asset('images/hero-bg.png') }}');">
+    </div>
+    
+    <!-- Emerald Gradient Overlay with adjustable opacity -->
+    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600/80 to-teal-600/75"></div>
+    
+    <!-- Optional: Additional overlay for better text contrast (remove if not needed) -->
+    <div class="absolute inset-0 bg-black/10"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
+            
+            <!-- Mobile Mockups - Left Side  -->
+            <div class="w-full lg:w-1/2 flex justify-center lg:justify-start">
+                <div class="relative z-10 transform hover:scale-105 transition-transform duration-300">
+                    <img src="{{ asset('images/mobile-mockup.png') }}" 
+                         alt="Mobile App Mockup" 
+                         class="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl h-auto object-contain drop-shadow-2xl"
+                         style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
                 </div>
-                <div class="flex items-center justify-center space-x-8 text-emerald-100">
-                    <div class="flex items-center">
-                        <i class="fas fa-mobile-alt mr-2"></i>
-                        <span>Mobile Friendly</span>
+            </div>
+            
+            <!-- CTA Content - Right Side -->
+            <div class="w-full lg:w-1/2 text-center lg:text-left">
+                <div class="max-w-2xl mx-auto lg:mx-0">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                        Ready to Get Started?
+                    </h2>
+                    <p class="text-xl lg:text-2xl text-emerald-100 mb-8 leading-relaxed drop-shadow-md">
+                        Join thousands of satisfied customers who've made the switch to convenient, fresh grocery delivery.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
+                        <button class="w-full sm:w-auto bg-white text-emerald-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl backdrop-blur-sm">
+                            <i class="fas fa-user-plus mr-3"></i>
+                            Create Your Free Account
+                        </button>
+                        <button class="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-emerald-600 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 backdrop-blur-sm">
+                            <i class="fas fa-phone mr-3"></i>
+                            Contact Us
+                        </button>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-lock mr-2"></i>
-                        <span>100% Secure</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-clock mr-2"></i>
-                        <span>24/7 Support</span>
+                    
+                    <!-- Features -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-8 text-emerald-100">
+                        <div class="flex items-center drop-shadow-md">
+                            <i class="fas fa-mobile-alt mr-2 text-lg"></i>
+                            <span class="text-base font-medium">Mobile Friendly</span>
+                        </div>
+                        <div class="flex items-center drop-shadow-md">
+                            <i class="fas fa-lock mr-2 text-lg"></i>
+                            <span class="text-base font-medium">100% Secure</span>
+                        </div>
+                        <div class="flex items-center drop-shadow-md">
+                            <i class="fas fa-clock mr-2 text-lg"></i>
+                            <span class="text-base font-medium">24/7 Support</span>
+                        </div>
                     </div>
                 </div>
             </div>
+            
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- Optional: Custom CSS for additional fine-tuning -->
+<style>
+    /* Custom background blend mode for even better integration */
+    .cta-background-blend {
+        background-blend-mode: multiply;
+    }
+    
+    /* Ensure text remains readable on various background colors */
+    @media (max-width: 768px) {
+        .cta-mobile-overlay {
+            background: linear-gradient(to right, rgba(5, 150, 105, 0.9), rgba(20, 184, 166, 0.85));
+        }
+    }
+</style>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-16">
