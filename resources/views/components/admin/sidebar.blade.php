@@ -160,8 +160,8 @@
                     </button>
                     <div class="dropdown-content ml-8 mt-1">
                         <ul class="space-y-1">
-                            <li><a href="#" class="block p-2 text-sm {{ request()->routeIs('admin.profile.*') ? 'text-green-600 bg-green-50 font-semibold' : 'text-gray-600 hover:text-green-500 hover:bg-green-50' }} rounded-md transition-colors">Profile</a></li>
-                            <li><a href="#" class="block p-2 text-sm {{ request()->routeIs('admin.password.*') ? 'text-green-600 bg-green-50 font-semibold' : 'text-gray-600 hover:text-green-500 hover:bg-green-50' }} rounded-md transition-colors">Change Password</a></li>
+                            <li><a href="{{ route('admin.profile.edit') }}" class="block p-2 text-sm {{ request()->routeIs('admin.profile.edit') ? 'text-green-600 bg-green-50 font-semibold' : 'text-gray-600 hover:text-green-500 hover:bg-green-50' }} rounded-md transition-colors">Profile</a></li>
+                            <li><a href="{{ route('admin.password.edit') }}" class="block p-2 text-sm {{ request()->routeIs('admin.password.edit') ? 'text-green-600 bg-green-50 font-semibold' : 'text-gray-600 hover:text-green-500 hover:bg-green-50' }} rounded-md transition-colors">Change Password</a></li>
                         </ul>
                     </div>
                 </div>

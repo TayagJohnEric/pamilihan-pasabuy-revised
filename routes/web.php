@@ -419,6 +419,8 @@ use App\Http\Controllers\Admin\AdminRatingController;
 use App\Http\Controllers\Admin\AdminNotificationController;
 use App\Http\Controllers\Admin\AdminPayoutController;
 use App\Http\Controllers\Admin\AdminSystemSettingController;
+use App\Http\Controllers\Admin\AdminProfileController;
+
 
 
 
@@ -557,3 +559,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 //System Settings CRUD
 Route::resource('system-settings', AdminSystemSettingController::class);
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+Route::get('profile', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
+Route::put('profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+Route::get('password', [AdminProfileController::class, 'editPassword'])->name('admin.password.edit');
+Route::put('password', [AdminProfileController::class, 'updatePassword'])->name('admin.password.update');
+});
