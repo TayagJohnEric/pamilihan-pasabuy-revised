@@ -417,33 +417,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Notifications Section -->
-    @if($dashboardStats['recent_notifications']->count() > 0)
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-800">Recent Notifications</h3>
-            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Mark All Read</button>
-        </div>
-        
-        <div class="space-y-3">
-            @foreach($dashboardStats['recent_notifications']->take(4) as $notification)
-                <div class="flex items-start space-x-3 p-3 rounded-lg {{ $notification['read'] ? 'bg-gray-50' : 'bg-blue-50' }}">
-                    <div class="flex-shrink-0 mt-1">
-                        <div class="h-2 w-2 rounded-full {{ $notification['read'] ? 'bg-gray-400' : 'bg-blue-500' }}"></div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <p class="text-sm font-medium text-gray-900">{{ $notification['title'] ?? 'Notification' }}</p>
-                            <p class="text-xs text-gray-500">{{ $notification['time'] }}</p>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-1">{{ $notification['message'] }}</p>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-    @endif
 </div>
 
 <script>

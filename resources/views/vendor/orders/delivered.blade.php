@@ -1,6 +1,6 @@
 @extends('layout.vendor')
 
-@section('title', 'Order Management')
+@section('title', 'Delivered Orders')
 
 @section('content')
     <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
@@ -9,26 +9,26 @@
             <div class="px-6 py-8 border-b border-gray-100 bg-gradient-to-r from-white to-green-50/30">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                     <div class="mb-6 md:mb-0">
-                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Order Management</h1>
-                        <p class="text-gray-600 text-md">View and manage orders containing your products</p>
+                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Delivered Orders</h1>
+                        <p class="text-gray-600 text-md">View completed orders containing your products</p>
                     </div>
                     
                     <!-- Navigation Links -->
                     <div class="bg-white rounded-xl px-6 py-4 shadow-sm border border-gray-100">
                         <div class="flex flex-wrap items-center gap-4 text-sm">
-                            <span class="flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
+                            <a href="{{ route('vendor.orders.index') }}" 
+                               class="flex items-center px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                 </svg>
                                 Active Orders
-                            </span>
-                            <a href="{{ route('vendor.orders.delivered') }}" 
-                               class="flex items-center px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200">
+                            </a>
+                            <span class="flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Delivered Orders
-                            </a>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -48,18 +48,15 @@
                                                 <h2 class="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">
                                                     Order #{{ $order->id }}
                                                 </h2>
-                                                <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full
-                                                    @if($order->status === 'processing') bg-amber-50 text-amber-700 border border-amber-200
-                                                    @elseif($order->status === 'awaiting_rider_assignment') bg-blue-50 text-blue-700 border border-blue-200
-                                                    @elseif($order->status === 'out_for_delivery') bg-purple-50 text-purple-700 border border-purple-200
-                                                    @elseif($order->status === 'delivered') bg-green-50 text-green-700 border border-green-200
-                                                    @else bg-gray-50 text-gray-700 border border-gray-200
-                                                    @endif">
-                                                    {{ ucwords(str_replace('_', ' ', $order->status)) }}
+                                                <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-full bg-green-50 text-green-700 border border-green-200">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Delivered
                                                 </span>
                                             </div>
                                             
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 text-sm">
                                                 <div class="flex items-center">
                                                     <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -77,6 +74,18 @@
                                                         <span class="text-gray-500">at {{ $order->created_at->format('h:i A') }}</span>
                                                     </span>
                                                 </div>
+                                                <div class="flex items-center">
+                                                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                    </svg>
+                                                    <span class="text-gray-600">
+                                                        @if($order->rider)
+                                                            <span class="font-medium text-gray-900">{{ $order->rider->first_name }} {{ $order->rider->last_name }}</span>
+                                                        @else
+                                                            <span class="text-gray-500">No rider assigned</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
                                                 <div class="flex items-start">
                                                     <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -88,16 +97,18 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="mt-6 lg:mt-0 lg:ml-6">
-                                          <a href="{{ route('vendor.orders.show', $order) }}"
-                                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 text-white font-medium rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
-                                                View Details
-                                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            
+                                            <!-- Delivery Date -->
+                                            <div class="mt-3 flex items-center text-sm">
+                                                <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                 </svg>
-                                            </a>
+                                                <span class="text-gray-600">
+                                                    <span class="font-medium text-green-700">Delivered on:</span>
+                                                    <span class="font-medium text-gray-900">{{ $order->updated_at->format('M d, Y') }}</span>
+                                                    <span class="text-gray-500">at {{ $order->updated_at->format('h:i A') }}</span>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -139,25 +150,33 @@
                                                                 </h4>
                                                                 <div class="space-y-1">
                                                                     <p class="text-sm text-gray-600">
-                                                                        <span class="font-medium">Qty:</span> {{ $item->quantity_requested }} {{ $item->product->unit }}
+                                                                        <span class="font-medium">Qty:</span> 
+                                                                        @if($item->vendor_assigned_quantity_description)
+                                                                            {{ $item->vendor_assigned_quantity_description }}
+                                                                        @else
+                                                                            {{ $item->quantity_requested }} {{ $item->product->unit }}
+                                                                        @endif
                                                                     </p>
-                                                                    @if($item->customer_budget_requested)
+                                                                    @if($item->actual_item_price)
+                                                                        <p class="text-sm text-gray-600">
+                                                                            <span class="font-medium">Price:</span> ₱{{ number_format($item->actual_item_price, 2) }}
+                                                                        </p>
+                                                                    @elseif($item->customer_budget_requested)
                                                                         <p class="text-sm text-gray-600">
                                                                             <span class="font-medium">Budget:</span> ₱{{ number_format($item->customer_budget_requested, 2) }}
+                                                                        </p>
+                                                                    @endif
+                                                                    @if($item->vendor_fulfillment_notes)
+                                                                        <p class="text-xs text-gray-500 italic">
+                                                                            "{{ $item->vendor_fulfillment_notes }}"
                                                                         </p>
                                                                     @endif
                                                                 </div>
                                                             </div>
                                                             
-                                                            <!-- Status Indicator -->
+                                                            <!-- Delivered Status Indicator -->
                                                             <div class="ml-3 flex-shrink-0">
-                                                                @if($item->status === 'pending')
-                                                                    <div class="w-3 h-3 bg-amber-400 rounded-full shadow-sm" title="Pending"></div>
-                                                                @elseif($item->status === 'preparing')
-                                                                    <div class="w-3 h-3 bg-blue-500 rounded-full shadow-sm" title="Preparing"></div>
-                                                                @elseif($item->status === 'ready_for_pickup')
-                                                                    <div class="w-3 h-3 bg-green-500 rounded-full shadow-sm" title="Ready"></div>
-                                                                @endif
+                                                                <div class="w-3 h-3 bg-green-500 rounded-full shadow-sm" title="Delivered"></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -184,23 +203,21 @@
                 <div class="text-center py-16 px-6">
                     <div class="mx-auto w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 border border-green-100">
                         <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">No Active Orders Found</h3>
-                    <p class="text-gray-600 mb-4 text-lg">You don't have any active orders to fulfill at the moment.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">No Delivered Orders Found</h3>
+                    <p class="text-gray-600 mb-4 text-lg">You don't have any delivered orders yet.</p>
                     <p class="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
-                        Active orders containing your products will appear here when customers place them. 
-                        Make sure your products are available and well-stocked to receive orders.
+                        Completed orders containing your products will appear here once they have been delivered to customers.
                     </p>
                     <div class="mt-6">
-                        <a href="{{ route('vendor.orders.delivered') }}" 
+                        <a href="{{ route('vendor.orders.index') }}" 
                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 text-white font-medium rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
-                            View Delivered Orders
+                            View Active Orders
                         </a>
                     </div>
                 </div>

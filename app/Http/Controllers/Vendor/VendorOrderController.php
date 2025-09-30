@@ -19,7 +19,7 @@ class VendorOrderController extends Controller
 {
     /**
      * Display list of orders that contain items from the authenticated vendor
-     * Groups order items by order for better organization
+     * Groups order items by order for better organization (excludes delivered orders)
      */
     public function index()
     {
@@ -29,10 +29,11 @@ class VendorOrderController extends Controller
             return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
         }
 
-        // Get orders that contain items from this vendor
+        // Get orders that contain items from this vendor (excluding delivered orders)
         $orders = Order::whereHas('orderItems.product', function($query) use ($vendor) {
                 $query->where('vendor_id', $vendor->id);
             })
+            ->where('status', '!=', 'delivered')
             ->with([
                 'customer',
                 'deliveryAddress.district',
@@ -40,13 +41,51 @@ class VendorOrderController extends Controller
                     // Only load items that belong to this vendor
                     $query->whereHas('product', function($q) use ($vendor) {
                         $q->where('vendor_id', $vendor->id);
-                    })->with('product');
+                    })->with(['product' => function($q) {
+                        $q->select('id', 'vendor_id', 'product_name', 'image_url', 'price', 'unit', 'is_budget_based');
+                    }]);
                 }
             ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('vendor.orders.index', compact('orders'));
+    }
+
+    /**
+     * Display list of delivered orders that contain items from the authenticated vendor
+     * Shows completed orders for vendor reference and record keeping
+     */
+    public function delivered()
+    {
+        $vendor = Auth::user()->vendor;
+        
+        if (!$vendor) {
+            return redirect()->route('vendor.dashboard')->with('error', 'Vendor profile not found.');
+        }
+
+        // Get delivered orders that contain items from this vendor
+        $orders = Order::whereHas('orderItems.product', function($query) use ($vendor) {
+                $query->where('vendor_id', $vendor->id);
+            })
+            ->where('status', 'delivered')
+            ->with([
+                'customer',
+                'deliveryAddress.district',
+                'rider',
+                'orderItems' => function($query) use ($vendor) {
+                    // Only load items that belong to this vendor
+                    $query->whereHas('product', function($q) use ($vendor) {
+                        $q->where('vendor_id', $vendor->id);
+                    })->with(['product' => function($q) {
+                        $q->select('id', 'vendor_id', 'product_name', 'image_url', 'price', 'unit', 'is_budget_based');
+                    }]);
+                }
+            ])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('vendor.orders.delivered', compact('orders'));
     }
 
     /**

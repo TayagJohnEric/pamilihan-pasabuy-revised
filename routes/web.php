@@ -282,9 +282,13 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
 Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
     // Order Management Routes
     Route::prefix('orders')->name('orders.')->group(function () {
-        // Display all orders containing vendor's items
+        // Display all orders containing vendor's items (excluding delivered)
         Route::get('/', [VendorOrderController::class, 'index'])
             ->name('index');
+        
+        // Display delivered orders containing vendor's items
+        Route::get('/delivered', [VendorOrderController::class, 'delivered'])
+            ->name('delivered');
         
         // Show detailed view of specific order
         Route::get('/{order}', [VendorOrderController::class, 'show'])
