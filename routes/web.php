@@ -240,7 +240,7 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'verified'])->grou
 });
 
 //Vendor Protected Routes (requires auth & vendor role)
-Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
+Route::middleware(['auth'])->prefix('vendor')->name('vendor.')->group(function () {
 
 
     // Logout
@@ -347,7 +347,7 @@ Route::prefix('rider')->name('rider.')->middleware(['auth', 'verified'])->group(
 });
 
 // Rider Protected Routes (requires auth & rider role)
-Route::middleware(['auth', 'role:rider'])->prefix('rider')->name('rider.')->group(function () {
+Route::middleware(['auth'])->prefix('rider')->name('rider.')->group(function () {
 
     // Rider Earnings, Payouts & Ratings
     Route::get('earnings', [RiderEarningsController::class, 'earnings'])->name('earnings');

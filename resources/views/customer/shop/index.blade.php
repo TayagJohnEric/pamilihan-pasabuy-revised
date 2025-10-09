@@ -190,11 +190,7 @@
                     @endforeach
                 </div>
 
-                <div class="flex justify-center">
-                    <div class="bg-gray-50 p-4 rounded-xl">
-                        {{ $products->links() }}
-                    </div>
-                </div>
+              
             @else
                 <div class="text-center py-16">
                     <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-6">

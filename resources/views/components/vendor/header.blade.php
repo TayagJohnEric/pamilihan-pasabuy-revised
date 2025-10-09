@@ -24,9 +24,9 @@
                                 class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
                             >
                                 <!-- Profile Picture -->
-                                @if(Auth::user()->profile_image_url)
+                                @if(Auth::user()->vendor->shop_logo_url)
                                     <img 
-                                        src="{{ asset('storage/' . Auth::user()->profile_image_url) }}" 
+                                        src="{{ asset('storage/' . Auth::user()->vendor->shop_logo_url) }}" 
                                         alt="User Profile" 
                                         class="h-10 w-10 rounded-full object-cover"
                                     >
@@ -39,7 +39,7 @@
                                 <!-- User Info -->
                                 <div class="hidden sm:block text-left leading-tight">
                                     <p class="text-sm font-semibold text-gray-800 m-0">
-                                        {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                                        {{ Auth::user()->vendor->vendor_name }} 
                                     </p>
                                     <p class="text-xs font-medium text-green-500 truncate m-0">
                                         {{ Auth::user()->role === 'customer' ? 'Customer' : ucfirst(Auth::user()->role) }}

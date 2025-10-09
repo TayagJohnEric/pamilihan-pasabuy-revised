@@ -67,7 +67,7 @@ class CustomerProductController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12)->withQueryString();
+$products = $query->get();
         $categories = Category::orderBy('category_name')->get();
         //  Get 5 random vendors
         $vendors = Vendor::inRandomOrder()->take(5)->get();
